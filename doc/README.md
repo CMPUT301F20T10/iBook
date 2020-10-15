@@ -6,5 +6,6 @@ The UML is devided into 3 parts, since it's too complicated that having them in 
 3. Currently, The <i>UML_FragmentLevelDetails.png</i> is all about the ViewBookFragment class. Since we decide (for now) to have different button logics (requesting/returning/borrowing...) for the page used to view the book details, according to the book to be viewed and the user openning this page, the classes like ViewBookFragment will have 6 ways of interacting with other classes (though they will be used by other classes in the same way).  
 
 <b> Product Backlog </b>
+
 The Product Backlog is on the wiki page of this repo. 
  [Lets go to the wiki page](https://github.com/CMPUT301F20T10/iBook/wiki)
