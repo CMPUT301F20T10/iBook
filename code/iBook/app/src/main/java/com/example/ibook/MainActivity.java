@@ -1,12 +1,13 @@
 package com.example.ibook;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -61,10 +62,13 @@ public class MainActivity extends AppCompatActivity {
         signInButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v){
                 System.out.println("Clicked on Sign Up!");
+                Intent intent = new Intent(MainActivity.this, SignUpActivity.class);
+                startActivity(intent);
                 // TODO: Go to Sign Up Page
 
             }// onClick
         }); // onClickListener
     }
+    //public void us
 
 }
