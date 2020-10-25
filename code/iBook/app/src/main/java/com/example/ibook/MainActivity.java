@@ -35,8 +35,6 @@ public class MainActivity extends AppCompatActivity {
                 if (valid(username, password)) {
 
                     // TODO: Go to Home Page
-                    Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-                    startActivity(intent);
                 }// if
 
                 // this following else condition will actually be in validate function
