@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login);
+        setContentView(R.layout.activity_login);
         setupSignInListener();
         setupSignUpListener();
 
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
                 if (valid(username, password)) {
 
                     // TODO: Go to Home Page
-                    Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                    Intent intent = new Intent(MainActivity.this, PageActivity.class);
                     startActivity(intent);
                 }// if
 

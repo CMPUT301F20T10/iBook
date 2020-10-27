@@ -14,7 +14,7 @@ public class Book {
     //Need to add picture data somehow
 
     //Constructor
-    Book(String title, String authors, String date, String description, String state, boolean available) {
+    public Book(String title, String authors, String date, String description, String state, boolean available) {
         this.title = title;
         this.authors = authors;
         this.date = date;
