@@ -34,6 +34,7 @@ public class PageActivity extends AppCompatActivity {
 
         //Set activity
         setContentView(R.layout.activity_page);
+        
 
         BottomNavigationView navigationView = findViewById(R.id.nav_view);
 
