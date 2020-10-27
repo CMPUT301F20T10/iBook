@@ -1,4 +1,4 @@
-package com.example.ibook;
+ package com.example.ibook;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -27,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
         Button signInButton = findViewById(R.id.signIn);
         signInButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+
+
                 usernameEditText = findViewById(R.id.usernameEditText);
                 passwordEditText = findViewById(R.id.passwordEditText);
                 String username = usernameEditText.getText().toString();
