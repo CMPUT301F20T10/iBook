@@ -13,13 +13,13 @@
 
     <fragment
         android:id="@+id/navigation_topic"
-        android:name="com.example.ibook.fragment.HomeFragment"
+        android:name="com.example.ibook.fragment.TopicFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_topic" />
 
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="com.example.ibook.fragment.HomeFragment"
+        android:name="com.example.ibook.fragment.NotificationsFragment"
         android:label="@string/title_user"
         tools:layout="@layout/fragment_topic" />
 
