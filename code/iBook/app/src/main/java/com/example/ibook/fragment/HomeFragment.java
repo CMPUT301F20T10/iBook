@@ -1,9 +1,12 @@
 package com.example.ibook.fragment;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
 
@@ -14,6 +17,8 @@ import androidx.fragment.app.Fragment;
 import com.example.ibook.Book;
 import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
+import com.example.ibook.User;
+import com.example.ibook.ViewBookActivity;
 
 import java.util.ArrayList;
 
@@ -36,10 +41,12 @@ public class HomeFragment extends Fragment {
 
         datalist = new ArrayList<>();
 
+
         // TODO: transfer into the database
-        Book newBook = new Book("Watchmen", "Alan Moore, Dave Gibbons", "2014", "Psychologically moving comic book...", "Available", true);
+        Book newBook = new Book("Watchmen", "Alan Moore, Dave Gibbons", "2014", "Psychologically moving comic book...", Book.Status.Available, "temp isbn 1");
+
         Book newBook2 = new Book("The Millionaire Maker", "Loral Langemeier", "2006", "You - A Millionaire? (It's true, and you might be closer than you think.)\n " +
-                "Even financial woes and a limited income can't stop you from creating real wealth and the freedom in buys.", "Available", true);
+                "Even financial woes and a limited income can't stop you from creating real wealth and the freedom in buys.", Book.Status.Available, "temp isbn 2");
         datalist.add(newBook2);
         datalist.add(newBook);
         datalist.add(newBook2);
@@ -51,14 +58,28 @@ public class HomeFragment extends Fragment {
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
 
-        //On click is used to make whole bar clickable and not just the icon
-        //TODO: implement the search function.
-        searchBar.setOnClickListener(new View.OnClickListener() {
+
+
+        bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
-                searchBar.setIconified(false);
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                User user = new User("ztan4", "a password", "something@things.ca", "123456");
+                Intent intent = new Intent(getContext(), ViewBookActivity.class);
+                Book book = (Book) parent.getItemAtPosition(position);
+                intent.putExtra("BOOK", (Book) parent.getItemAtPosition(position));
+                intent.putExtra("USER", user);
+                startActivity(intent);
             }
         });
+        /*
+
+        * */
+//        searchBar.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                searchBar.setIconified(false);
+//            }
+//        });
 
         return root;
     }
