@@ -2,25 +2,31 @@ package com.example.ibook;
 
 import android.service.autofill.DateValueSanitizer;
 
-public class Book {
+import java.io.Serializable;
+
+public class Book implements Serializable {
+
+    public enum Status{
+        Available, Requested, Borrowed, Return
+    }
 
     private String title;
     private String authors;
     private String date;
     private String description;
-    private String state;
-    boolean available;
+    private Status status;
+    private String isbn;
 
-    //Need to add picture data somehow
+//Need to add picture data somehow
 
     //Constructor
-    public Book(String title, String authors, String date, String description, String state, boolean available) {
+    public Book(String title, String authors, String date, String description, Status status, String isbn) {
         this.title = title;
         this.authors = authors;
         this.date = date;
         this.description = description;
-        this.state = state;
-        this.available = available;
+        this.status = status;    // Attribute state denotes the status of the book, and thus we don't actually need
+        this.isbn = isbn;
     }
 
     //Getters
@@ -40,13 +46,15 @@ public class Book {
         return description;
     }
 
-    public String getState() {
-        return state;
+    public Status getStatus() {
+        return status;
     }
 
     public boolean isAvailable() {
-        return available;
+        return this.status == Status.Available;
     }
+
+    public String getIsbn() { return isbn; }
 
     //Setters
     public void setTitle(String title) {
@@ -65,11 +73,11 @@ public class Book {
         this.description = description;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setStatus(Status state) {
+        this.status = state;
     }
 
-    public void setAvailable(boolean available) {
-        this.available = available;
-    }
+    public void setIsbn(String isbn) { this.isbn = isbn; }
+
+    public void setAvailable(boolean available) { this.status = Status.Available; }
 }
