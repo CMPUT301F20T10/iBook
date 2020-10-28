@@ -31,7 +31,7 @@ public class BookListAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return books.get(position);
     }
 
     @Override
