@@ -29,10 +29,14 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
+
+        // Set up the view
         bookListView = root.findViewById(R.id.bookList);
-//        searchBar = (SearchView) root.findViewById(R.id.searchButton);
+        searchBar = (SearchView) root.findViewById(R.id.searchButton);
+
         datalist = new ArrayList<>();
 
+        // TODO: transfer into the database
         Book newBook = new Book("Watchmen", "Alan Moore, Dave Gibbons", "2014", "Psychologically moving comic book...", "Available", true);
         Book newBook2 = new Book("The Millionaire Maker", "Loral Langemeier", "2006", "You - A Millionaire? (It's true, and you might be closer than you think.)\n " +
                 "Even financial woes and a limited income can't stop you from creating real wealth and the freedom in buys.", "Available", true);
@@ -47,17 +51,31 @@ public class HomeFragment extends Fragment {
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
 
-//        searchBar.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                searchBar.setIconified(false);
-//            }
-//        });
+        //On click is used to make whole bar clickable and not just the icon
+        //TODO: implement the search function.
+        searchBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchBar.setIconified(false);
+            }
+        });
 
         return root;
     }
 
 
-
-
 }
+
+
+/*
+ * Resources:
+ * Android Notes for Professionals
+ *
+ * Websites:
+ *
+ * Make search bar fully clickable
+ * Liu, Eric. Custom SearchView whole clickable in android. Stack Overflow. Stack Exchange Inc. Nov 10, 2015. License(CC BY-SA).
+ * https://stackoverflow.com/questions/17670685/custom-searchview-whole-clickable-in-android
+ *
+ *
+ * */
