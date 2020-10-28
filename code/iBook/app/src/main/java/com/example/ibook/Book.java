@@ -74,7 +74,6 @@ public class Book implements Serializable {
     }
 
     public void setStatus(Status status) {
-
         this.status = status;
     }
 
