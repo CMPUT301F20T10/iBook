@@ -65,7 +65,7 @@ public class BookListAdapter extends BaseAdapter {
             status.setText("Status: Available");
             status.setTextColor(0xFF1E9F01);
         }else{
-            status.setText("Status: " + book.getState());
+            status.setText("Status: " + book.getStatus());
             status.setTextColor(0xFFFF0000);
         }
 

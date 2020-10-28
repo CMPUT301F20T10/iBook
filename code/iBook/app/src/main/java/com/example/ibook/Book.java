@@ -25,7 +25,7 @@ public class Book implements Serializable {
         this.authors = authors;
         this.date = date;
         this.description = description;
-        this.status = status;    // Attribute state denotes the status of the book, and thus we don't actually need
+        this.status = status;    // Attribute status denotes the status of the book, and thus we don't actually need
         this.isbn = isbn;
     }
 
@@ -46,7 +46,7 @@ public class Book implements Serializable {
         return description;
     }
 
-    public Status getState() {
+    public Status getStatus() {
         return status;
     }
 
@@ -73,8 +73,8 @@ public class Book implements Serializable {
         this.description = description;
     }
 
-    public void setState(Status state) {
-        this.status = state;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public void setIsbn(String isbn) { this.isbn = isbn; }
