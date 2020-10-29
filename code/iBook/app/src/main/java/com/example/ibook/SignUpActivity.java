@@ -1,11 +1,26 @@
 package com.example.ibook;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -14,6 +29,10 @@ public class SignUpActivity extends AppCompatActivity {
   private EditText ed_email;
   private EditText ed_phoneNumber;
   private EditText ed_confirmPassword;
+  private ProgressBar ed_progressBar;
+  private FirebaseAuth uAuth; // user authentication
+  private FirebaseFirestore db;
+  private String userID;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -24,13 +43,25 @@ public class SignUpActivity extends AppCompatActivity {
     ed_password = findViewById(R.id.ed_password_signup);
     ed_phoneNumber = findViewById(R.id.ed_phoneNumber_signup);
     ed_confirmPassword = findViewById(R.id.ed_confirmPassword_signup);
+    ed_progressBar = findViewById(R.id.signUpProgressBar);
+    db = FirebaseFirestore.getInstance();
+    uAuth = FirebaseAuth.getInstance();
     // Toast.makeText(getBaseContext(), "SignUp to be done", Toast.LENGTH_SHORT).show();
-  }
 
+    // if current user already is logged in
+   // if(uAuth.getCurrentUser() != null){
+     // System.out.println(uAuth.getCurrentUser());
+      //startActivity(new Intent(getApplicationContext(),PageActivity.class));
+      //finish();
+    //}// if
+
+  }// onCreate
+
+  //method gets called when confirm button is clicked in sign-up activity
   public void confirm_signup(View view) {
-    String username = ed_username.getText().toString();
-    String phoneNumber = ed_phoneNumber.getText().toString();
-    String email = ed_email.getText().toString();
+    final String username = ed_username.getText().toString();
+    final String phoneNumber = ed_phoneNumber.getText().toString();
+    final String email = ed_email.getText().toString();
     String password = ed_password.getText().toString();
     String confirmPassword = ed_confirmPassword.getText().toString();
     if (username.length() > 0
@@ -47,16 +78,57 @@ public class SignUpActivity extends AppCompatActivity {
                   "The Confirm Password confirmation does not match",
                   Toast.LENGTH_SHORT)
               .show();
+          return;
         }
       } else {
-        Toast.makeText(getBaseContext(), "Improper passward", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getBaseContext(), "Improper password", Toast.LENGTH_SHORT).show();
+        return;
       }
 
       // Toast.makeText(getBaseContext(), "Confirm -> iBook Home Page", Toast.LENGTH_SHORT).show();
     } else {
       Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();
+      return;
     }
+
+    // make the progressbar visible
+    ed_progressBar.setVisibility(View.VISIBLE);
+
+    //register the user
+    uAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+      @Override
+      public void onComplete(@NonNull Task<AuthResult> task) {
+        if(task.isSuccessful()){
+          userID = uAuth.getCurrentUser().getUid(); // fetching the user id for the current user
+          DocumentReference documentReference = db.collection("users").document(userID);//creating a document for the user
+          Map<String,Object> user = new HashMap();
+          //put info for the user in hashmap
+          user.put("Username",username);
+          user.put("email",email);
+          user.put("PhoneNumber", phoneNumber);
+          
+
+          //update the document
+          documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+              Log.d("tag", "User profile is created for " + userID);
+            }// onSuccess
+          });
+
+          //We don't put in the password do we?
+          Toast.makeText(SignUpActivity.this, "Created user successfully", Toast.LENGTH_SHORT).show();
+          startActivity(new Intent(getApplicationContext(),PageActivity.class));
+        }// if
+        else{
+          Toast.makeText(SignUpActivity.this, "Unsuccessful" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+        }// else
+      }
+    });
+
+
   }
+
 
   public void cancel_signup(View view) {
     //Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();

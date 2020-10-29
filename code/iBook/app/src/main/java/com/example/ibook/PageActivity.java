@@ -1,6 +1,8 @@
 package com.example.ibook;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -14,6 +16,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
@@ -21,6 +24,7 @@ import java.util.ArrayList;
 public class PageActivity extends AppCompatActivity {
 
     //Private variables
+
     private ListView bookList;
     private ArrayAdapter<Book> bookAdapter;
     private ArrayList<Book> bookDataList;
@@ -55,6 +59,12 @@ public class PageActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
 
     }
+
+    public void logout(View view){
+        FirebaseAuth.getInstance().signOut();
+        startActivity(new Intent(getApplicationContext(),MainActivity.class));
+        finish();
+    }// logout
 }
 
 
