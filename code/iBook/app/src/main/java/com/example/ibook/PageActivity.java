@@ -8,17 +8,17 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.ArrayList;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.auth.FirebaseAuth;
-
-import java.util.ArrayList;
 
 // There is no need to modify this class, this class just set up the navigation function
 public class PageActivity extends AppCompatActivity {
@@ -29,7 +29,7 @@ public class PageActivity extends AppCompatActivity {
     private ArrayAdapter<Book> bookAdapter;
     private ArrayList<Book> bookDataList;
     private SearchView searchBar;
-
+    private String username;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +40,15 @@ public class PageActivity extends AppCompatActivity {
 
         //Set activity
         setContentView(R.layout.activity_page);
+        Intent intentGet= getIntent();
+        username = intentGet.getStringExtra("curr_username");
+        //Toast.makeText(getBaseContext(), username, Toast.LENGTH_LONG).show();
+
+        Intent intentPut = new Intent(PageActivity.this, AddMyBookActivity.class);
+        intentPut.putExtra("curr_username", username);
+        /*
+        * todo: think of how to transit data ↑
+        * */
         
         // Set the navigation view
         BottomNavigationView navigationView = findViewById(R.id.nav_view);

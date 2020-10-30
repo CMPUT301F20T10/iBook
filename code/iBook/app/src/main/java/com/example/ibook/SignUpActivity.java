@@ -8,9 +8,6 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -19,8 +16,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -69,7 +70,7 @@ public class SignUpActivity extends AppCompatActivity {
         && email.length() > 0
         && password.length() > 0
         && confirmPassword.length() > 0) {
-      if (password.length() >= 5) {
+      if (password.length() >= 6) {
         if (password.equals(confirmPassword)) {
           Toast.makeText(getBaseContext(), "Confirm -> iBook Home Page", Toast.LENGTH_SHORT).show();
         } else {
@@ -106,6 +107,8 @@ public class SignUpActivity extends AppCompatActivity {
           user.put("Username",username);
           user.put("email",email);
           user.put("PhoneNumber", phoneNumber);
+          ArrayList<Book> bookList = new ArrayList<>();
+          user.put("BookList", bookList);
           
 
           //update the document
@@ -118,10 +121,16 @@ public class SignUpActivity extends AppCompatActivity {
 
           //We don't put in the password do we?
           Toast.makeText(SignUpActivity.this, "Created user successfully", Toast.LENGTH_SHORT).show();
-          startActivity(new Intent(getApplicationContext(),PageActivity.class));
-        }// if
+          Intent intent = new Intent(getApplicationContext(),PageActivity.class);
+          intent.putExtra("curr_username", username);
+          startActivity(intent);
+        }
         else{
           Toast.makeText(SignUpActivity.this, "Unsuccessful" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+          Intent intent = getIntent();
+          finish();
+          startActivity(intent); // when we get unsuccessful message here,
+                  // Idk why it continues waiting, so I restart the sign up activity.
         }// else
       }
     });

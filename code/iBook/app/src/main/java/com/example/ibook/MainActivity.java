@@ -8,16 +8,13 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
-import org.w3c.dom.Text;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import static android.view.View.GONE;
 
@@ -56,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         signInButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                String username = usernameEditText.getText().toString();
+                final String username = usernameEditText.getText().toString();
                 String password = passwordEditText.getText().toString();
                 signInProgressBar.setVisibility(View.VISIBLE);
 
@@ -68,8 +65,10 @@ public class MainActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()){
                                 Toast.makeText(MainActivity.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(getApplicationContext(),PageActivity.class));
-                            }// if
+                                Intent intent = new Intent(getApplicationContext(),PageActivity.class);
+                                intent.putExtra("curr_username", username);
+                                startActivity(intent);
+                            }
                             else{
                                 Toast.makeText(MainActivity.this, "Unsuccessful" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                 signInProgressBar.setVisibility(GONE);
@@ -98,13 +97,23 @@ public class MainActivity extends AppCompatActivity {
     }// setupSignInListener
 
     public Boolean valid(String username, String password) {
+        /*
+         *  convenience for testing
+         * */
+        if (username.equals("1") && password.equals("1")){
+            Intent intent = new Intent(getApplicationContext(),PageActivity.class);
+            intent.putExtra("curr_username", "1@gmail.com");
+            startActivity(intent);
+            return false;
+        }
+        /**/
+
         if(username.equals("") || password.equals((""))){
             return false;
         }// if
         else{
             return true;
         }// else
-
     }// valid
 
     public void setupSignUpListener() {

@@ -145,11 +145,11 @@
         android:layout_marginBottom="24dp"
         android:ems="10"
         android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/deleteButton"
+        app:layout_constraintBottom_toTopOf="@+id/addButton"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
-        android:id="@+id/editButton"
+        android:id="@+id/cancelButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="100dp"
@@ -157,23 +157,23 @@
         android:layout_marginEnd="34dp"
         android:layout_marginRight="34dp"
         android:layout_marginBottom="85dp"
-        android:text="@string/editButton"
+        android:text="cancel"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/deleteButton"
+        app:layout_constraintEnd_toStartOf="@+id/addButton"
         app:layout_constraintStart_toStartOf="parent"
-        tools:text="@string/editButton" />
+        tools:text="cancel" />
 
     <Button
-        android:id="@+id/deleteButton"
+        android:id="@+id/addButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="100dp"
         android:layout_marginRight="100dp"
         android:layout_marginBottom="85dp"
-        android:text="@string/deleteButton"
+        android:text="add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:text="@string/deleteButton" />
+        tools:text="add" />
 
     <ImageView
         android:id="@+id/imageView"

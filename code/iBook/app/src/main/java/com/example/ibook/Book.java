@@ -1,7 +1,5 @@
 package com.example.ibook;
 
-import android.service.autofill.DateValueSanitizer;
-
 import java.io.Serializable;
 
 public class Book implements Serializable {
@@ -20,6 +18,14 @@ public class Book implements Serializable {
 //Need to add picture data somehow
 
     //Constructor
+    public Book(String title, String authors, String date, String isbn) {
+        this.title = title;
+        this.authors = authors;
+        this.date = date;
+        this.status = Status.Available;    // Attribute status denotes the status of the book, and thus we don't actually need
+        this.isbn = isbn;
+    }
+
     public Book(String title, String authors, String date, String description, Status status, String isbn) {
         this.title = title;
         this.authors = authors;
