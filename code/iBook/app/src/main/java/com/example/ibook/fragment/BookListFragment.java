@@ -10,12 +10,12 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.ibook.AddMyBookActivity;
+import com.example.ibook.activities.AddMyBookActivity;
 import com.example.ibook.Book;
 import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
 import com.example.ibook.User;
-import com.example.ibook.ViewBookActivity;
+import com.example.ibook.activities.ViewBookActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;

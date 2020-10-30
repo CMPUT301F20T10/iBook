@@ -1,7 +1,6 @@
 package com.example.ibook.fragment;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +17,7 @@ import com.example.ibook.Book;
 import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
 import com.example.ibook.User;
-import com.example.ibook.ViewBookActivity;
+import com.example.ibook.activities.ViewBookActivity;
 
 import java.util.ArrayList;
 
