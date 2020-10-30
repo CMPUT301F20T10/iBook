@@ -60,7 +60,12 @@ public class BookListAdapter extends BaseAdapter {
         date.setText(book.getDate());
 
         //Set part of the description up to ~30 characters
-        description.setText(book.getDescription().substring(0,30) + "...");
+        String bookDescription = book.getDescription();
+        if(bookDescription.length() >30) {
+            description.setText(bookDescription.substring(0, 30) + "...");
+        }else {
+            description.setText(bookDescription + "...");
+        }
         if(book.isAvailable()){
             status.setText("Status: Available");
             status.setTextColor(0xFF1E9F01);
