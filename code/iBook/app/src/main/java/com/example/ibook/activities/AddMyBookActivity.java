@@ -8,9 +8,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.ibook.Book;
+import com.example.ibook.entities.Book;
 import com.example.ibook.R;
-import com.example.ibook.User;
+import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;

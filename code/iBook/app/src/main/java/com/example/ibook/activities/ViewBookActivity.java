@@ -8,9 +8,9 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.ibook.Book;
+import com.example.ibook.entities.Book;
 import com.example.ibook.R;
-import com.example.ibook.User;
+import com.example.ibook.entities.User;
 
 public class ViewBookActivity extends AppCompatActivity {
     private User user;

@@ -13,10 +13,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.ibook.Book;
+import com.example.ibook.entities.Book;
 import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
-import com.example.ibook.User;
+import com.example.ibook.entities.User;
 import com.example.ibook.activities.ViewBookActivity;
 
 import java.util.ArrayList;
