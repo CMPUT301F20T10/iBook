@@ -39,7 +39,9 @@ public class User implements Serializable {
         this.db = FirebaseFirestore.getInstance();
 
         this.documentReference = db.collection("users").document(userID);//creating a document for the use
-        this.fetch();
+        while (this.userName == null) {
+            this.fetch();
+        }
     }
 
     /**
