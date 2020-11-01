@@ -30,6 +30,9 @@ public class UserFragment extends Fragment {
         tv_phoneNumber = root.findViewById(R.id.tv_phoneNumber);
 
         user = new User();
+        while (user.getUserName() == null) {
+            user.fetch();
+        }
 
         tv_userName.setText(user.getUserName());
         tv_email.setText(user.getEmail());

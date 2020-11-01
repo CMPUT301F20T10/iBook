@@ -88,7 +88,7 @@ public class User implements Serializable {
 
         // Somehow on my device, the user Info page will not function properly,
         // If you find this unnecessary, feel free to remove
-        SystemClock.sleep(200);
+        SystemClock.sleep(50);
         if (get.isSuccessful()) {
             DocumentSnapshot document = (DocumentSnapshot) get.getResult();
             this.userName = document.getString("userName");
