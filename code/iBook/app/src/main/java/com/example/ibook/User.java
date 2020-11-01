@@ -39,22 +39,7 @@ public class User implements Serializable {
         this.db = FirebaseFirestore.getInstance();
 
         this.documentReference = db.collection("users").document(userID);//creating a document for the use
-
-        Task get = this.documentReference.get();
-
-        // Somehow on my device, the user Info page will not function properly,
-        // If you find this unnecessary, feel free to remove
-        SystemClock.sleep(200);
-        if (get.isSuccessful()) {
-            DocumentSnapshot document = (DocumentSnapshot) get.getResult();
-            this.userName = document.getString("userName");
-            this.email = document.getString("email");
-            this.phoneNumber = document.getString("phoneNumber");
-            this.password = document.getString("password");
-        }
-        else {
-            Log.d("tag", "loading user info failed");
-        }
+        this.fetch();
     }
 
     /**
@@ -71,6 +56,7 @@ public class User implements Serializable {
         this.db = FirebaseFirestore.getInstance();
 
         this.documentReference = db.collection("users").document(userID);//creating a document for the user
+
     }
 
     /**
@@ -96,6 +82,24 @@ public class User implements Serializable {
         });
     }
 
+    public void fetch() {
+
+        Task get = this.documentReference.get();
+
+        // Somehow on my device, the user Info page will not function properly,
+        // If you find this unnecessary, feel free to remove
+        SystemClock.sleep(200);
+        if (get.isSuccessful()) {
+            DocumentSnapshot document = (DocumentSnapshot) get.getResult();
+            this.userName = document.getString("userName");
+            this.email = document.getString("email");
+            this.phoneNumber = document.getString("phoneNumber");
+            this.password = document.getString("password");
+        }
+        else {
+            Log.d("tag", "loading user info failed");
+        }
+    }
 
     /* getters and setters
     * */
