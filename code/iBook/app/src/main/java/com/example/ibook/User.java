@@ -41,6 +41,9 @@ public class User implements Serializable {
         this.documentReference = db.collection("users").document(userID);//creating a document for the use
 
         Task get = this.documentReference.get();
+
+        // Somehow on my device, the user Info page will not function properly,
+        // If you find this unnecessary, feel free to remove
         SystemClock.sleep(200);
         if (get.isSuccessful()) {
             DocumentSnapshot document = (DocumentSnapshot) get.getResult();
