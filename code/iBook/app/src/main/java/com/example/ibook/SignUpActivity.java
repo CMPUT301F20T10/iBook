@@ -32,8 +32,6 @@ public class SignUpActivity extends AppCompatActivity {
   private EditText ed_confirmPassword;
   private ProgressBar ed_progressBar;
   private FirebaseAuth uAuth; // user authentication
-  private FirebaseFirestore db;
-  private String userID;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +43,6 @@ public class SignUpActivity extends AppCompatActivity {
     ed_phoneNumber = findViewById(R.id.ed_phoneNumber_signup);
     ed_confirmPassword = findViewById(R.id.ed_confirmPassword_signup);
     ed_progressBar = findViewById(R.id.signUpProgressBar);
-    db = FirebaseFirestore.getInstance();
     uAuth = FirebaseAuth.getInstance();
     // Toast.makeText(getBaseContext(), "SignUp to be done", Toast.LENGTH_SHORT).show();
 
@@ -63,8 +60,10 @@ public class SignUpActivity extends AppCompatActivity {
     final String username = ed_username.getText().toString();
     final String phoneNumber = ed_phoneNumber.getText().toString();
     final String email = ed_email.getText().toString();
-    String password = ed_password.getText().toString();
+    final String password = ed_password.getText().toString();
     String confirmPassword = ed_confirmPassword.getText().toString();
+
+    // verifying the user's input
     if (username.length() > 0
         && phoneNumber.length() > 0
         && email.length() > 0
@@ -100,24 +99,8 @@ public class SignUpActivity extends AppCompatActivity {
       @Override
       public void onComplete(@NonNull Task<AuthResult> task) {
         if(task.isSuccessful()){
-          userID = uAuth.getCurrentUser().getUid(); // fetching the user id for the current user
-          DocumentReference documentReference = db.collection("users").document(userID);//creating a document for the user
-          Map<String,Object> user = new HashMap();
-          //put info for the user in hashmap
-          user.put("Username",username);
-          user.put("email",email);
-          user.put("PhoneNumber", phoneNumber);
-          ArrayList<Book> bookList = new ArrayList<>();
-          user.put("BookList", bookList);
-          
-
-          //update the document
-          documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-              Log.d("tag", "User profile is created for " + userID);
-            }// onSuccess
-          });
+          User user = new User(username, password, email, phoneNumber);
+          user.commit();
 
           //We don't put in the password do we?
           Toast.makeText(SignUpActivity.this, "Created user successfully", Toast.LENGTH_SHORT).show();
