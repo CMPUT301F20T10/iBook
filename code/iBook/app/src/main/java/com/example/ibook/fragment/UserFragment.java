@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.ibook.R;
-import com.example.ibook.User;
+import com.example.ibook.entities.User;
 
 public class UserFragment extends Fragment {
     private TextView tv_userName;
