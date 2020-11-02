@@ -49,6 +49,7 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-auth' // for authenticating users
 
+    implementation 'com.google.android.gms:play-services-maps:17.0.0' //For google maps services
 
 
 }
