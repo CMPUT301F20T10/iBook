@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class User implements Serializable {
+public class User {
     private String userName;
     private String password;
     private String email;

@@ -67,7 +67,7 @@ public class HomeFragment extends Fragment {
                 Intent intent = new Intent(getContext(), ViewBookActivity.class);
                 Book book = (Book) parent.getItemAtPosition(position);
                 intent.putExtra("BOOK", (Book) parent.getItemAtPosition(position));
-                intent.putExtra("USER", user);
+                intent.putExtra("USERNAME", user.getUserName());
                 startActivity(intent);
             }
         });

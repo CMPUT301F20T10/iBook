@@ -9,7 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class ViewBookActivity extends AppCompatActivity {
-    private User user;
+    private String userName;
     private Book book;
 
     private TextView bookNameTextView;
@@ -24,7 +24,7 @@ public class ViewBookActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         this.book = (Book) intent.getSerializableExtra("BOOK");
-        this.user = (User) intent.getSerializableExtra("USER");
+        this.userName = (String) intent.getSerializableExtra("USERNAME");
 
         setContentView(R.layout.activity_view_book);
 
