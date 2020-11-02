@@ -10,12 +10,12 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.ibook.AddMyBookActivity;
-import com.example.ibook.Book;
+import com.example.ibook.activities.AddMyBookActivity;
+import com.example.ibook.entities.Book;
 import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
-import com.example.ibook.User;
-import com.example.ibook.ViewBookActivity;
+import com.example.ibook.entities.User;
+import com.example.ibook.activities.ViewBookActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -49,14 +49,8 @@ public class BookListFragment extends Fragment {
         btn_addBook = root.findViewById(R.id.button_add);
         datalist = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
-        /*
-        // TODO: transfer into the database
-        Book newBook = new Book("Watchmen", "Alan Moore, Dave Gibbons", "2014", "Psychologically moving comic book...", Book.Status.Available, "temp isbn 1");
 
-        Book newBook2 = new Book("The Millionaire Maker", "Loral Langemeier", "2006", "You - A Millionaire? (It's true, and you might be closer than you think.)\n " +
-                "Even financial woes and a limited income can't stop you from creating real wealth and the freedom in buys.", Book.Status.Available, "temp isbn 2");
-        datalist.add(newBook);
-        datalist.add(newBook2);*/
+        // TODO: transfer into the database
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
         adapter.notifyDataSetChanged();

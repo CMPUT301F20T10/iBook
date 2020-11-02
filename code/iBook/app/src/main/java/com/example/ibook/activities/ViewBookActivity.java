@@ -1,4 +1,4 @@
-package com.example.ibook;
+package com.example.ibook.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +7,10 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.ibook.entities.Book;
+import com.example.ibook.R;
+import com.example.ibook.entities.User;
 
 public class ViewBookActivity extends AppCompatActivity {
     private User user;

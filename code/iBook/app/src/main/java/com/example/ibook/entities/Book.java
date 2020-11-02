@@ -1,4 +1,4 @@
-package com.example.ibook;
+package com.example.ibook.entities;
 
 import java.io.Serializable;
 
