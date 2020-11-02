@@ -68,7 +68,7 @@ public class HomeFragment extends Fragment {
         bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                User user = new User("ztan4", "a password", "something@things.ca", "123456");
+                User user = new User();
                 Intent intent = new Intent(getContext(), ViewBookActivity.class);
                 Book book = (Book) parent.getItemAtPosition(position);
                 intent.putExtra("BOOK", (Book) parent.getItemAtPosition(position));
