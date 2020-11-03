@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.ibook.R;
-import com.example.ibook.entities.Book;
+import com.example.ibook.entities.*;
 import com.example.ibook.fragment.EditBookFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -22,6 +22,8 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import org.w3c.dom.Document;
 
 public class ViewBookActivity extends AppCompatActivity implements EditBookFragment.OnFragmentInteractionListener{
     private String userID;
@@ -50,7 +52,8 @@ public class ViewBookActivity extends AppCompatActivity implements EditBookFragm
         // Toast.makeText(getBaseContext(), userID, Toast.LENGTH_SHORT).show();
         db = FirebaseFirestore.getInstance();
 
-        DocumentReference docRef = db.collection("users").document(userID);
+        User user = new com.example.ibook.entities.User();
+        DocumentReference docRef = user.getDocumentReference();
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
