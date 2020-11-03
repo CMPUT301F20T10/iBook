@@ -10,20 +10,21 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 
+import com.example.ibook.BookListAdapter;
+import com.example.ibook.GLOBAL_CONSTANT;
+import com.example.ibook.R;
+import com.example.ibook.activities.ScanActivity;
+import com.example.ibook.activities.ViewBookActivity;
+import com.example.ibook.entities.Book;
+import com.example.ibook.entities.User;
+
+import java.util.ArrayList;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.ibook.GLOBAL_CONSTANT;
-import com.example.ibook.activities.PageActivity;
-import com.example.ibook.activities.ScanActivity;
-import com.example.ibook.entities.Book;
-import com.example.ibook.BookListAdapter;
-import com.example.ibook.R;
-import com.example.ibook.entities.User;
-import com.example.ibook.activities.ViewBookActivity;
 
-import java.util.ArrayList;
 
 public class HomeFragment extends Fragment {
 

@@ -1,7 +1,6 @@
 package com.example.ibook.activities;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -17,8 +16,6 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import java.util.jar.Manifest;
 
 import static android.view.View.GONE;
 
@@ -51,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
     }// onResume
 
 
-
     public void setupSignInListener() {
         final Button signInButton = findViewById(R.id.signIn);
         signInButton.setOnClickListener(new View.OnClickListener() {
@@ -64,16 +60,15 @@ public class MainActivity extends AppCompatActivity {
                 if (valid(username, password)) {
 
                     // TODO: Go to Home Page
-                    uAuth.signInWithEmailAndPassword(username,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    uAuth.signInWithEmailAndPassword(username, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-                            if(task.isSuccessful()){
+                            if (task.isSuccessful()) {
                                 Toast.makeText(MainActivity.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(getApplicationContext(),PageActivity.class);
+                                Intent intent = new Intent(getApplicationContext(), PageActivity.class);
                                 intent.putExtra("curr_username", username);
                                 startActivity(intent);
-                            }
-                            else{
+                            } else {
                                 Toast.makeText(MainActivity.this, "Unsuccessful" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                 signInProgressBar.setVisibility(GONE);
                                 return;
@@ -82,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
-                   // Intent intent = new Intent(MainActivity.this, PageActivity.class);
+                    // Intent intent = new Intent(MainActivity.this, PageActivity.class);
                     //startActivity(intent);
                 }// if
 
@@ -104,18 +99,30 @@ public class MainActivity extends AppCompatActivity {
         /*
          *  convenience for testing
          * */
-        if (username.equals("1") && password.equals("1")){
-            Intent intent = new Intent(getApplicationContext(),PageActivity.class);
-            intent.putExtra("curr_username", "1@gmail.com");
-            startActivity(intent);
+        if (username.equals("1") && password.equals("1")) {
+            uAuth.signInWithEmailAndPassword("yzhang24@gmail.com", "123456").addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(MainActivity.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), PageActivity.class);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(MainActivity.this, "Unsuccessful" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        signInProgressBar.setVisibility(GONE);
+                        return;
+                    }
+
+                }
+            });
             return false;
         }
         /**/
 
-        if(username.equals("") || password.equals((""))){
+        if (username.equals("") || password.equals((""))) {
             return false;
         }// if
-        else{
+        else {
             return true;
         }// else
     }// valid
@@ -123,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
     public void setupSignUpListener() {
         Button signInButton = findViewById(R.id.signUp);
         signInButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v){
+            public void onClick(View v) {
                 System.out.println("Clicked on Sign Up!");
                 Intent intent = new Intent(MainActivity.this, SignUpActivity.class);
                 startActivity(intent);

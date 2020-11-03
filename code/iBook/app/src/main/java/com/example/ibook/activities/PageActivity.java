@@ -42,15 +42,6 @@ public class PageActivity extends AppCompatActivity {
 
         //Set activity
         setContentView(R.layout.activity_page);
-        Intent intentGet= getIntent();
-        username = intentGet.getStringExtra("curr_username");
-        //Toast.makeText(getBaseContext(), username, Toast.LENGTH_LONG).show();
-
-        Intent intentPut = new Intent(PageActivity.this, AddMyBookActivity.class);
-        intentPut.putExtra("curr_username", username);
-        /*
-        * todo: think of how to transit data ↑
-        * */
         
         // Set the navigation view
         BottomNavigationView navigationView = findViewById(R.id.nav_view);

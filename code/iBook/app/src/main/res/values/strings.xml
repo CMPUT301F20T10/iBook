@@ -4,6 +4,7 @@
     <string name="nameText">Book Name</string>
     <string name="authorText">Author</string>
     <string name="dateText">Date</string>
+    <string name="descriptionText">Description</string>
     <string name="photoText">Photo</string>
     <string name="isbnText">ISBN</string>
     <string name="editButton">Edit</string>
