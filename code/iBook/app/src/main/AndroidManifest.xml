@@ -10,7 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AddMyBookActivity"></activity>
+        <activity android:name=".AddMyBookActivity" />
         <activity android:name=".AddBook" />
         <activity
             android:name=".ViewBookActivity"
@@ -25,8 +25,8 @@
         </activity>
         <activity android:name=".PageActivity" />
     </application>
-    <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

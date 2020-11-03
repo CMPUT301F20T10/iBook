@@ -10,9 +10,9 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,8 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class AddMyBookActivity extends AppCompatActivity {
-    private User user;
-    private Book book;
     private EditText bookNameEditText;
     private EditText authorEditText;
     private EditText dateEditText;
@@ -33,8 +31,8 @@ public class AddMyBookActivity extends AppCompatActivity {
     private ImageView imageView;
     private FirebaseFirestore db;
     private String userID;
-    private String userName;
     private ArrayList<Book> books;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +51,8 @@ public class AddMyBookActivity extends AppCompatActivity {
         books = new ArrayList<>();
 
         Intent intent = getIntent();
-        userName = intent.getStringExtra("curr_username");
+        userID = intent.getStringExtra("USER_ID");
 
-        userName = "yzhang24@gmail.com";
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,35 +73,34 @@ public class AddMyBookActivity extends AppCompatActivity {
                         && authorName.length() > 0
                         && date.length() > 0
                         && isbn.length() > 0) {
-                    db.collection("users")
-                            .get()
-                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                    if (task.isSuccessful()) {
-                                        for (QueryDocumentSnapshot document : task.getResult()) {
-                                            // todo: change email key word to username
-                                            if(document.getData().get("email").equals(userName)){
-                                                Toast.makeText(getBaseContext(), "findMatch", Toast.LENGTH_SHORT).show();
-                                                userID = document.getId();
-                                                Map<String,Object> data = new HashMap();
-                                                data = document.getData();
-                                                books = (ArrayList<Book>)document.getData().get("BookList");
-                                                books.add(new Book(bookName, authorName, date, isbn));
-                                                data.put("BookList",books);
-                                                db.collection("users")
-                                                        .document(userID).set(data);
-                                                Toast.makeText(getBaseContext(), "Add book successfully!", Toast.LENGTH_LONG).show();
-                                                finish();
-                                            }
 
-                                        }
-                                    } else {
-                                        Toast.makeText(getBaseContext(), "got an error", Toast.LENGTH_SHORT).show();
-                                    }
+
+                    DocumentReference docRef = db.collection("users").document(userID);
+                    docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+                                if (document.exists()) {
+                                    Map<String, Object> data = new HashMap();
+                                    data = document.getData();
+                                    books = (ArrayList<Book>) document.getData().get("BookList");
+                                    books.add(new Book(bookName, authorName, date, isbn));
+                                    data.put("BookList", books);
+                                    db.collection("users")
+                                            .document(userID).set(data);
+                                    Toast.makeText(getBaseContext(), "Add book successfully!", Toast.LENGTH_LONG).show();
+                                    Intent intent = new Intent();
+                                    setResult(1, intent);
+                                    finish();
+                                } else {
+                                    Toast.makeText(getBaseContext(), "No such document", Toast.LENGTH_SHORT).show();
                                 }
-                            });
-
+                            } else {
+                                Toast.makeText(getBaseContext(), "got an error", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
 
                 } else {
                     Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();
@@ -116,6 +112,7 @@ public class AddMyBookActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getBaseContext(), "Image!", Toast.LENGTH_SHORT).show();
+                // TODO: Open gallery or camera
 
             }
         });

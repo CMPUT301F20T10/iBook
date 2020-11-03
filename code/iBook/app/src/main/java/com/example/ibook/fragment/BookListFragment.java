@@ -14,16 +14,18 @@ import com.example.ibook.AddMyBookActivity;
 import com.example.ibook.Book;
 import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
-import com.example.ibook.User;
 import com.example.ibook.ViewBookActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
@@ -37,8 +39,11 @@ public class BookListFragment extends Fragment {
     private BookListAdapter adapter;
     private ArrayList<Book> datalist;
     private Button btn_addBook;
-    private String username;
     private FirebaseFirestore db;
+    private String userID;
+    private String userName;
+    private FirebaseAuth uAuth;
+
 
     @Nullable
     @Override
@@ -49,6 +54,7 @@ public class BookListFragment extends Fragment {
         btn_addBook = root.findViewById(R.id.button_add);
         datalist = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
+        uAuth = FirebaseAuth.getInstance();
         /*
         // TODO: transfer into the database
         Book newBook = new Book("Watchmen", "Alan Moore, Dave Gibbons", "2014", "Psychologically moving comic book...", Book.Status.Available, "temp isbn 1");
@@ -61,8 +67,18 @@ public class BookListFragment extends Fragment {
         bookListView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
+        //default username = "yzhang24@gmail.com";
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            // try to get the userID
+            userID = user.getUid();
+            //Toast.makeText(getContext(), userID, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "invalid user", Toast.LENGTH_SHORT).show();
+            return root;
+        }
 
-        username = "yzhang24@gmail.com";
+
         db.collection("users")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -71,35 +87,34 @@ public class BookListFragment extends Fragment {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 // todo: change email key word to username
-                                if(document.getData().get("email").equals(username)){
-                                    Map<String, Object> map = document.getData();
+                                String matchID = document.getId();
+                                //Toast.makeText(getContext(), id, Toast.LENGTH_SHORT).show();
+                                if (matchID.equals(userID)) {
+                                    //Toast.makeText(getContext(), "match", Toast.LENGTH_SHORT).show();\
 
-
-                                    Map<String,Object> convertMap = new HashMap();
-                                    //ArrayList<Book> convertMap = (ArrayList<Book>) map.get("BookList");
+                                    Map<String, Object> convertMap;
                                     ArrayList<Book> hashList = (ArrayList<Book>) document.get("BookList");
 
 
-                                    for(int i=0;i<hashList.size();i+=1){
-                                        convertMap = (Map<String,Object>) hashList.get(i);
+                                    for (int i = 0; i < hashList.size(); i += 1) {
+                                        convertMap = (Map<String, Object>) hashList.get(i);
 
                                         datalist.add(new Book(
                                                 String.valueOf(convertMap.get("title")),
                                                 String.valueOf(convertMap.get("author")),
                                                 String.valueOf(convertMap.get("date")),
-                                                (String.valueOf(convertMap.get("description")))+"fweoihfohwfjoiwojifojwojfjowjfjskdlfljksdjlfksldjkfsljfwefwefwefwfwefwefwefwef", // make it long
+                                                (String.valueOf(convertMap.get("description"))),
                                                 from_string_to_enum(String.valueOf(convertMap.get("status"))),
                                                 String.valueOf(convertMap.get("isbn"))
                                         ));
                                     }
-                                    if(datalist==null){
+                                    if (datalist == null) {
                                         datalist = new ArrayList<>();
-                                    }
-                                    else{
+                                    } else {
                                         adapter.notifyDataSetChanged();
                                     }
-                                }
 
+                                }
                             }
                         } else {
                             Toast.makeText(getContext(), "got an error", Toast.LENGTH_SHORT).show();
@@ -109,17 +124,14 @@ public class BookListFragment extends Fragment {
                 });
 
 
-
         // view book on the list
         bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                User user = new User("ztan4", "a password", "something@things.ca", "123456");
                 Intent intent = new Intent(getContext(), ViewBookActivity.class);
-                Book book = (Book) parent.getItemAtPosition(position);
-                intent.putExtra("BOOK", (Book) parent.getItemAtPosition(position));
-                intent.putExtra("USER", user);
-                startActivity(intent);
+                intent.putExtra("USER_ID", userID);
+                intent.putExtra("BOOK_NUMBER", position);
+                startActivityForResult(intent, 0);
             }
         });
 
@@ -127,29 +139,80 @@ public class BookListFragment extends Fragment {
         btn_addBook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                User user = new User("ivan", "123456", "ivan@gmail.com", "123456");
                 Intent intent = new Intent(getContext(), AddMyBookActivity.class);
-                //intent.putExtra("USER", user);
-                intent.putExtra("curr_username", "1@gmail.com");
-                // todo: I don't know how can this fragment have access to username from PageActivity
-                startActivity(intent);
+                intent.putExtra("USER_ID", userID);
+                startActivityForResult(intent, 0);
             }
         });
 
 
         return root;
     }
-    public Book.Status from_string_to_enum(String input){
-        if(input.equals("Available"))
+
+    @Override // if add/edit/delete books, update changes
+    public void onActivityResult(int requestCode, int resultCode, final Intent data) {
+        // TODO Auto-generated method stub
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == 1) { // if data changed, update
+            Toast.makeText(getContext(), "updated", Toast.LENGTH_SHORT).show();
+            DocumentReference docRef = db.collection("users").document(userID);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            Map<String, Object> convertMap;
+
+                            ArrayList<Book> hashList = (ArrayList<Book>) document.get("BookList");
+                            datalist = new ArrayList<>();
+                            for (int i = 0; i < hashList.size(); i += 1) {
+                                convertMap = (Map<String, Object>) hashList.get(i);
+
+
+                                datalist.add(new Book(
+                                        String.valueOf(convertMap.get("title")),
+                                        String.valueOf(convertMap.get("author")),
+                                        String.valueOf(convertMap.get("date")),
+                                        (String.valueOf(convertMap.get("description"))),
+                                        from_string_to_enum(String.valueOf(convertMap.get("status"))),
+                                        String.valueOf(convertMap.get("isbn"))
+                                ));
+
+                            }
+
+                            if (datalist == null) {
+                                datalist = new ArrayList<>();
+                            } else {
+                                adapter = new BookListAdapter(datalist, getActivity());
+                                bookListView.setAdapter(adapter);
+                            }
+
+                        } else {
+                            Toast.makeText(getContext(), "No such document", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(getContext(), "got an error", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+        }
+    }
+
+
+    public Book.Status from_string_to_enum(String input) {
+        if (input.equals("Available"))
             return Book.Status.Available;
 
-        if(input.equals("Available"))
+        if (input.equals("Available"))
             return Book.Status.Available;
 
-        if(input.equals("Available"))
+        if (input.equals("Available"))
             return Book.Status.Available;
 
-        if(input.equals("Available"))
+        if (input.equals("Available"))
             return Book.Status.Available;
         // todo: change later
         return Book.Status.Available;

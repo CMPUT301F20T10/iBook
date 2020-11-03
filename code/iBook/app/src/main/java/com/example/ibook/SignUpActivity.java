@@ -2,23 +2,15 @@ package com.example.ibook;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,14 +36,6 @@ public class SignUpActivity extends AppCompatActivity {
     ed_confirmPassword = findViewById(R.id.ed_confirmPassword_signup);
     ed_progressBar = findViewById(R.id.signUpProgressBar);
     uAuth = FirebaseAuth.getInstance();
-    // Toast.makeText(getBaseContext(), "SignUp to be done", Toast.LENGTH_SHORT).show();
-
-    // if current user already is logged in
-   // if(uAuth.getCurrentUser() != null){
-     // System.out.println(uAuth.getCurrentUser());
-      //startActivity(new Intent(getApplicationContext(),PageActivity.class));
-      //finish();
-    //}// if
 
   }// onCreate
 

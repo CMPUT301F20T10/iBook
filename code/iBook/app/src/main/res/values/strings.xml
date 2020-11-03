@@ -6,6 +6,7 @@
     <string name="dateText">Date</string>
     <string name="photoText">Photo</string>
     <string name="isbnText">ISBN</string>
+    <string name="descriptionText">Description</string>
     <string name="editButton">Edit</string>
     <string name="deleteButton">Delete</string>
 
