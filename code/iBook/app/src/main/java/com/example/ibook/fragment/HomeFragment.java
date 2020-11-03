@@ -71,7 +71,9 @@ public class HomeFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getContext(), ViewBookActivity.class);
+                User user = new User();
                 intent.putExtra("BOOK_NUMBER", position);
+                intent.putExtra("USER_ID", user.getUserID());
                 startActivityForResult(intent, 0);
             }
         });
