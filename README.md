@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/CMPUT301F20T10/iBook.svg?branch=main)](https://travis-ci.com/CMPUT301F20T10/iBook)
 # Test
 <b>UML: </b>
 The UML is devided into 3 parts, since it's too complicated that having them in one single diagram would make it really hard to read. 
