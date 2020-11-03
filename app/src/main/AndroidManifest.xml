@@ -28,7 +28,6 @@
             android:name="com.google.android.gms.vision.DEPENDENCIES"
             android:value="barcode" />
         <activity android:name=".activities.AddMyBookActivity" />
-        <activity android:name=".activities.AddBookActivity" />
         <activity android:name=".activities.ScanActivity"/>
         <activity
             android:name=".activities.ViewBookActivity"
