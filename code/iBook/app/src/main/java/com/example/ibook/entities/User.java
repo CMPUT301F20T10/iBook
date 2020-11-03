@@ -110,6 +110,18 @@ public class User {
         return documentReference;
     }
 
+    public FirebaseAuth getuAuth() {
+        return uAuth;
+    }
+
+    public FirebaseFirestore getDb() {
+        return db;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
     public String getUserName() {
         return userName;
     }
