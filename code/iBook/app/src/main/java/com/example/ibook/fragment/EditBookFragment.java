@@ -47,7 +47,7 @@ public class EditBookFragment extends DialogFragment {
 
     // Fragment parts are adapted from lab
     public interface OnFragmentInteractionListener {
-        void onOkPressed(boolean isChanged);
+        void onOkPressed(boolean isChanged, Book book);
     }
 
     @Override
@@ -117,7 +117,6 @@ public class EditBookFragment extends DialogFragment {
         });
 
 
-
         final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
         builder
@@ -184,8 +183,7 @@ public class EditBookFragment extends DialogFragment {
                             }
                         }
                     });
-                    listener.onOkPressed(true);
-                    //listener.onOkPressed(true, bookName, authorName, date, isbn, description, Book.Status.Available, isbn);
+                    listener.onOkPressed(true, new Book(bookName, authorName, date, description, Book.Status.Available, isbn));
                     wantToCloseDialog = true;
                 } else {
                     Toast.makeText(getContext(), "Please input full information", Toast.LENGTH_SHORT).show();

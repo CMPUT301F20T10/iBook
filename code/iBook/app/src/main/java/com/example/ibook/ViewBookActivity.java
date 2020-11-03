@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.ibook.fragment.EditBookFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -105,9 +104,8 @@ public class ViewBookActivity extends AppCompatActivity implements EditBookFragm
     }
 
     @Override
-    public void onOkPressed(boolean isChanged){
+    public void onOkPressed(boolean isChanged, final Book book){
         if(isChanged){
-            Toast.makeText(getBaseContext(), "changed", Toast.LENGTH_SHORT).show();
             db = FirebaseFirestore.getInstance();
             DocumentReference docRef = db.collection("users").document(userID);
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -116,17 +114,6 @@ public class ViewBookActivity extends AppCompatActivity implements EditBookFragm
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
-                            ArrayList<Book> hashList = (ArrayList<Book>) document.get("BookList");
-                            Map<String, Object> convertMap = (Map<String, Object>) hashList.get(bookNumber);
-                            book = new Book(
-                                    String.valueOf(convertMap.get("title")),
-                                    String.valueOf(convertMap.get("author")),
-                                    String.valueOf(convertMap.get("date")),
-                                    String.valueOf(convertMap.get("description")),
-                                    //from_string_to_enum(String.valueOf(convertMap.get("status"))),
-                                    Book.Status.Available,
-                                    String.valueOf(convertMap.get("isbn"))
-                            );
 
                             bookNameTextView = findViewById(R.id.ViewBookName);
                             authorTextView = findViewById(R.id.ViewAuthor);
@@ -137,8 +124,8 @@ public class ViewBookActivity extends AppCompatActivity implements EditBookFragm
                             authorTextView.setText(book.getAuthor());
                             dateTextView.setText(book.getDate());
                             isbnTextView.setText(book.getIsbn());
-                            Toast.makeText(getBaseContext(), book.getTitle(), Toast.LENGTH_SHORT).show();
-
+                            Intent intent = new Intent();
+                            setResult(1, intent);
 
                         } else {
                             //Log.d(TAG, "No such document");
