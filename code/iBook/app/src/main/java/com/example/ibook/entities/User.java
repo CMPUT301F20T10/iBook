@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class User implements Serializable {
+public class User {
     private String userName;
     private String password;
     private String email;
@@ -31,6 +31,7 @@ public class User implements Serializable {
     private FirebaseAuth uAuth; // user authentication
     private FirebaseFirestore db;
     private String userID;
+
     private DocumentReference documentReference;
 
     public User() {
@@ -105,6 +106,10 @@ public class User implements Serializable {
 
     /* getters and setters
     * */
+    public DocumentReference getDocumentReference() {
+        return documentReference;
+    }
+
     public String getUserName() {
         return userName;
     }

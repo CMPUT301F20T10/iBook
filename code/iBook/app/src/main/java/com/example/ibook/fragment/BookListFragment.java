@@ -122,7 +122,6 @@ public class BookListFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getContext(), ViewBookActivity.class);
-                intent.putExtra("USER_ID", userID);
                 intent.putExtra("BOOK_NUMBER", position);
                 startActivityForResult(intent, 0);
             }
