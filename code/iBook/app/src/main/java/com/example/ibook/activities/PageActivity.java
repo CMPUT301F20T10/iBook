@@ -82,5 +82,8 @@ Removing top title bar
 Kumar, Manmohan. How do I remove the title bar in android studio? Stack Overflow. Stack Exchange Inc. Mar 10, 2016. License(CC BY-SA).
 https://stackoverflow.com/questions/26492522/how-do-i-remove-the-title-bar-in-android-studio
 
+Exiting directly to home instead of login screen when back button is pressed.
+Buru. "Exit android app on back pressed". Stack Overflow. Stack Exchange Inc. Apr 10, 2014. License(CC BY-SA).
+https://stackoverflow.com/questions/21253303/exit-android-app-on-back-pressed
 
  */

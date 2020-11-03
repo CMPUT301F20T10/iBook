@@ -42,7 +42,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.maps_view);
+       /* setContentView(R.layout.maps_view);
 
         //Set content view for the map. Will probably be directly implemented in the view message part.
         //Check the type of action code:
@@ -101,7 +101,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View v) {
                 finish();
             }
-        });
+        });*/
 
     }
 

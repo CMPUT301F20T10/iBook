@@ -34,7 +34,7 @@
             android:name=".activities.ViewBookActivity"
             tools:ignore="Instantiatable" />
         <activity android:name=".activities.SignUpActivity" />
-        <activity android:name=".activities.MainActivity">
+        <activity android:name=".activities.MainActivity" android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
