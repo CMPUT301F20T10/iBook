@@ -1,7 +1,7 @@
+# Modified from the Travis file in lab 8
 language: android
 jdk: oraclejdk8
 dist: trusty
-sudo: required
 
 env:
   global:
@@ -47,9 +47,8 @@ before_script:
   - chmod +x ./code/iBook/gradlew
   - echo no | android create avd --force -n test -t android-$ANDROID_EMU_API_LEVEL --abi google_apis/$ANDROID_ABI
   - emulator -avd test -no-window &
-  - android-wait-for-emulator
-  # - adb shell input keyevent 82 &
-
+  - android-wait-for-emulator 
+  # - adb shell input keyevent 82 & 
 script:
   - ./code/iBook/gradlew clean build
   - ./code/iBook/gradlew test
