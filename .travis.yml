@@ -51,5 +51,7 @@ before_script:
   # - adb shell input keyevent 82 &
 
 script:
+  # it will check the code in details and will be very strict
+  # it will cost more time (about 12 min for whole CI)
   - ./gradlew clean build
   - ./gradlew test
