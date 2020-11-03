@@ -36,7 +36,6 @@
         android:background="@drawable/ic_baseline_add_circle_24"
         android:clickable="true"
         android:focusable="true"
-        android:onClick="addBook"
         app:layout_constraintTop_toBottomOf="@id/selectState"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
