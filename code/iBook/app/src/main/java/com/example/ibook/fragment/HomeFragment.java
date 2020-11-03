@@ -1,12 +1,12 @@
 package com.example.ibook.fragment;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 
@@ -14,11 +14,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.ibook.Book;
+import com.example.ibook.GLOBAL_CONSTANT;
+import com.example.ibook.activities.PageActivity;
+import com.example.ibook.activities.ScanActivity;
+import com.example.ibook.entities.Book;
 import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
-import com.example.ibook.User;
-import com.example.ibook.ViewBookActivity;
+import com.example.ibook.entities.User;
+import com.example.ibook.activities.ViewBookActivity;
 
 import java.util.ArrayList;
 
@@ -29,6 +32,7 @@ public class HomeFragment extends Fragment {
     private BookListAdapter adapter;
     private ArrayList<Book> datalist;
     private SearchView searchBar;
+    private Button camera;
 
     @Nullable
     @Override
@@ -38,6 +42,7 @@ public class HomeFragment extends Fragment {
         // Set up the view
         bookListView = root.findViewById(R.id.bookList);
         searchBar = (SearchView) root.findViewById(R.id.searchButton);
+        camera=root.findViewById(R.id.cameraButton);
 
         datalist = new ArrayList<>();
 
@@ -80,6 +85,16 @@ public class HomeFragment extends Fragment {
 //                searchBar.setIconified(false);
 //            }
 //        });
+        camera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent= new Intent();
+//                TODO: the add book activity here just for test
+                intent.putExtra("ACTIVITY",GLOBAL_CONSTANT.ADD_BOOK_ACTIVITY);
+                intent.setClass(getContext(),ScanActivity.class);
+                startActivity(intent);
+            }
+        });
 
         return root;
     }
