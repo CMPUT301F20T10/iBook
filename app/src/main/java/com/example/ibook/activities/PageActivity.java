@@ -42,7 +42,7 @@ public class PageActivity extends AppCompatActivity {
 
         //Set activity
         setContentView(R.layout.activity_page);
-        
+
         // Set the navigation view
         BottomNavigationView navigationView = findViewById(R.id.nav_view);
 
@@ -62,25 +62,10 @@ public class PageActivity extends AppCompatActivity {
 
     }
 
-    public void logout(View view){
-        FirebaseAuth.getInstance().signOut();
-        startActivity(new Intent(getApplicationContext(),MainActivity.class));
-        finish();
-    }// logout
+
+    //to prevent users from going back to login by clicking back button
+    @Override
+    public void onBackPressed() {
+    } //onBackPressed
 }
 
-
-/*
-Resources:
-
-Android Notes for Professionals
-
-
-Websites
-____________________________
-Removing top title bar
-Kumar, Manmohan. How do I remove the title bar in android studio? Stack Overflow. Stack Exchange Inc. Mar 10, 2016. License(CC BY-SA).
-https://stackoverflow.com/questions/26492522/how-do-i-remove-the-title-bar-in-android-studio
-
-
- */
