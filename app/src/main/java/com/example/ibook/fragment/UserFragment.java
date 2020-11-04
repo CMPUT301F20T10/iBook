@@ -8,21 +8,23 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import com.example.ibook.R;
 import com.example.ibook.activities.ResetPassword;
+
 import com.example.ibook.activities.EditProfile;
 import com.example.ibook.activities.MainActivity;
-import com.example.ibook.entities.User;
+import com.example.ibook.activities.ResetPassword;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 
 public class UserFragment extends Fragment {
     private TextView email;
