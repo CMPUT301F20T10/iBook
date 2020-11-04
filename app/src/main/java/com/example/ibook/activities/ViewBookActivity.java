@@ -30,8 +30,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.w3c.dom.Document;
-
 public class ViewBookActivity extends AppCompatActivity {
     private String userID;
     private Book book;
@@ -156,11 +154,13 @@ public class ViewBookActivity extends AppCompatActivity {
             }
         });
     }
+
     public void changeBookPhoto(View view) {
         // Toast.makeText(getBaseContext(), "changePhoto", Toast.LENGTH_SHORT).show();
         showImagePickerDialog();
 
     }
+
     private void showImagePickerDialog() {
         final int REQ_CAMERA_IMAGE = 1;
         final int REQ_GALLERY_IMAGE = 2;
@@ -181,7 +181,7 @@ public class ViewBookActivity extends AppCompatActivity {
                 .setNegativeButton("Gallery", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent=new Intent();
+                        Intent intent = new Intent();
                         intent.setType("image/*");
                         intent.setAction(Intent.ACTION_GET_CONTENT);
 
@@ -194,7 +194,7 @@ public class ViewBookActivity extends AppCompatActivity {
 
                     }
                 });
-        AlertDialog dialog=builder.create();
+        AlertDialog dialog = builder.create();
         dialog.show();
     }
 
@@ -203,21 +203,20 @@ public class ViewBookActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         final int REQ_CAMERA_IMAGE = 1;
         final int REQ_GALLERY_IMAGE = 2;
-        if(requestCode==REQ_CAMERA_IMAGE){
+        if (requestCode == REQ_CAMERA_IMAGE) {
             // result of camera
-            if(resultCode==RESULT_OK){
-                Bitmap bitmap=(Bitmap)data.getExtras().get("data");
+            if (resultCode == RESULT_OK) {
+                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
                 imageView.setImageBitmap(bitmap);
                 onSuccessChangePhoto(bitmap);
             }
 
-        }
-        else if(requestCode==REQ_GALLERY_IMAGE){
-            if(resultCode==RESULT_OK){
+        } else if (requestCode == REQ_GALLERY_IMAGE) {
+            if (resultCode == RESULT_OK) {
 
                 Uri selectedImage = data.getData();
                 try {
-                    Bitmap bitmap= MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
                     imageView.setImageBitmap(bitmap);
                     onSuccessChangePhoto(bitmap);
                 } catch (IOException e) {
@@ -227,7 +226,8 @@ public class ViewBookActivity extends AppCompatActivity {
             }
         }
     }
-    private void onSuccessChangePhoto(Bitmap bitmap){
+
+    private void onSuccessChangePhoto(Bitmap bitmap) {
         //Intent intent = new Intent();
         //intent.putExtra("PHOTO_CHANGE", bitmap);
         //setResult(1, intent);
