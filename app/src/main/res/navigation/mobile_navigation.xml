@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.example.ibook.fragment.HomeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/navigation_topic"
+        android:name="com.example.ibook.fragment.TopicFragment"
+        android:label="@string/title_notifications"
+        tools:layout="@layout/fragment_topic" />
+
+    <fragment
+        android:id="@+id/navigation_notifications"
+        android:name="com.example.ibook.fragment.NotificationsFragment"
+        android:label="@string/title_user"
+        tools:layout="@layout/fragment_topic" />
+
+    <fragment
+        android:id="@+id/navigation_booklist"
+        android:name="com.example.ibook.fragment.BookListFragment"
+        android:label="@string/title_booklist"
+        tools:layout="@layout/fragment_booklist" />
+
+    <fragment
+        android:id="@+id/navigation_user"
+        android:name="com.example.ibook.fragment.UserFragment"
+        android:label="@string/title_user"
+        tools:layout="@layout/fragment_user" />
+</navigation>
