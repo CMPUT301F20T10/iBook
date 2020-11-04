@@ -1,4 +1,4 @@
-package com.example.ibook;
+package com.example.ibook.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.ibook.R;
 import com.example.ibook.activities.EditProfile;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -46,6 +47,18 @@ public class ResetPassword extends AppCompatActivity {
                     uAuth = FirebaseAuth.getInstance();
                     db = FirebaseFirestore.getInstance();
                     currentUser = uAuth.getCurrentUser();
+                    DocumentReference documentReference = db.collection("users").document(currentUser.getUid());
+
+                    Map<String, Object> editedInfo = new HashMap();
+                    editedInfo.put("password", newPassword.getText().toString());
+
+                    documentReference.update(editedInfo).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(ResetPassword.this, "Database successfully updated", Toast.LENGTH_SHORT).show();
+                        }// onSuccess
+                    }); //update the database
+
                     currentUser.updatePassword(newPassword.getText().toString()).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {

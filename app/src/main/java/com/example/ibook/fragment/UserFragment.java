@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.ibook.R;
-import com.example.ibook.ResetPassword;
+import com.example.ibook.activities.ResetPassword;
 import com.example.ibook.activities.EditProfile;
 import com.example.ibook.activities.MainActivity;
 import com.example.ibook.entities.User;
