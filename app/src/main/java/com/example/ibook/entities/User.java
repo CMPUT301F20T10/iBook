@@ -74,8 +74,7 @@ public class User {
         user.put("userName", this.userName);
         user.put("email", this.email);
         user.put("phoneNumber", this.phoneNumber);
-        user.put("password", this.password);
-        user.put("Booklist", new ArrayList<Book>());
+        user.put("password", this.phoneNumber);
 
         //update the document
         documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
