@@ -13,7 +13,6 @@ import android.widget.SearchView;
 import com.example.ibook.BookListAdapter;
 import com.example.ibook.GLOBAL_CONSTANT;
 import com.example.ibook.R;
-import com.example.ibook.activities.ScanActivity;
 import com.example.ibook.activities.ViewBookActivity;
 import com.example.ibook.entities.Book;
 import com.example.ibook.entities.User;
@@ -33,7 +32,6 @@ public class HomeFragment extends Fragment {
     private BookListAdapter adapter;
     private ArrayList<Book> datalist;
     private SearchView searchBar;
-    private Button camera;
 
     @Nullable
     @Override
@@ -43,7 +41,6 @@ public class HomeFragment extends Fragment {
         // Set up the view
         bookListView = root.findViewById(R.id.bookList);
         searchBar = (SearchView) root.findViewById(R.id.searchButton);
-        camera=root.findViewById(R.id.cameraButton);
 
         datalist = new ArrayList<>();
 
@@ -86,16 +83,6 @@ public class HomeFragment extends Fragment {
 //                searchBar.setIconified(false);
 //            }
 //        });
-        camera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent= new Intent();
-//                TODO: the add book activity here just for test
-                intent.putExtra("ACTIVITY",GLOBAL_CONSTANT.ADD_BOOK_ACTIVITY);
-                intent.setClass(getContext(),ScanActivity.class);
-                startActivity(intent);
-            }
-        });
 
         return root;
     }

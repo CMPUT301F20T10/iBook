@@ -13,7 +13,7 @@ import com.example.ibook.activities.ResetPassword;
 
 import com.example.ibook.activities.EditProfile;
 import com.example.ibook.activities.MainActivity;
-import com.example.ibook.activities.ResetPassword;
+import com.example.ibook.activities.ResetPasswordActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -51,7 +51,7 @@ public class UserFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 //Go to reset password activity
-                Intent intent = new Intent(getActivity(), ResetPassword.class);
+                Intent intent = new Intent(getActivity(), ResetPasswordActivity.class);
                 startActivity(intent);
 
             }
