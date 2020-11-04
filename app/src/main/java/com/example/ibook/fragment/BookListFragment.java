@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
-import com.example.ibook.activities.AddMyBookActivity;
+import com.example.ibook.activities.AddBookActivity;
 import com.example.ibook.activities.ViewBookActivity;
 import com.example.ibook.entities.Book;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -145,7 +145,7 @@ public class BookListFragment extends Fragment {
         btn_addBook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), AddMyBookActivity.class);
+                Intent intent = new Intent(getContext(), AddBookActivity.class);
                 intent.putExtra("USER_ID", userID);
                 startActivityForResult(intent, 0);
             }
