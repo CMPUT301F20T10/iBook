@@ -33,7 +33,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
     private EditText dateEditText;
     private EditText isbnEditText;
     private Button cancelButton;
-    private Button addButton;
+    private Button completeButton;
     private Button scanButton;
     private ImageView imageView;
     private FirebaseFirestore db;
@@ -44,14 +44,14 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_book_screen);
+        setContentView(R.layout.activity_add_or_edit_book_screen);
         bookNameEditText = findViewById(R.id.editTextBookName);
         authorEditText = findViewById(R.id.editTextAuthor);
         dateEditText = findViewById(R.id.editTextDate);
         isbnEditText = findViewById(R.id.editTextISBN);
 
         cancelButton = findViewById(R.id.cancelButton);
-        addButton = findViewById(R.id.addButton);
+        completeButton = findViewById(R.id.completeButton);
         scanButton = findViewById(R.id.scan_button);
         imageView = findViewById(R.id.imageView);
 
@@ -68,7 +68,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
             }
         });
 
-        addButton.setOnClickListener(new View.OnClickListener() {
+        completeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final String bookName = bookNameEditText.getText().toString();

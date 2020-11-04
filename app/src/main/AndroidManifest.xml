@@ -29,6 +29,7 @@
         <activity android:name=".activities.AddBookActivity" />
         <activity android:name=".activities.ViewBookActivity"/>
         <activity android:name=".activities.SignUpActivity" />
+        <activity android:name=".activities.EditBookActivity"/>
         <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
