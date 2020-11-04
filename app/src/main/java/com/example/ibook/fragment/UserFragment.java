@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.ibook.R;
+import com.example.ibook.activities.ResetPassword;
+
 import com.example.ibook.activities.EditProfile;
 import com.example.ibook.activities.MainActivity;
 import com.example.ibook.activities.ResetPassword;
