@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">iBook</string>
 
-    <string name="nameText">Book Name</string>
+    <string name="nameText">Title</string>
     <string name="authorText">Author</string>
     <string name="dateText">Date</string>
     <string name="descriptionText">Description</string>

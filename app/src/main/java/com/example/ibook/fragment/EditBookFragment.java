@@ -26,6 +26,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import org.jetbrains.annotations.NotNull;
+
 public class EditBookFragment extends DialogFragment {
 
     private EditText bookNameEditText;
@@ -56,7 +58,7 @@ public class EditBookFragment extends DialogFragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
             listener = (OnFragmentInteractionListener) context;
@@ -126,7 +128,6 @@ public class EditBookFragment extends DialogFragment {
                 .setPositiveButton(
                         "OK",
                         new DialogInterface.OnClickListener() {
-
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                             }
@@ -190,7 +191,7 @@ public class EditBookFragment extends DialogFragment {
                 }
 
 
-                // if the book values are inproper, hold on the fragment
+                // if the book values are improper, hold on the fragment
                 if (wantToCloseDialog)
                     dialog.dismiss();
 

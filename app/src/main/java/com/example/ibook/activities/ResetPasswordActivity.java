@@ -14,7 +14,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class ResetPassword extends AppCompatActivity {
+public class ResetPasswordActivity extends AppCompatActivity {
 
     EditText newPassword;
     EditText confirmPassword;
@@ -42,7 +42,7 @@ public class ResetPassword extends AppCompatActivity {
                     currentUser.updatePassword(newPassword.getText().toString()).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            Toast.makeText(ResetPassword.this, "Password Updated", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ResetPasswordActivity.this, "Password Updated", Toast.LENGTH_SHORT).show();
                             finish();
                         }
                     });
@@ -60,21 +60,21 @@ public class ResetPassword extends AppCompatActivity {
 
 
         if(updatedPassword.isEmpty() || confirmedPassword.isEmpty()){
-            Toast.makeText(ResetPassword.this, "Please fill out both fields", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ResetPasswordActivity.this, "Please fill out both fields", Toast.LENGTH_SHORT).show();
             return false;
         }// if
 
         if(updatedPassword.equals(confirmedPassword)){
 
             if(updatedPassword.length() < 6){
-                Toast.makeText(ResetPassword.this, "The password should have atleast 6 characters", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ResetPasswordActivity.this, "The password should have atleast 6 characters", Toast.LENGTH_SHORT).show();
                 return false;
             }
             return true;
         }
 
         //else
-        Toast.makeText(ResetPassword.this, "The entered passwords don't match", Toast.LENGTH_SHORT).show();
+        Toast.makeText(ResetPasswordActivity.this, "The entered passwords don't match", Toast.LENGTH_SHORT).show();
         return false;
     }//isValid
 
