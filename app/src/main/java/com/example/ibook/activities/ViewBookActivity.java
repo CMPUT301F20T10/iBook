@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.example.ibook.R;
 import com.example.ibook.entities.*;
-import com.example.ibook.fragment.EditBookFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
