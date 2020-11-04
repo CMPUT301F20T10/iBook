@@ -1,0 +1,63 @@
+com/example/ibook/activities/AddMyBookActivity.java
+ com.example.ibook.activities.AddMyBookActivity
+ com.example.ibook.activities.AddMyBookActivity$1
+ com.example.ibook.activities.AddMyBookActivity$2
+ com.example.ibook.activities.AddMyBookActivity$2$1
+ com.example.ibook.activities.AddMyBookActivity$3
+com/example/ibook/fragment/UserFragment.java
+ com.example.ibook.fragment.UserFragment
+com/example/ibook/BookListAdapter.java
+ com.example.ibook.BookListAdapter
+com/example/ibook/fragment/TopicFragment.java
+ com.example.ibook.fragment.TopicFragment
+com/example/ibook/activities/MainActivity.java
+ com.example.ibook.activities.MainActivity
+ com.example.ibook.activities.MainActivity$1
+ com.example.ibook.activities.MainActivity$1$1
+ com.example.ibook.activities.MainActivity$2
+ com.example.ibook.activities.MainActivity$3
+com/example/ibook/entities/Book.java
+ com.example.ibook.entities.Book
+ com.example.ibook.entities.Book$Status
+com/example/ibook/BuildConfig.java
+ com.example.ibook.BuildConfig
+com/example/ibook/GLOBAL_CONSTANT.java
+ com.example.ibook.GLOBAL_CONSTANT
+com/example/ibook/activities/ScanActivity.java
+ com.example.ibook.activities.ScanActivity
+ com.example.ibook.activities.ScanActivity$1
+ com.example.ibook.activities.ScanActivity$2
+ com.example.ibook.activities.ScanActivity$3
+ com.example.ibook.activities.ScanActivity$4
+com/example/ibook/entities/User.java
+ com.example.ibook.entities.User
+ com.example.ibook.entities.User$1
+com/example/ibook/activities/PageActivity.java
+ com.example.ibook.activities.PageActivity
+com/example/ibook/fragment/NotificationsFragment.java
+ com.example.ibook.fragment.NotificationsFragment
+com/example/ibook/activities/SignUpActivity.java
+ com.example.ibook.activities.SignUpActivity
+ com.example.ibook.activities.SignUpActivity$1
+com/example/ibook/activities/ViewBookActivity.java
+ com.example.ibook.activities.ViewBookActivity
+ com.example.ibook.activities.ViewBookActivity$1
+ com.example.ibook.activities.ViewBookActivity$2
+ com.example.ibook.activities.ViewBookActivity$3
+com/example/ibook/fragment/HomeFragment.java
+ com.example.ibook.fragment.HomeFragment
+ com.example.ibook.fragment.HomeFragment$1
+ com.example.ibook.fragment.HomeFragment$2
+com/example/ibook/fragment/BookListFragment.java
+ com.example.ibook.fragment.BookListFragment
+ com.example.ibook.fragment.BookListFragment$1
+ com.example.ibook.fragment.BookListFragment$2
+ com.example.ibook.fragment.BookListFragment$3
+ com.example.ibook.fragment.BookListFragment$4
+com/example/ibook/fragment/EditBookFragment.java
+ com.example.ibook.fragment.EditBookFragment
+ com.example.ibook.fragment.EditBookFragment$1
+ com.example.ibook.fragment.EditBookFragment$2
+ com.example.ibook.fragment.EditBookFragment$3
+ com.example.ibook.fragment.EditBookFragment$3$1
+ com.example.ibook.fragment.EditBookFragment$OnFragmentInteractionListener

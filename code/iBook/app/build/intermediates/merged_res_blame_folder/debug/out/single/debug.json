@@ -1,0 +1,258 @@
+[
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\layout_activity_scan.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\layout\\activity_scan.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\mipmap-xxxhdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\layout_activity_view_book.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\layout\\activity_view_book.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\mipmap-xxhdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\layout_fragment_edit_book.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\layout\\fragment_edit_book.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\mipmap-anydpi-v26\\ic_launcher_round.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi_ic_launcher_background.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-hdpi\\ic_launcher_background.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\mipmap-anydpi-v26\\ic_launcher.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\layout_activity_page.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\layout\\activity_page.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi_ic_launcher_background.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-xxhdpi\\ic_launcher_background.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxxhdpi_ic_baseline_add_circle_24.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-xxxhdpi\\ic_baseline_add_circle_24.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-xxxhdpi_ic_launcher_round.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\mipmap-xxxhdpi\\ic_launcher_round.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-ldpi_ic_user_black_24dp.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-ldpi\\ic_user_black_24dp.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxxhdpi_ic_booklist_black_24dp.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-xxxhdpi\\ic_booklist_black_24dp.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi_ic_baseline_add_circle_24.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-xxhdpi\\ic_baseline_add_circle_24.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi_ic_baseline_add_circle_24.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-xhdpi\\ic_baseline_add_circle_24.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable_add_image.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\drawable\\add_image.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-mdpi_ic_launcher.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\mipmap-mdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-mdpi_ic_launcher_round.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\mipmap-mdpi\\ic_launcher_round.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi_ic_booklist_black_24dp.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-mdpi\\ic_booklist_black_24dp.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\layout_fragment_user.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\layout\\fragment_user.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-anydpi-v21_ic_baseline_add_circle_24.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-anydpi-v21\\ic_baseline_add_circle_24.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-ldpi_ic_baseline_add_circle_24.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-ldpi\\ic_baseline_add_circle_24.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-anydpi-v21_ic_launcher_background.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-anydpi-v21\\ic_launcher_background.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-anydpi-v24_ic_launcher_foreground.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-anydpi-v24\\ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi_ic_baseline_add_circle_24.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-mdpi\\ic_baseline_add_circle_24.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi_ic_user_black_24dp.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-mdpi\\ic_user_black_24dp.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi_ic_booklist_black_24dp.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-xhdpi\\ic_booklist_black_24dp.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi_ic_user_black_24dp.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-xxhdpi\\ic_user_black_24dp.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-hdpi_ic_launcher.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\layout_book_list_content.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\layout\\book_list_content.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-xxhdpi_ic_launcher_round.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\mipmap-xxhdpi\\ic_launcher_round.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxxhdpi_ic_user_black_24dp.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-xxxhdpi\\ic_user_black_24dp.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-xhdpi_ic_launcher_round.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher_round.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi_ic_baseline_add_circle_24.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-hdpi\\ic_baseline_add_circle_24.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi_ic_user_black_24dp.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-xhdpi\\ic_user_black_24dp.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi_ic_launcher_background.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-mdpi\\ic_launcher_background.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-anydpi-v21_ic_user_black_24dp.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-anydpi-v21\\ic_user_black_24dp.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\menu_bottom_nav_menu.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\menu\\bottom_nav_menu.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-ldpi_ic_booklist_black_24dp.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-ldpi\\ic_booklist_black_24dp.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\layout_activity_add_book_screen.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\layout\\activity_add_book_screen.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable_selector_orange.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\drawable\\selector_orange.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\layout_activity_view_book_interact.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\layout\\activity_view_book_interact.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi_ic_launcher_background.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-xhdpi\\ic_launcher_background.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\layout_activity_login.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\layout\\activity_login.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\layout_activity_view_book_owner.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\layout\\activity_view_book_owner.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable_bg_edittext.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\drawable\\bg_edittext.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-anydpi-v24_ic_dashboard_black_24dp.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-anydpi-v24\\ic_dashboard_black_24dp.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\layout_activity_sign_up.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\layout\\activity_sign_up.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\layout_fragment_notification.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\layout\\fragment_notification.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxxhdpi_ic_launcher_background.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-xxxhdpi\\ic_launcher_background.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\layout_fragment_booklist.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\layout\\fragment_booklist.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-ldpi_ic_launcher_background.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-ldpi\\ic_launcher_background.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-anydpi-v24_ic_home_black_24dp.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-anydpi-v24\\ic_home_black_24dp.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi_ic_booklist_black_24dp.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-xxhdpi\\ic_booklist_black_24dp.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi_ic_booklist_black_24dp.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-hdpi\\ic_booklist_black_24dp.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi_ic_user_black_24dp.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-hdpi\\ic_user_black_24dp.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\navigation_mobile_navigation.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\navigation\\mobile_navigation.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-anydpi-v24_ic_notifications_black_24dp.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-anydpi-v24\\ic_notifications_black_24dp.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\layout_fragment_home.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\layout\\fragment_home.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\mipmap-hdpi_ic_launcher_round.png.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher_round.png"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\layout_fragment_topic.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\src\\main\\res\\layout\\fragment_topic.xml"
+    },
+    {
+        "merged": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\intermediates\\res\\merged\\debug\\drawable-anydpi-v21_ic_booklist_black_24dp.xml.flat",
+        "source": "G:\\Code\\githubCode\\iBook\\code\\iBook\\app\\build\\generated\\res\\pngs\\debug\\drawable-anydpi-v21\\ic_booklist_black_24dp.xml"
+    }
+]
