@@ -10,11 +10,11 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.ibook.activities.AddMyBookActivity;
-import com.example.ibook.entities.Book;
 import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
+import com.example.ibook.activities.AddMyBookActivity;
 import com.example.ibook.activities.ViewBookActivity;
+import com.example.ibook.entities.Book;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,6 +26,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
@@ -87,6 +88,18 @@ public class BookListFragment extends Fragment {
 
                                     Map<String, Object> convertMap;
                                     ArrayList<Book> hashList = (ArrayList<Book>) document.get("BookList");
+                                    if (document.getData().containsKey("BookList")) {
+                                        //Toast.makeText(getContext(), "exist", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        //Toast.makeText(getContext(), "not exist", Toast.LENGTH_SHORT).show();
+                                        Map<String, Object> data = new HashMap();
+                                        ArrayList<Book> bookList = new ArrayList<>();
+                                        data = document.getData();
+                                        data.put("BookList", bookList);
+                                        db.collection("users")
+                                                .document(userID).set(data);
+                                        return;
+                                    }
 
 
                                     for (int i = 0; i < hashList.size(); i += 1) {
