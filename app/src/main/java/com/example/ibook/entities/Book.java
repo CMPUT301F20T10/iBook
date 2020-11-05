@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class Book implements Serializable {
 
     public enum Status{
-        Available, Requested, Borrowed, Return
+        Available, Requested, Borrowed, Return, Accepted
     }
 
     private String title;
