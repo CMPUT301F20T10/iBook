@@ -45,14 +45,14 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_or_edit_book_screen);
-        bookNameEditText = findViewById(R.id.editTextBookName);
-        authorEditText = findViewById(R.id.editTextAuthor);
-        dateEditText = findViewById(R.id.editTextDate);
-        isbnEditText = findViewById(R.id.editTextISBN);
+        bookNameEditText = findViewById(R.id.titleEditor);
+        authorEditText = findViewById(R.id.authorEditor);
+        dateEditText = findViewById(R.id.dateEditor);
+        isbnEditText = findViewById(R.id.isbnEditor);
 
         cancelButton = findViewById(R.id.cancelButton);
         completeButton = findViewById(R.id.completeButton);
-        scanButton = findViewById(R.id.scan_button);
+        scanButton = findViewById(R.id.scanButton);
         imageView = findViewById(R.id.imageView);
 
         db = FirebaseFirestore.getInstance();

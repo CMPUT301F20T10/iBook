@@ -128,8 +128,8 @@ public class MainActivity extends AppCompatActivity {
     }// valid
 
     public void setupSignUpListener() {
-        Button signInButton = findViewById(R.id.signUp);
-        signInButton.setOnClickListener(new View.OnClickListener() {
+        Button signUpButton = findViewById(R.id.signUp);
+        signUpButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 System.out.println("Clicked on Sign Up!");
                 Intent intent = new Intent(MainActivity.this, SignUpActivity.class);

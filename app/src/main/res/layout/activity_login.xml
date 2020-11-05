@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".activities.MainActivity"
     android:fillViewport="true"
-
     >
 
 
@@ -87,41 +86,41 @@
             android:inputType="textPassword"
             android:paddingLeft="10dp"
             android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@id/signIn"
+            app:layout_constraintBottom_toTopOf="@id/signUp"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/password" />
 
         <Button
-            android:id="@+id/signIn"
+            android:id="@+id/signUp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="70dp"
             android:background="@drawable/selector_orange"
             android:clickable="true"
-            android:text="Sign in"
+            android:text="Sign Up"
             android:textColor="#FFF"
-            app:layout_constraintBottom_toBottomOf="@id/signUp"
+            app:layout_constraintBottom_toBottomOf="@id/signIn"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/signUp"
+            app:layout_constraintRight_toLeftOf="@id/signIn"
             app:layout_constraintTop_toBottomOf="@id/passwordEditText">
 
         </Button>
 
         <Button
-            android:id="@+id/signUp"
+            android:id="@+id/signIn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:background="@drawable/selector_orange"
             android:clickable="true"
-            android:text="Sign up"
+            android:text="Sign In"
             android:textColor="#FFF"
-            app:layout_constraintBaseline_toBaselineOf="@+id/signIn"
-            app:layout_constraintBottom_toBottomOf="@id/signIn"
-            app:layout_constraintLeft_toRightOf="@id/signIn"
+            app:layout_constraintBaseline_toBaselineOf="@+id/signUp"
+            app:layout_constraintBottom_toBottomOf="@id/signUp"
+            app:layout_constraintLeft_toRightOf="@id/signUp"
             app:layout_constraintRight_toRightOf="parent">
 
         </Button>
@@ -136,7 +135,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/signIn"
+            app:layout_constraintTop_toBottomOf="@+id/signUp"
             app:layout_constraintVertical_bias="0.344" />
 
 
