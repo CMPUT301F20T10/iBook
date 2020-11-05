@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.SignUpActivity"
+    android:fillViewport="true"
+
+    >
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            android:id="@+id/header_signup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="iBook"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/info_signup"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.24" />
+
+        <TextView
+            android:id="@+id/info_signup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:text="Create an account"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textSize="24dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/tv_username_signup"
+            app:layout_constraintHorizontal_bias="0.093"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_username_signup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="20dp"
+            android:text="Username:"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/ed_username_signup"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/info_signup">
+
+        </TextView>
+
+        <EditText
+            android:id="@+id/ed_username_signup"
+            android:layout_marginHorizontal="20dp"
+            android:inputType="textEmailAddress"
+            app:layout_constraintBottom_toTopOf="@+id/tv_email_signup"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_username_signup"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:textSize="16sp"
+            android:hint="Username"
+            android:paddingLeft="10dp"
+            android:background="@drawable/bg_edittext"/>
+
+        <TextView
+            android:id="@+id/tv_email_signup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="10dp"
+            android:text="Email:"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/ed_email_signup"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ed_username_signup">
+
+        </TextView>
+
+        <EditText
+            android:id="@+id/ed_email_signup"
+            android:inputType="textEmailAddress"
+            android:layout_marginHorizontal="20dp"
+            app:layout_constraintBottom_toTopOf="@id/tv_phoneNumber_signup"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_email_signup"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:textSize="16sp"
+            android:hint="emailname@gmail.com"
+            android:paddingLeft="10dp"
+            android:background="@drawable/bg_edittext"
+            />
+
+        <TextView
+            android:id="@+id/tv_phoneNumber_signup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="10dp"
+            android:text="Phone Number:"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/ed_phoneNumber_signup"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ed_email_signup">
+
+        </TextView>
+
+        <EditText
+            android:id="@+id/ed_phoneNumber_signup"
+            android:inputType="numberDecimal"
+            android:maxLength="10"
+            android:layout_marginHorizontal="20dp"
+            app:layout_constraintBottom_toTopOf="@id/tv_password_signup"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_phoneNumber_signup"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:textSize="16sp"
+            android:hint="Phone Number"
+            android:paddingLeft="10dp"
+            android:background="@drawable/bg_edittext"/>
+
+        <TextView
+            android:id="@+id/tv_password_signup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="10dp"
+            android:text="Password: (The field must be at least 5 characters)"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/ed_password_signup"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ed_phoneNumber_signup">
+
+        </TextView>
+
+        <EditText
+            android:id="@+id/ed_password_signup"
+            android:autofillHints="*****"
+            android:inputType="textPassword"
+            android:maxLength="20"
+            android:layout_marginHorizontal="20dp"
+            app:layout_constraintBottom_toTopOf="@id/tv_confirmPassword_signup"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_password_signup"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:textSize="16sp"
+            android:hint="Enter Your Password"
+            android:paddingLeft="10dp"
+            android:background="@drawable/bg_edittext"/>
+
+        <TextView
+            android:id="@+id/tv_confirmPassword_signup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="10dp"
+            android:text="Confirm Password:"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/ed_password_signup"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ed_password_signup">
+
+        </TextView>
+
+        <EditText
+            android:id="@+id/ed_confirmPassword_signup"
+            android:autofillHints="*****"
+            android:inputType="textPassword"
+            android:layout_marginHorizontal="20dp"
+            app:layout_constraintBottom_toTopOf="@id/cancel_signup"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_confirmPassword_signup"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:textSize="16sp"
+            android:hint="Confirm Your Password"
+            android:paddingLeft="10dp"
+            android:background="@drawable/bg_edittext"/>
+
+        <Button
+            android:id="@+id/cancel_signup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:clickable="true"
+            android:text="Cancel"
+            app:layout_constraintBottom_toBottomOf="@id/signUp_signup"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/signUp_signup"
+            app:layout_constraintTop_toBottomOf="@id/ed_confirmPassword_signup"
+            android:onClick="cancel_signup"
+            android:textColor="#FFF"
+            android:background="@drawable/selector_orange">
+
+        </Button>
+
+        <Button
+            android:id="@+id/signUp_signup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:text="Confirm"
+            app:layout_constraintBaseline_toBaselineOf="@+id/cancel_signup"
+            app:layout_constraintBottom_toBottomOf="@id/cancel_signup"
+            app:layout_constraintLeft_toRightOf="@id/cancel_signup"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginLeft="100dp"
+            android:onClick="confirm_signup"
+            android:textColor="#FFF"
+            android:background="@drawable/selector_orange">
+
+        </Button>
+
+        <ProgressBar
+            android:id="@+id/signUpProgressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cancel_signup" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
