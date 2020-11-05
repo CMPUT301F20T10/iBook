@@ -28,6 +28,11 @@ import com.karumi.dexter.listener.single.PermissionListener;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 
+/**
+ * The fragment class for the isbn scanning function
+ * <p>
+ * This class use the ZXing library to implement
+ */
 public class ScanFragment extends DialogFragment implements ZXingScannerView.ResultHandler {
     private ZXingScannerView scannerView;
     private Button rescanButton;
@@ -37,7 +42,11 @@ public class ScanFragment extends DialogFragment implements ZXingScannerView.Res
 
     private OnFragmentInteractionListener listener;
 
+    /**
+     * The listener to send the isbn to the activity
+     */
     public interface OnFragmentInteractionListener {
+        // send the isbn back
         void onOkPressed(String ISBN);
     }
 
@@ -60,9 +69,8 @@ public class ScanFragment extends DialogFragment implements ZXingScannerView.Res
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        // set up the layout of the fragment
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_scan, null);
-
-
         scannerView = view.findViewById(R.id.scan);
         rescanButton = view.findViewById(R.id.rescan_button);
         isbnView = view.findViewById(R.id.isbn_result);
@@ -72,14 +80,16 @@ public class ScanFragment extends DialogFragment implements ZXingScannerView.Res
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
-        // Get the camera permission and handel other thing
+        // Deal with the camera permission and open the camera
         Dexter.withActivity(getActivity()).withPermission(Manifest.permission.CAMERA).withListener(new PermissionListener() {
+            // deal with the camera when the permission is allowed
             @Override
             public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
                 scannerView.setResultHandler(ScanFragment.this);
                 scannerView.startCamera();
             }
 
+            // display the message when the permission is denied
             @Override
             public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
                 Toast.makeText(getContext(), "You must accept the permission to use the camera", Toast.LENGTH_SHORT).show();
@@ -87,10 +97,10 @@ public class ScanFragment extends DialogFragment implements ZXingScannerView.Res
 
             @Override
             public void onPermissionRationaleShouldBeShown(PermissionRequest permissionRequest, PermissionToken permissionToken) {
-
             }
         }).check();
 
+        // the click action of the rescan button
         rescanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,9 +111,10 @@ public class ScanFragment extends DialogFragment implements ZXingScannerView.Res
             }
         });
 
+        // send the message back when user closes the fragment
         return builder.setView(view)
                 .setTitle("Scan ISBN")
-                .setNegativeButton("BACK", null)
+                .setNegativeButton("Cancel", null)
                 .setPositiveButton(
                         "Complete",
                         new DialogInterface.OnClickListener() {
@@ -113,6 +124,13 @@ public class ScanFragment extends DialogFragment implements ZXingScannerView.Res
                             }
                         }).create();
     }
+
+    /**
+     * This method is called when it get the message from scanning
+     * It will deal with the message.
+     *
+     * @param rawResult The message get from scanning
+     */
     @Override
     public void handleResult(Result rawResult) {
         isbnView.setText(rawResult.getText());
@@ -120,12 +138,18 @@ public class ScanFragment extends DialogFragment implements ZXingScannerView.Res
         rescanButton.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * The resume function, it will start the camera again
+     */
     @Override
     public void onResume() {
         scannerView.startCamera();
         super.onResume();
     }
 
+    /**
+     * The destroy function to stop everything
+     */
     @Override
     public void onDestroy() {
         scannerView.stopCamera();
