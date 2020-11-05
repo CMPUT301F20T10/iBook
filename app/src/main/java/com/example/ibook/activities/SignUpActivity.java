@@ -34,7 +34,8 @@ public class SignUpActivity extends AppCompatActivity {
   private EditText ed_phoneNumber;
   private EditText ed_confirmPassword;
   private ProgressBar ed_progressBar;
-  private FirebaseAuth uAuth; // user authentication
+  private FirebaseAuth uAuth;
+  public static User user; // user authentication
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +103,7 @@ public class SignUpActivity extends AppCompatActivity {
       @Override
       public void onComplete(@NonNull Task<AuthResult> task) {
         if(task.isSuccessful()){
-          User user = new User(username, password, email, phoneNumber);
+          user = new User(username, password, email, phoneNumber);
           user.commit();
 
           //We don't put in the password do we?

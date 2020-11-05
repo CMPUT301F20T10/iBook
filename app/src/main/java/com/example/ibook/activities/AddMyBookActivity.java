@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class AddMyBookActivity extends AppCompatActivity {
-    private User user;
+//    private User user;
     private Book book;
     private EditText bookNameEditText;
     private EditText authorEditText;
@@ -85,6 +85,7 @@ public class AddMyBookActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                             if (task.isSuccessful()) {
                                 DocumentSnapshot document = task.getResult();
+
                                 if (document.exists()) {
                                     Map<String, Object> data = new HashMap();
                                     data = document.getData();
@@ -92,7 +93,7 @@ public class AddMyBookActivity extends AppCompatActivity {
                                     books.add(new Book(bookName, authorName, date, isbn));
                                     data.put("BookList", books);
                                     db.collection("users")
-                                            .document(userID).set(data);
+                                            .document(userID).update(data);
                                     Toast.makeText(getBaseContext(), "Add book successfully!", Toast.LENGTH_LONG).show();
                                     Intent intent = new Intent();
                                     setResult(1, intent);
