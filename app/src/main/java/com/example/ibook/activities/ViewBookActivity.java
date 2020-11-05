@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
@@ -71,12 +72,6 @@ public class ViewBookActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         getBookData();
 
-        //TODO !: imageView
-
-        //TODO 2: ViewBookActivity with 4 kinds of interaction
-
-        //TODO 3: ViewBookActivity conducted by the owner of the book
-
         edit_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,6 +82,9 @@ public class ViewBookActivity extends AppCompatActivity {
             }
         });
     }
+
+
+
 
     public void delete_book(View view) {
         DocumentReference docRef = db.collection("users").document(userID);
@@ -116,10 +114,10 @@ public class ViewBookActivity extends AppCompatActivity {
         });
     }
 
-    //    TODO: Page could not refresh
     @Override
     protected void onResume() {
         super.onResume();
+        SystemClock.sleep(500);
         getBookData();
     }
 
