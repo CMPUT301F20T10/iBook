@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.example.ibook.R;
 import com.example.ibook.entities.Book;
 import com.example.ibook.entities.User;
+import com.example.ibook.fragment.ScanFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
@@ -24,7 +25,10 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class AddMyBookActivity extends AppCompatActivity {
+/**
+ * The Add book activity class
+ */
+public class AddBookActivity extends AppCompatActivity implements ScanFragment.OnFragmentInteractionListener {
     private User user;
     private Book book;
     private EditText bookNameEditText;
@@ -32,24 +36,25 @@ public class AddMyBookActivity extends AppCompatActivity {
     private EditText dateEditText;
     private EditText isbnEditText;
     private Button cancelButton;
-    private Button addButton;
+    private Button completeButton;
+    private Button scanButton;
     private ImageView imageView;
     private FirebaseFirestore db;
     private String userID;
-    private String userName;
     private ArrayList<Book> books;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_book_screen);
+        setContentView(R.layout.activity_add_or_edit_book_screen);
         bookNameEditText = findViewById(R.id.editTextBookName);
         authorEditText = findViewById(R.id.editTextAuthor);
         dateEditText = findViewById(R.id.editTextDate);
         isbnEditText = findViewById(R.id.editTextISBN);
 
         cancelButton = findViewById(R.id.cancelButton);
-        addButton = findViewById(R.id.addButton);
+        completeButton = findViewById(R.id.completeButton);
+        scanButton = findViewById(R.id.scan_button);
         imageView = findViewById(R.id.imageView);
 
         db = FirebaseFirestore.getInstance();
@@ -64,7 +69,8 @@ public class AddMyBookActivity extends AppCompatActivity {
                 finish();
             }
         });
-        addButton.setOnClickListener(new View.OnClickListener() {
+
+        completeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final String bookName = bookNameEditText.getText().toString();
@@ -120,6 +126,16 @@ public class AddMyBookActivity extends AppCompatActivity {
             }
         });
 
+        scanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new ScanFragment().show(getSupportFragmentManager(), "Scan ISBN");
+            }
+        });
+    }
 
+    @Override
+    public void onOkPressed(String ISBN) {
+        isbnEditText.setText(ISBN);
     }
 }

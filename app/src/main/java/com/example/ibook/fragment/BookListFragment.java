@@ -10,11 +10,11 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.ibook.activities.AddMyBookActivity;
-import com.example.ibook.entities.Book;
 import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
+import com.example.ibook.activities.AddBookActivity;
 import com.example.ibook.activities.ViewBookActivity;
+import com.example.ibook.entities.Book;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,6 +26,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
@@ -87,6 +88,18 @@ public class BookListFragment extends Fragment {
 
                                     Map<String, Object> convertMap;
                                     ArrayList<Book> hashList = (ArrayList<Book>) document.get("BookList");
+                                    if (document.getData().containsKey("BookList")) {
+                                        //Toast.makeText(getContext(), "exist", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        //Toast.makeText(getContext(), "not exist", Toast.LENGTH_SHORT).show();
+                                        Map<String, Object> data = new HashMap();
+                                        ArrayList<Book> bookList = new ArrayList<>();
+                                        data = document.getData();
+                                        data.put("BookList", bookList);
+                                        db.collection("users")
+                                                .document(userID).set(data);
+                                        return;
+                                    }
 
 
                                     for (int i = 0; i < hashList.size(); i += 1) {
@@ -132,7 +145,7 @@ public class BookListFragment extends Fragment {
         btn_addBook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), AddMyBookActivity.class);
+                Intent intent = new Intent(getContext(), AddBookActivity.class);
                 intent.putExtra("USER_ID", userID);
                 startActivityForResult(intent, 0);
             }
@@ -148,6 +161,14 @@ public class BookListFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == 1) { // if data changed, update
+            /*
+            if(data.getExtras().containsKey("PHOTO_CHANGE")){
+                Bitmap new_pic = (Bitmap)data.getExtras().get("PHOTO_CHANGE");
+                //Toast.makeText(getContext(),new_pic.toString(),Toast.LENGTH_SHORT).show();
+            }
+            */
+
+
             Toast.makeText(getContext(), "updated", Toast.LENGTH_SHORT).show();
             DocumentReference docRef = db.collection("users").document(userID);
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {

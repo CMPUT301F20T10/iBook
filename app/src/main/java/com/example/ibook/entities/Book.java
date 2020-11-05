@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class Book implements Serializable {
 
     public enum Status{
-        Available, Requested, Borrowed, Return
+        Available, Requested, Borrowed, Return, Accepted
     }
 
     private String title;
@@ -14,6 +14,9 @@ public class Book implements Serializable {
     private String description;
     private Status status;
     private String isbn;
+
+    private String owner;
+    private String holder;
 
 //Need to add picture data somehow
 
