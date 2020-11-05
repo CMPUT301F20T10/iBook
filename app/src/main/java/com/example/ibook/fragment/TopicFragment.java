@@ -11,6 +11,9 @@ import androidx.fragment.app.Fragment;
 
 import com.example.ibook.R;
 
+/**
+ * The class for the topic fragment
+ */
 public class TopicFragment extends Fragment {
     @Nullable
     @Override
