@@ -15,6 +15,9 @@ public class Book implements Serializable {
     private Status status;
     private String isbn;
 
+    private String owner;
+    private String holder;
+
 //Need to add picture data somehow
 
     //Constructor
