@@ -6,12 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.example.ibook.BookListAdapter;
-import com.example.ibook.GLOBAL_CONSTANT;
 import com.example.ibook.R;
 import com.example.ibook.activities.ViewBookActivity;
 import com.example.ibook.entities.Book;

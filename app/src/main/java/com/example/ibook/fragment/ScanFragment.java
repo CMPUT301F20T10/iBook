@@ -28,6 +28,9 @@ import com.karumi.dexter.listener.single.PermissionListener;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 
+/**
+ * The fragment class for the isbn scanning function
+ */
 public class ScanFragment extends DialogFragment implements ZXingScannerView.ResultHandler {
     private ZXingScannerView scannerView;
     private Button rescanButton;
@@ -37,6 +40,9 @@ public class ScanFragment extends DialogFragment implements ZXingScannerView.Res
 
     private OnFragmentInteractionListener listener;
 
+    /**
+     * The listener to send the isbn to the activity
+     */
     public interface OnFragmentInteractionListener {
         void onOkPressed(String ISBN);
     }
@@ -113,6 +119,13 @@ public class ScanFragment extends DialogFragment implements ZXingScannerView.Res
                             }
                         }).create();
     }
+
+    /**
+     * This method is called when it get the message from scanning
+     * It will deal with the message.
+     *
+     * @param rawResult The message get from scanning
+     */
     @Override
     public void handleResult(Result rawResult) {
         isbnView.setText(rawResult.getText());
