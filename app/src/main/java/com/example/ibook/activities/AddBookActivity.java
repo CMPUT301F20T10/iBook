@@ -25,6 +25,9 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * The Add book activity class
+ */
 public class AddBookActivity extends AppCompatActivity implements ScanFragment.OnFragmentInteractionListener {
     private User user;
     private Book book;
@@ -38,8 +41,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
     private ImageView imageView;
     private FirebaseFirestore db;
     private String userID;
-    private String userName;
-   private ArrayList<Book> books;
+    private ArrayList<Book> books;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

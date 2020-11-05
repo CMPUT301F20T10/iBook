@@ -60,8 +60,10 @@ public class BookListAdapter extends BaseAdapter {
     }
 
     /**
-     * @param position
-     * @return
+     * The method to get the id of book in the list with given position
+     *
+     * @param position the given position of the book
+     * @return the id of the book, also the position of the book
      */
     @Override
     public long getItemId(int position) {
@@ -69,10 +71,9 @@ public class BookListAdapter extends BaseAdapter {
     }
 
     /**
-     * @param position
-     * @param convertView
-     * @param parent
-     * @return
+     * The method to display the information of items in the list view.
+     *
+     * @return The view of the each item in the list
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -87,7 +88,7 @@ public class BookListAdapter extends BaseAdapter {
         date = convertView.findViewById(R.id.listBookDate);
         description = convertView.findViewById(R.id.listBookDescription);
         status = convertView.findViewById(R.id.listBookStatus);
-        //Get the image attribute
+        //TODO:Get the image attribute
 
         //Set the values for the xml attributes
         title.setText(book.getTitle());
@@ -110,7 +111,6 @@ public class BookListAdapter extends BaseAdapter {
         }
 
         //Set the image if there is one
-
         return convertView;
     }
 }

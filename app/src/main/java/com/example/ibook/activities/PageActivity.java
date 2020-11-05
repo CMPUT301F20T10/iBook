@@ -32,6 +32,9 @@ public class PageActivity extends AppCompatActivity {
     private SearchView searchBar;
     private String username;
 
+    /**
+     * The onCreate method when activity is creating
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
