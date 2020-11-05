@@ -21,21 +21,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.ResetPassword"></activity>
-        <activity android:name=".activities.EditProfile" />
-
         <meta-data
             android:name="com.google.android.gms.vision.DEPENDENCIES"
             android:value="barcode" />
-
-        <activity android:name=".activities.AddMyBookActivity" />
-
-        <activity android:name=".activities.ScanActivity"/>
-
-        <activity
-            android:name=".activities.ViewBookActivity"
-            tools:ignore="Instantiatable" />
+        <activity android:name=".activities.ResetPasswordActivity" />
+        <activity android:name=".activities.EditProfile" />
+        <activity android:name=".activities.AddBookActivity" />
+        <activity android:name=".activities.ViewBookActivity"/>
         <activity android:name=".activities.SignUpActivity" />
+        <activity android:name=".activities.EditBookActivity"/>
+        <activity android:name=".activities.SearchedBooksActivity"/>
         <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -2,25 +2,17 @@ package com.example.ibook.entities;
 
 import android.os.SystemClock;
 import android.util.Log;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 public class User {
     private String userName;
@@ -35,6 +27,10 @@ public class User {
 
     private DocumentReference documentReference;
 
+    /**
+     * This default constructor will use fetch() to get data of the current user from database
+     * , and build the User object accordingly.
+     * */
     public User() {
         this.uAuth = FirebaseAuth.getInstance();
         this.userID = this.uAuth.getCurrentUser().getUid();
@@ -47,7 +43,8 @@ public class User {
     }
 
     /**
-     * This constructor is used to create an user object
+     * This constructor builds a User object based on the given parameters
+     * , and then uploads the data to the database, using commit().
      * */
     public User(String userName, String password, String email, String phoneNumber) {
         this.userName = userName;
@@ -65,6 +62,7 @@ public class User {
 
     /**
      * This Method should update the data on database according to the data it has.
+     * It creates a document for the current user if it doesn't exist, or update the document otherwise.
      * @Parameter - None
      * @Return - None
      * */
@@ -75,7 +73,8 @@ public class User {
         user.put("userName", this.userName);
         user.put("email", this.email);
         user.put("phoneNumber", this.phoneNumber);
-        user.put("password", this.phoneNumber);
+        user.put("password", this.password);
+        user.put("Booklist", new ArrayList<Book>());
 
         //update the document
         documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -86,6 +85,13 @@ public class User {
         });
     }
 
+    /**
+     * This method will fetch data of the current user from the database, and
+     * updates the attributes of the User object accordingly.
+     * Note that this method works under the assumption that there is indeed an authenticated user.
+     * @Parameter - None
+     * @Return - None
+     * */
     public void fetch() {
 
         Task get = this.documentReference.get();
