@@ -58,6 +58,7 @@ public class ViewBookActivity extends AppCompatActivity {
         dateTextView = findViewById(R.id.ViewDate);
         isbnTextView = findViewById(R.id.ViewISBN);
         edit_button = findViewById(R.id.btn_edit_book);
+        imageView = findViewById(R.id.imageView);
 
         Intent intent = getIntent();
         userID = intent.getStringExtra("USER_ID");
