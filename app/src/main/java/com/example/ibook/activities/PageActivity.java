@@ -73,4 +73,3 @@ public class PageActivity extends AppCompatActivity {
     public void onBackPressed() {
     } //onBackPressed
 }
-
