@@ -32,8 +32,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+
 /**
- * The Add book activity class
+ *
  */
 public class AddBookActivity extends AppCompatActivity implements ScanFragment.OnFragmentInteractionListener {
     private User user;
@@ -101,16 +102,30 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                             if (task.isSuccessful()) {
                                 DocumentSnapshot document = task.getResult();
+
                                 if (document.exists()) {
                                     Map<String, Object> data;
 
                                     // get data and overwrite it
                                     data = document.getData();
+
+                                    //make a new book object
+//                                    Book book = new Book(bookName,authorName,date,isbn);
+//
+//                                    // add book to current users booklist
+//                                    SignUpActivity.user.addBook(book);
+//
+//                                    //Add to "book" collections in database
+//                                    SignUpActivity.database.getBookDocumentReference().set(book);
+//                                    //Add the book to  "user" Collections in database
+//                                    SignUpActivity.database.getUserDocumentReference().set(SignUpActivity.user);
+
                                     books = (ArrayList<Book>) document.getData().get("BookList");
                                     books.add(new Book(bookName, authorName, date, isbn));
+
                                     data.put("BookList", books);
                                     db.collection("users")
-                                            .document(userID).set(data);
+                                            .document(userID).update(data);
                                     Toast.makeText(getBaseContext(), "Add book successfully!", Toast.LENGTH_LONG).show();
 
                                     // TODO: use OOP to simplify it later

@@ -36,13 +36,14 @@ public class SearchedBooksActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 User user = new User();
                 Intent intent = new Intent(getApplicationContext(), ViewBookActivity.class);
-                intent.putExtra("USER_ID", user.getUserID());
+                intent.putExtra("USER_ID", MainActivity.database.getCurrentUserUID());
                 intent.putExtra("BOOK_NUMBER", position);
                 intent.putExtra("IS_OWNER", -1);
                 intent.putExtra("BOOK_ISBN", resultList.get(position).getIsbn());
                 startActivityForResult(intent, 0);
             }
         });
+
 
 
     }

@@ -127,12 +127,13 @@ public class HomeFragment extends Fragment {
                 Intent intent = new Intent(getContext(), ViewBookActivity.class);
                 User user = new User();
                 intent.putExtra("BOOK_NUMBER", position);
-                intent.putExtra("USER_ID", user.getUserID());
+                intent.putExtra("USER_ID", user.getUserName());
                 intent.putExtra("IS_OWNER", -1);
                 intent.putExtra("BOOK_ISBN", datalist.get(position).getIsbn());
                 startActivityForResult(intent, 0);
             }
         });
+
 
         return root;
     }

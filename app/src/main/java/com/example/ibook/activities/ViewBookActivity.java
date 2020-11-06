@@ -19,6 +19,7 @@ import com.example.ibook.entities.Book;
 import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -52,6 +53,7 @@ public class ViewBookActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private User user;
     private DocumentReference docRef;
+    FirebaseAuth uAuth;
 
 
     @Override
@@ -68,6 +70,16 @@ public class ViewBookActivity extends AppCompatActivity {
         delete_button = findViewById(R.id.btn_delete_book);
         imageView = findViewById(R.id.imageView);
 
+       user = new User();
+        uAuth = FirebaseAuth.getInstance();
+        userID = uAuth.getCurrentUser().getUid();
+        db = FirebaseFirestore.getInstance();
+
+        docRef = db.collection("users").document(userID);//creating a document for the use
+
+
+
+
         Intent intent = getIntent();
         userID = intent.getStringExtra("USER_ID");
 
@@ -83,13 +95,19 @@ public class ViewBookActivity extends AppCompatActivity {
             edit_button.setVisibility(View.GONE);
             delete_button.setVisibility(View.GONE);
             bookISBN = intent.getStringExtra("BOOK_ISBN");
-        }
-        user = new User();
-        docRef = user.getDocumentReference();
-        db = FirebaseFirestore.getInstance();
-        getBookData();
 
-        // click edit button to edit a book
+            // Toast.makeText(getBaseContext(), String.valueOf(bookNumber), Toast.LENGTH_SHORT).show();
+            // Toast.makeText(getBaseContext(), userID, Toast.LENGTH_SHORT).show();
+
+//            user = new User();
+//            docRef = user.getDocumentReference();
+//            db = FirebaseFirestore.getInstance();
+            getBookData();
+
+
+        }
+
+
         edit_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

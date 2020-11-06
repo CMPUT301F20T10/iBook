@@ -18,6 +18,10 @@ import java.util.Map;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * Activity for allowing the the user to reset/change password
+ * updates the database with the changed password
+ */
 public class ResetPasswordActivity extends AppCompatActivity {
 
     EditText newPassword;
@@ -68,10 +72,16 @@ public class ResetPasswordActivity extends AppCompatActivity {
             }
         });
 
-
     }//onCreate
 
-
+    /**
+     * Checks if the user-input is valid or not for resetting password
+     * @param updatedPassword
+     * @param confirmedPassword
+     * @return boolean - True or False
+     * True if the user input is valid
+     * False if the user input is invalid
+     */
     public Boolean isValid(String updatedPassword, String confirmedPassword){
 
 
