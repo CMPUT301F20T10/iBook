@@ -40,7 +40,6 @@ public class ViewBookActivityTest {
     password: "123456"
     phoneNumber: "123456"
     userName: "ztan7"
-
     book:
     author: "ztan7"
     available: true
