@@ -22,7 +22,7 @@
         android:id="@+id/searchButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:drawable/title_bar"
+        android:background="@color/common_google_signin_btn_text_light_default"
         app:layout_constraintBottom_toTopOf="@+id/bookList"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header_home" />
