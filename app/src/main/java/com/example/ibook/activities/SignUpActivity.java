@@ -77,7 +77,8 @@ public class SignUpActivity extends AppCompatActivity {
         && confirmPassword.length() > 0) {
       if (password.length() >= 6) {
         if (password.equals(confirmPassword)) {
-          Toast.makeText(getBaseContext(), "Confirm -> iBook Home Page", Toast.LENGTH_SHORT).show();
+          // if not valid, the func will return
+          //Toast.makeText(getBaseContext(), "Confirm -> iBook Home Page", Toast.LENGTH_SHORT).show();
         } else {
           Toast.makeText(
                   getBaseContext(),

@@ -78,11 +78,12 @@ public class ViewBookActivity extends AppCompatActivity {
         isbnTextView = findViewById(R.id.ViewISBN);
 
         edit_button = findViewById(R.id.editButton);
-        delete_button = findViewById(R.id.btn_delete_book);
+        //delete_button = findViewById(R.id.btn_delete_book);
         request_button = findViewById(R.id.btn_request_book);
 
         imageView = findViewById(R.id.imageView);
         backButton = findViewById(R.id.cancelButton);
+        delete_button = findViewById(R.id.btn_delete_book);
 
         user = new User();
         uAuth = FirebaseAuth.getInstance();
@@ -151,6 +152,8 @@ public class ViewBookActivity extends AppCompatActivity {
 
     public void delete_book(View view) {
         DocumentReference docRef = db.collection("users").document(userID);
+
+
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -176,6 +179,9 @@ public class ViewBookActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+
     }
 
     @Override

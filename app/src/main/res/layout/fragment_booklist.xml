@@ -20,16 +20,63 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    <Button
-        android:id="@+id/selectState"
+    <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/selectState"
+        android:orientation="horizontal"
         android:layout_marginTop="8dp"
-        android:background="@android:drawable/title_bar"
-        android:text="Own (improve later)"
         app:layout_constraintBottom_toTopOf="@+id/bookList"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header_booklist" />
+        app:layout_constraintTop_toBottomOf="@+id/header_booklist">
+
+        <RadioButton
+            android:id="@+id/rb_1"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:background="@drawable/selector_orange_radiobutton"
+            android:button="@null"
+            android:checked="true"
+            android:gravity="center"
+            android:text="Own"
+            android:textColor="#000"
+            android:textSize="18sp" />
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:id="@+id/rb_2"
+            android:text="Borrow"
+            android:button="@null"
+            android:textSize="18sp"
+            android:textColor="#000"
+            android:background="@drawable/selector_orange_radiobutton"/>
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:id="@+id/rb_3"
+            android:text="Request"
+            android:button="@null"
+            android:textSize="18sp"
+            android:textColor="#000"
+            android:background="@drawable/selector_orange_radiobutton"/>
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:id="@+id/rb_4"
+            android:text="Accept"
+            android:button="@null"
+            android:textSize="18sp"
+            android:textColor="#000"
+            android:background="@drawable/selector_orange_radiobutton"/>
+    </RadioGroup>
+
 
 
     <ListView
