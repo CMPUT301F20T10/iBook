@@ -3,14 +3,11 @@ package com.example.ibook.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.ibook.R;
 import com.example.ibook.entities.Book;
@@ -24,6 +21,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class EditBookActivity extends AppCompatActivity implements ScanFragment.OnFragmentInteractionListener {
 
@@ -44,16 +45,20 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Hide the top bar and make it full screen
+        requestWindowFeature(Window.FEATURE_NO_TITLE); //will hide the title
+        getSupportActionBar().hide(); // hide the title bar
+
         setContentView(R.layout.activity_add_or_edit_book_screen);
 
-        bookNameEditText = findViewById(R.id.editTextBookName);
-        authorEditText = findViewById(R.id.editTextAuthor);
-        dateEditText = findViewById(R.id.editTextDate);
-        isbnEditText = findViewById(R.id.editTextISBN);
+        bookNameEditText = findViewById(R.id.titleEditor);
+        authorEditText = findViewById(R.id.authorEditor);
+        dateEditText = findViewById(R.id.dateEditor);
+        isbnEditText = findViewById(R.id.isbnEditor);
 
         cancelButton = findViewById(R.id.cancelButton);
         completeButton = findViewById(R.id.completeButton);
-        scanButton = findViewById(R.id.scan_button);
+        scanButton = findViewById(R.id.scanButton);
         imageView = findViewById(R.id.imageView);
 
         Intent intent = getIntent();
@@ -75,6 +80,8 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                         && isbn.length() > 0) {
 //                    TODO:add more value
                     Book currentBook = new Book(bookName, authorName, date, isbn);
+
+                    // update book if there's a change
                     if (!currentBook.equals(originalBook)) {
                         updateBook(currentBook);
                     }
@@ -129,7 +136,8 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                         authorEditText.setText(book.getAuthor());
                         dateEditText.setText(book.getDate());
                         isbnEditText.setText(book.getIsbn());
-//                        descriptionEditText.setText(book.getDescription());
+                        // TODO: forgot to let the user edit description, improve it later
+//                      // descriptionEditText.setText(book.getDescription());
 
                         // photoEditText todo: photo format path
 
@@ -144,6 +152,7 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
 
     }
 
+    // update book info
     private void updateBook(final Book book) {
         DocumentReference docRef = db.collection("users").document(userID);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {

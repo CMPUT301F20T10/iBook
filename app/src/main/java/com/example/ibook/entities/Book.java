@@ -1,11 +1,12 @@
 package com.example.ibook.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Book implements Serializable {
 
     public enum Status{
-        Available, Requested, Borrowed, Return
+        Available, Requested, Borrowed, Return, Accepted
     }
 
     private String title;
@@ -14,11 +15,14 @@ public class Book implements Serializable {
     private String description;
     private Status status;
     private String isbn;
-
+    
     private String owner;
     private String holder;
 
 //Need to add picture data somehow
+    public Book(){
+
+    }
 
     //Constructor
     public Book(String title, String authors, String date, String isbn) {

@@ -7,7 +7,7 @@
 
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/titleView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -21,7 +21,7 @@
         tools:text="@string/nameText" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/authorView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -31,11 +31,11 @@
         android:textColor="#000000"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/titleView"
         tools:text="@string/authorText" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/dateView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -45,13 +45,13 @@
         android:text="@string/dateText"
         android:textColor="#000000"
         android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/textView4"
+        app:layout_constraintBottom_toTopOf="@+id/photoView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:layout_constraintTop_toBottomOf="@+id/authorView"
         tools:text="@string/dateText" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/photoView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -63,11 +63,11 @@
         app:layout_constraintEnd_toStartOf="@+id/ViewDate"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3"
+        app:layout_constraintTop_toBottomOf="@+id/dateView"
         tools:text="@string/photoText" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/isbnView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -97,7 +97,7 @@
         android:ems="10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/textView"
+        app:layout_constraintStart_toEndOf="@+id/titleView"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -112,7 +112,7 @@
         android:ems="10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/textView2"
+        app:layout_constraintStart_toEndOf="@+id/authorView"
         app:layout_constraintTop_toBottomOf="@+id/ViewBookName" />
 
     <TextView
@@ -127,7 +127,7 @@
         android:ems="10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/textView3"
+        app:layout_constraintStart_toEndOf="@+id/dateView"
         app:layout_constraintTop_toBottomOf="@+id/ViewAuthor" />
 
     <TextView
@@ -164,7 +164,7 @@
         app:layout_constraintBottom_toTopOf="@+id/ViewISBN"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4"
+        app:layout_constraintTop_toBottomOf="@+id/photoView"
         app:srcCompat="@android:drawable/ic_input_add"
         android:scaleType="center"/>
 
