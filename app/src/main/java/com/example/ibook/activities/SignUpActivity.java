@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.example.ibook.entities.Book;
 import com.example.ibook.R;
+import com.example.ibook.entities.Database;
 import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -26,6 +27,11 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * Activity for signing users up for the app
+ * registers the users in database firebase authentication
+ * creates a collection called "users" in cloud firestore
+ */
 public class SignUpActivity extends AppCompatActivity {
 
   private EditText ed_username;
@@ -36,6 +42,7 @@ public class SignUpActivity extends AppCompatActivity {
   private ProgressBar ed_progressBar;
   private FirebaseAuth uAuth;
   public static User user; // user authentication
+  public static Database database;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -48,18 +55,16 @@ public class SignUpActivity extends AppCompatActivity {
     ed_confirmPassword = findViewById(R.id.ed_confirmPassword_signup);
     ed_progressBar = findViewById(R.id.signUpProgressBar);
     uAuth = FirebaseAuth.getInstance();
-    // Toast.makeText(getBaseContext(), "SignUp to be done", Toast.LENGTH_SHORT).show();
-
-    // if current user already is logged in
-   // if(uAuth.getCurrentUser() != null){
-     // System.out.println(uAuth.getCurrentUser());
-      //startActivity(new Intent(getApplicationContext(),PageActivity.class));
-      //finish();
-    //}// if
 
   }// onCreate
 
   //method gets called when confirm button is clicked in sign-up activity
+
+  /**
+   * This method is called when the sign up button is clicked on
+   * This method creates a user object and adds the user to the database(both cloud and authentication)
+   * @param view
+   */
   public void confirm_signup(View view) {
     final String username = ed_username.getText().toString();
     final String phoneNumber = ed_phoneNumber.getText().toString();
@@ -103,8 +108,10 @@ public class SignUpActivity extends AppCompatActivity {
       @Override
       public void onComplete(@NonNull Task<AuthResult> task) {
         if(task.isSuccessful()){
+
           user = new User(username, password, email, phoneNumber);
-          user.commit();
+          database = new Database();
+          database.addUser(user);
 
           //We don't put in the password do we?
           Toast.makeText(SignUpActivity.this, "Created user successfully", Toast.LENGTH_SHORT).show();
@@ -125,7 +132,11 @@ public class SignUpActivity extends AppCompatActivity {
 
   }
 
-
+  /**
+   * Method called when user clicks cancel button on sign up screen
+   * Makes the user return to the log in activity
+   * @param view
+   */
   public void cancel_signup(View view) {
     //Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
     finish();

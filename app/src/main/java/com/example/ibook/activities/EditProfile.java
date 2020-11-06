@@ -22,13 +22,17 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Activity for letting users update their profile information
+ * such as username, email-id, phone number
+ * updates the database with the edited information and stores it
+ */
 public class EditProfile extends AppCompatActivity {
 
-    FirebaseAuth uAuth;
-    FirebaseFirestore db;
+
     Button saveButton;
     EditText usernameEditText, phoneEditText, emailEditText;
-    FirebaseUser user;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +53,7 @@ public class EditProfile extends AppCompatActivity {
         emailEditText.setText(email);
         phoneEditText.setText(phone);
 
-        uAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
-        user = uAuth.getCurrentUser();
-        final String userID = user.getUid();
+        final String userID = SignUpActivity.database.getCurrentUserUID();
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,7 +68,7 @@ public class EditProfile extends AppCompatActivity {
 
                 String email = emailEditText.getText().toString();
 
-                user.updateEmail(email)
+                SignUpActivity.database.getcurrentUser().updateEmail(email)
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
@@ -75,33 +76,32 @@ public class EditProfile extends AppCompatActivity {
                             }
                         })
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        DocumentReference documentReference = db.collection("users").document(userID);
-
-                        Map<String, Object> editedInfo = new HashMap();
-                        editedInfo.put("userName", usernameEditText.getText().toString());
-                        editedInfo.put("email", emailEditText.getText().toString());
-                        editedInfo.put("phoneNumber", phoneEditText.getText().toString());
-
-                        documentReference.update(editedInfo).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                Toast.makeText(EditProfile.this, "Database successfully updated", Toast.LENGTH_SHORT).show();
-                                finish();
-                            }// onSuccess
-                        }); //update the database
+                                // DocumentReference documentReference = db.collection("users").document(userID);
+                                SignUpActivity.user.setEmail(emailEditText.getText().toString());
+                                SignUpActivity.user.setUserName(usernameEditText.getText().toString());
+                                SignUpActivity.user.setPhoneNumber(phoneEditText.getText().toString());
 
-                        Toast.makeText(EditProfile.this, "Updated", Toast.LENGTH_SHORT).show();
-                    }//onSuccess
+//                        Map<String, Object> editedInfo = new HashMap();
+//                        editedInfo.put("userName", );
+//                        editedInfo.put("email", emailEditText.getText().toString());
+//                        editedInfo.put("phoneNumber", phoneEditText.getText().toString());
 
-                });
+                                SignUpActivity.database.getUserDocumentReference().set(SignUpActivity.user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(EditProfile.this, "Database successfully updated", Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    }
+                                }); //update the database
+
+                            }// onClick
+                        });
 
 
             }
         });
 
-
     }
 }
-

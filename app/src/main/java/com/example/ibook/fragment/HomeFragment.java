@@ -91,16 +91,16 @@ public class HomeFragment extends Fragment {
 
 
         // view book on the list
-        bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getContext(), ViewBookActivity.class);
-                User user = new User();
-                intent.putExtra("BOOK_NUMBER", position);
-                intent.putExtra("USER_ID", user.getUserID());
-                startActivityForResult(intent, 0);
-            }
-        });
+//        bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent intent = new Intent(getContext(), ViewBookActivity.class);
+//                User user = new User();
+//                intent.putExtra("BOOK_NUMBER", position);
+//                intent.putExtra("USER_ID", user.getUserID());
+//                startActivityForResult(intent, 0);
+//            }
+//        });
 
         return root;
     }

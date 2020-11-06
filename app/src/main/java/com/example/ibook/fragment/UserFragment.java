@@ -24,7 +24,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-
+/**
+ * Activity for the current user profile
+ * Displays username, phone-number, email-id
+ * Displays image(will add the functionalities in future)
+ */
 public class UserFragment extends Fragment {
     private TextView email;
     private TextView username;
@@ -70,21 +74,22 @@ public class UserFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 editButton();
-            }
-        });
+            }//onClick
+        });//setOnClickListener
 
         return root;
-
-
-    }
+    }//onCreateView
 
     @Override
     public void onResume() {
         super.onResume();
         displayUserInfo(root);
+    }// onResume
 
-    }
-
+    /**
+     * onclick of the editButton,this method gets triggered which lets the user go to another
+     * activity where they can update/edit their contact information
+     */
     public void editButton(){
         Intent intent = new Intent(getActivity(), EditProfile.class);
         intent.putExtra("username", username.getText().toString());
@@ -93,6 +98,11 @@ public class UserFragment extends Fragment {
         startActivity(intent);
     }//editButton
 
+    /**
+     * This method is invoked when the user edits information and returns to the profile activity
+     * updates the user profile activity whenever the user edits their information
+     * @param root
+     */
     public void displayUserInfo(View root){
         email = root.findViewById(R.id.emailID);
         username = root.findViewById(R.id.username);
@@ -114,6 +124,11 @@ public class UserFragment extends Fragment {
         });
     }//displayUserInfo
 
+    /**
+     * Method invoked when logout button is clicked
+     * Logs the current user out of the app
+     * @param root
+     */
     public void logout(View root){
         FirebaseAuth.getInstance().signOut();
         startActivity(new Intent(getActivity(), MainActivity.class));

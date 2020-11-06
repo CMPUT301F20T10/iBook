@@ -12,6 +12,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class User {
@@ -19,114 +20,23 @@ public class User {
     private String password;
     private String email;
     private String phoneNumber;
-    private ArrayList<Book> booklist;
+    private ArrayList<Book> booklist; //made it capitalized B because someone named key in database colloction to be capital, have to see later
 
-    private FirebaseAuth uAuth; // user authentication
-    private FirebaseFirestore db;
-    private String userID;
-
-    private DocumentReference documentReference;
-
-    /**
-     * This default constructor will use fetch() to get data of the current user from database
-     * , and build the User object accordingly.
-     * */
     public User() {
-        this.uAuth = FirebaseAuth.getInstance();
-        this.userID = this.uAuth.getCurrentUser().getUid();
-        this.db = FirebaseFirestore.getInstance();
 
-        this.documentReference = db.collection("users").document(userID);//creating a document for the use
-        while (this.userName == null) {
-            this.fetch();
-        }
     }
 
-    /**
-     * This constructor builds a User object based on the given parameters
-     * , and then uploads the data to the database, using commit().
-     * */
     public User(String userName, String password, String email, String phoneNumber) {
         this.userName = userName;
         this.password = password;
         this.email = email;
         this.phoneNumber = phoneNumber;
-
-        this.uAuth = FirebaseAuth.getInstance();
-        this.userID = this.uAuth.getCurrentUser().getUid();
-        this.db = FirebaseFirestore.getInstance();
-
-        this.documentReference = db.collection("users").document(userID);//creating a document for the user
-
+        this.booklist = new ArrayList<Book>();
     }
 
-    /**
-     * This Method should update the data on database according to the data it has.
-     * It creates a document for the current user if it doesn't exist, or update the document otherwise.
-     * @Parameter - None
-     * @Return - None
-     * */
-    public void commit() {
 
-        Map<String,Object> user = new HashMap();
-        //put info for the user in hashMap
-        user.put("userName", this.userName);
-        user.put("email", this.email);
-        user.put("phoneNumber", this.phoneNumber);
-        user.put("password", this.password);
-        user.put("Booklist", new ArrayList<Book>());
-
-        //update the document
-        documentReference.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d("tag", "User profile is created for " + userID);
-            }// onSuccess
-        });
-    }
-
-    /**
-     * This method will fetch data of the current user from the database, and
-     * updates the attributes of the User object accordingly.
-     * Note that this method works under the assumption that there is indeed an authenticated user.
-     * @Parameter - None
-     * @Return - None
-     * */
-    public void fetch() {
-
-        Task get = this.documentReference.get();
-
-        // Somehow on my device, the user Info page will not function properly,
-        // If you find this unnecessary, feel free to remove
-        SystemClock.sleep(50);
-        if (get.isSuccessful()) {
-            DocumentSnapshot document = (DocumentSnapshot) get.getResult();
-            this.userName = document.getString("userName");
-            this.email = document.getString("email");
-            this.phoneNumber = document.getString("phoneNumber");
-            this.password = document.getString("password");
-        }
-        else {
-            Log.d("tag", "loading user info failed");
-        }
-    }
-
-    /* getters and setters
-    * */
-    public DocumentReference getDocumentReference() {
-        return documentReference;
-    }
-
-    public FirebaseAuth getuAuth() {
-        return uAuth;
-    }
-
-    public FirebaseFirestore getDb() {
-        return db;
-    }
-
-    public String getUserID() {
-        return userID;
+    public void setBooklist(ArrayList<Book> booklist) {
+        this.booklist = booklist;
     }
 
     public String getUserName() {
@@ -155,6 +65,10 @@ public class User {
 
     public String getPhoneNumber() {
         return phoneNumber;
+    }
+
+    public ArrayList<Book> getBooklist() {
+        return booklist;
     }
 
     public void setPhoneNumber(String phoneNumber) {

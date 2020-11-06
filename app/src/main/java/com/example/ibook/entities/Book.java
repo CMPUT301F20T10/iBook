@@ -1,6 +1,7 @@
 package com.example.ibook.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Book implements Serializable {
 
@@ -14,7 +15,7 @@ public class Book implements Serializable {
     private String description;
     private Status status;
     private String isbn;
-
+    
     private String owner;
     private String holder;
 

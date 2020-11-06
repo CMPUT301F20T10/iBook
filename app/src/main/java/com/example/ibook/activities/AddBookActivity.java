@@ -27,7 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 
 /**
- * The Add book activity class
+ *
  */
 public class AddBookActivity extends AppCompatActivity implements ScanFragment.OnFragmentInteractionListener {
     private User user;
@@ -96,11 +96,28 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                                 if (document.exists()) {
                                     Map<String, Object> data = new HashMap();
                                     data = document.getData();
-                                    books = (ArrayList<Book>) document.getData().get("BookList");
-                                    books.add(new Book(bookName, authorName, date, isbn));
-                                    data.put("BookList", books);
-                                    db.collection("users")
-                                            .document(userID).update(data);
+
+                                    //make a new book object
+                                    Book book = new Book(bookName,authorName,date,isbn);
+
+                                    // add book to current users booklist
+                                    SignUpActivity.user.addBook(book);
+
+                                    //Add to "book" collections in database
+                                    SignUpActivity.database.getBookDocumentReference().set(book);
+                                    //Add the book to  "user" Collections in database
+                                    SignUpActivity.database.getUserDocumentReference().set(SignUpActivity.user);
+
+//                                    books = (ArrayList<Book>) document.getData().get("BookList");
+//                                    books.add(new Book(bookName, authorName, date, isbn));
+
+
+
+
+
+//                                    data.put("BookList", books);
+//                                    db.collection("users")
+//                                            .document(userID).update(data);
                                     Toast.makeText(getBaseContext(), "Add book successfully!", Toast.LENGTH_LONG).show();
                                     Intent intent = new Intent();
                                     setResult(1, intent);

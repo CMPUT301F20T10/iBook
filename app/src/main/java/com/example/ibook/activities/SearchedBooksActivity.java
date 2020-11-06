@@ -31,16 +31,7 @@ public class SearchedBooksActivity extends AppCompatActivity {
         adapter = new BookListAdapter(resultList,getApplicationContext());
         listView.setAdapter(adapter);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                User user = new User();
-                Intent intent = new Intent(getApplicationContext(), ViewBookActivity.class);
-                intent.putExtra("USER_ID", user.getUserID());
-                intent.putExtra("BOOK_NUMBER", position);
-                startActivityForResult(intent, 0);
-            }
-        });
+
 
 
     }

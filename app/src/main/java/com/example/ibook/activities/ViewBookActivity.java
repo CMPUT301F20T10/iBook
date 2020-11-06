@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.ibook.R;
 import com.example.ibook.entities.Book;
+import com.example.ibook.entities.Database;
 import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -67,8 +69,8 @@ public class ViewBookActivity extends AppCompatActivity {
         // Toast.makeText(getBaseContext(), String.valueOf(bookNumber), Toast.LENGTH_SHORT).show();
         // Toast.makeText(getBaseContext(), userID, Toast.LENGTH_SHORT).show();
 
-        user = new User();
-        docRef = user.getDocumentReference();
+        Database database = new Database();
+        docRef = database.getUserDocumentReference();
         db = FirebaseFirestore.getInstance();
         getBookData();
 
