@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F2F6F9">
 
 
     <TextView
@@ -36,6 +37,7 @@
         app:layout_constraintTop_toBottomOf="@+id/header_home" />
 
     <ListView
+        android:background="#FFF"
         android:id="@+id/bookList"
         android:layout_width="match_parent"
         android:layout_height="0dp"

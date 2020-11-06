@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="50dp"
-            android:text="Username"
+            android:text="Email"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/usernameEditText"
             app:layout_constraintEnd_toEndOf="parent"

@@ -197,11 +197,8 @@
             android:background="@drawable/ic_baseline_arrow_back_ios_24"
             android:clickable="true"
             android:onClick="cancel_signup"
-            android:textColor="#FFF"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
-
-
         </Button>
 
         <Button
