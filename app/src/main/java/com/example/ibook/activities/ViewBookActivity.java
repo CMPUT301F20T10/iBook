@@ -22,6 +22,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,6 +37,8 @@ public class ViewBookActivity extends AppCompatActivity {
     private String userID;
     private Book book;
     private int bookNumber;
+    private int isOwner;
+    private String bookISBN;
 
     private TextView bookNameTextView;
     private TextView authorTextView;
@@ -42,7 +46,7 @@ public class ViewBookActivity extends AppCompatActivity {
     private TextView isbnTextView;
     private ImageView imageView;
     private Button edit_button;
-    //private Button delete_button;
+    private Button delete_button;
     private FirebaseFirestore db;
     private User user;
     private DocumentReference docRef;
@@ -59,31 +63,38 @@ public class ViewBookActivity extends AppCompatActivity {
         dateTextView = findViewById(R.id.ViewDate);
         isbnTextView = findViewById(R.id.ViewISBN);
         edit_button = findViewById(R.id.btn_edit_book);
+        delete_button = findViewById(R.id.btn_delete_book);
         imageView = findViewById(R.id.imageView);
+
 
         Intent intent = getIntent();
         userID = intent.getStringExtra("USER_ID");
         bookNumber = intent.getIntExtra("BOOK_NUMBER", 0);
-        // Toast.makeText(getBaseContext(), String.valueOf(bookNumber), Toast.LENGTH_SHORT).show();
-        // Toast.makeText(getBaseContext(), userID, Toast.LENGTH_SHORT).show();
+        isOwner = intent.getIntExtra("IS_OWNER", 0);
 
-        user = new User();
-        docRef = user.getDocumentReference();
-        db = FirebaseFirestore.getInstance();
-        getBookData();
+        if (isOwner == -1) {
+            edit_button.setVisibility(View.GONE);
+            delete_button.setVisibility(View.GONE);
+            bookISBN = intent.getStringExtra("BOOK_ISBN");
+            // Toast.makeText(getBaseContext(), String.valueOf(bookNumber), Toast.LENGTH_SHORT).show();
+            // Toast.makeText(getBaseContext(), userID, Toast.LENGTH_SHORT).show();
 
-        edit_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ViewBookActivity.this, EditBookActivity.class);
-                intent.putExtra("ID", userID);
-                intent.putExtra("bookNumber", bookNumber);
-                startActivity(intent);
-            }
-        });
+            user = new User();
+            docRef = user.getDocumentReference();
+            db = FirebaseFirestore.getInstance();
+            getBookData();
+
+            edit_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(ViewBookActivity.this, EditBookActivity.class);
+                    intent.putExtra("ID", userID);
+                    intent.putExtra("bookNumber", bookNumber);
+                    startActivity(intent);
+                }
+            });
+        }
     }
-
-
 
 
     public void delete_book(View view) {
@@ -123,36 +134,77 @@ public class ViewBookActivity extends AppCompatActivity {
 
 
     private void getBookData() {
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        ArrayList<Book> hashList = (ArrayList<Book>) document.get("BookList");
-                        Map<String, Object> convertMap = (Map<String, Object>) hashList.get(bookNumber);
-                        book = new Book(
-                                String.valueOf(convertMap.get("title")),
-                                String.valueOf(convertMap.get("author")),
-                                String.valueOf(convertMap.get("date")),
-                                (String.valueOf(convertMap.get("description"))),
-                                //from_string_to_enum(String.valueOf(convertMap.get("status"))),
-                                Book.Status.Available,
-                                String.valueOf(convertMap.get("isbn"))
-                        );
-                        bookNameTextView.setText(book.getTitle());
-                        authorTextView.setText(book.getAuthor());
-                        dateTextView.setText(book.getDate());
-                        isbnTextView.setText(book.getIsbn());
+        if (isOwner == -1) {
+            db.collection("books")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                            Book selectedBook = null;
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    String checkISBN = (String)document.get("isbn");
+                                    if (checkISBN.equals(bookISBN)){
+                                        // todo: change email key word to username
+                                        selectedBook = new Book(
+                                                String.valueOf(document.get("title")),
+                                                String.valueOf(document.get("authors")),
+                                                String.valueOf(document.get("date")),
+                                                String.valueOf(document.get("description")),
+                                                Book.Status.Available,
+                                                String.valueOf(document.get("isbn"))
+                                        );
+                                        //Toast.makeText(getBaseContext(), "match book!", Toast.LENGTH_SHORT).show();
+                                        break;
+                                    }
+
+                                }
+                                bookNameTextView.setText(selectedBook.getTitle());
+                                authorTextView.setText(selectedBook.getAuthor());
+                                dateTextView.setText(selectedBook.getDate());
+                                isbnTextView.setText(selectedBook.getIsbn());
+
+                            } else {
+                                Toast.makeText(getBaseContext(), "got an error", Toast.LENGTH_SHORT).show();
+
+                            }
+                        }
+                    });
+
+        } else {
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            ArrayList<Book> hashList = (ArrayList<Book>) document.get("BookList");
+                            Map<String, Object> convertMap = (Map<String, Object>) hashList.get(bookNumber);
+                            book = new Book(
+                                    String.valueOf(convertMap.get("title")),
+                                    String.valueOf(convertMap.get("author")),
+                                    String.valueOf(convertMap.get("date")),
+                                    (String.valueOf(convertMap.get("description"))),
+                                    //from_string_to_enum(String.valueOf(convertMap.get("status"))),
+                                    Book.Status.Available,
+                                    String.valueOf(convertMap.get("isbn"))
+                            );
+                            bookNameTextView.setText(book.getTitle());
+                            authorTextView.setText(book.getAuthor());
+                            dateTextView.setText(book.getDate());
+                            isbnTextView.setText(book.getIsbn());
+                        } else {
+                            //Log.d(TAG, "No such document");
+                        }
                     } else {
-                        //Log.d(TAG, "No such document");
+                        //Log.d(TAG, "get failed with ", task.getException());
                     }
-                } else {
-                    //Log.d(TAG, "get failed with ", task.getException());
                 }
-            }
-        });
+            });
+        }
     }
+
 
     public void changeBookPhoto(View view) {
         // Toast.makeText(getBaseContext(), "changePhoto", Toast.LENGTH_SHORT).show();

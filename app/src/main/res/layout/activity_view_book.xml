@@ -171,7 +171,8 @@
                 android:clickable="true"
                 android:onClick="delete_book"
                 android:text="delete"
-                android:textColor="#FFF">
+                android:textColor="#FFF"
+                android:visibility="visible">
 
             </Button>
 
@@ -185,7 +186,8 @@
                 android:clickable="true"
                 android:onClick="edit_book"
                 android:text="edit"
-                android:textColor="#FFF"/>
+                android:textColor="#FFF"
+                android:visibility="visible"/>
         </LinearLayout>
 
     </LinearLayout>
