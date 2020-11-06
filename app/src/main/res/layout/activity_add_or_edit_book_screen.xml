@@ -8,8 +8,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:background="#F2F6F9"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="#F2F6F9">
 
         <Button
             android:id="@+id/cancelButton"
