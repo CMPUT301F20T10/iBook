@@ -90,7 +90,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
     /**
      * Checks if the user-input is valid or not for resetting password
-     *
      * @param updatedPassword
      * @param confirmedPassword
      * @return boolean - True or False
@@ -110,9 +109,9 @@ public class ResetPasswordActivity extends AppCompatActivity {
             if (updatedPassword.length() < 6) {
                 Toast.makeText(ResetPasswordActivity.this, "The password should have atleast 6 characters", Toast.LENGTH_SHORT).show();
                 return false;
-            }
+            }// if
             return true;
-        }
+        }// outer if
 
         //else
         Toast.makeText(ResetPasswordActivity.this, "The entered passwords don't match", Toast.LENGTH_SHORT).show();
@@ -120,4 +119,4 @@ public class ResetPasswordActivity extends AppCompatActivity {
     }//isValid
 
 
-}
+}// class -ResetPasswordActivity

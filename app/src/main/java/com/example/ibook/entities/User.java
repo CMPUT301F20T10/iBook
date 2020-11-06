@@ -15,6 +15,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This is a model/entity class for the user
+ * has getters for the attributes and is passed to the firestore cloud as a object
+ */
 public class User {
     private String userName;
     private String password;
@@ -22,22 +26,29 @@ public class User {
     private String phoneNumber;
     private ArrayList<Book> BookList; //made it capitalized B because someone named key in database colloction to be capital, have to see later
 
+    /**
+     *   no argument constructor for the firebase cloud
+     */
     public User() {
 
-    }
+    }// empty constructor
 
+    /**
+     * This constructor is called when a new user signs up
+     * @param userName
+     * @param password
+     * @param email
+     * @param phoneNumber
+     */
     public User(String userName, String password, String email, String phoneNumber) {
         this.userName = userName;
         this.password = password;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.BookList = new ArrayList<Book>();
-    }
+    }// constructor
 
 
-    public void setBooklist(ArrayList<Book> booklist) {
-        this.BookList = booklist;
-    }
 
     public String getUserName() {
         return userName;
@@ -67,6 +78,10 @@ public class User {
         return phoneNumber;
     }
 
+    /**
+     * This method returns the users booklist
+     * @return arraylist of books of the user
+     */
     public ArrayList<Book> getBooklist() {
         return BookList;
     }
@@ -75,6 +90,10 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
+    /**
+     * This method is used to add books to the user's booklist
+     * @param book
+     */
     public void addBook(Book book){
         BookList.add(book);
     }// addBook

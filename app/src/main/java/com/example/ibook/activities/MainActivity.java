@@ -52,9 +52,6 @@ public class MainActivity extends AppCompatActivity {
         setupSignInListener();
         setupSignUpListener();
 
-        //set up database object for the entire run
-
-
     }// onCreate
 
     protected void onResume() {
@@ -64,11 +61,13 @@ public class MainActivity extends AppCompatActivity {
         passwordEditText.setText(null);
     }// onResume
 
-
-
-
+    /**
+     * This method listens for click on sign-in button and then checks if the user input is valid
+     * and if it exists in database or not
+     */
     public void setupSignInListener() {
         final Button signInButton = findViewById(R.id.loginIn);
+
         signInButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
@@ -80,8 +79,6 @@ public class MainActivity extends AppCompatActivity {
                 uAuth = database.getuAuth();
 
                 if (valid(username, password)) {
-
-
                     // TODO: Go to Home Page
                     uAuth.signInWithEmailAndPassword(username, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
@@ -89,45 +86,38 @@ public class MainActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 Toast.makeText(MainActivity.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
 
-                                //TODO: when user sign in should I make a user object? Any Benefits?
-
                                 //create a user object of existing user by loading info from database
                                 createUserObject();
 
                                 Intent intent = new Intent(getApplicationContext(), PageActivity.class);
                                 intent.putExtra("curr_username", username);
                                 startActivity(intent);
-                            } else {
+                            }// if
+                            else {
                                 Toast.makeText(MainActivity.this, "Unsuccessful" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                 signInProgressBar.setVisibility(GONE);
                                 return;
-                            }
-
-                        }
+                            }// else
+                        }// onComplete
                     });
-
-                    // Intent intent = new Intent(MainActivity.this, PageActivity.class);
-                    //startActivity(intent);
-                }// if
-
-                // this following else condition will actually be in validate function
-                // since a different message should be displayed for different errors:
-                // for example - if password left empty -> it should say "please enter password"
-                // and if not in db, then should say user doesn't exist etc.
+                }// outer if
                 else {
                     signInProgressBar.setVisibility(GONE);
                     Toast.makeText(getBaseContext(), "Invalid Input", Toast.LENGTH_LONG).show();
                 }// else
-
-
             }// onClick
         }); // onClickListener
     }// setupSignInListener
 
+    /**
+     *
+     * @param username - the username that the userInput while logging in (the var should actually
+     *                 be called emailId --> will fix later)
+     * @param password -
+     * @return
+     */
     public Boolean valid(String username, String password) {
-        /*
-         *  convenience for testing
-         * */
+
         if (username.equals("1") && password.equals("1")) {
             uAuth.signInWithEmailAndPassword("yzhang24@gmail.com", "123456").addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
@@ -156,6 +146,9 @@ public class MainActivity extends AppCompatActivity {
         }// else
     }// valid
 
+    /**
+     * This method sets up the listener for signup button and takes the user to the signup activity
+     */
     public void setupSignUpListener() {
         TextView signUpButton = findViewById(R.id.signUp);
         signUpButton.setOnClickListener(new View.OnClickListener() {
@@ -167,7 +160,11 @@ public class MainActivity extends AppCompatActivity {
 
             }// onClick
         }); // onClickListener
-    }
+    }// setupSignUpListener
+
+    /**
+     * This method gets the user object from the database for the current user upon logging in
+     */
     public void createUserObject(){
 
         //load data from database for existing user
@@ -179,10 +176,8 @@ public class MainActivity extends AppCompatActivity {
                     user = documentSnapshot.toObject(User.class);
 
                 }// if
-
-            }
+            }//onSuccess
         });
     }//createUserObject
-    //public void us
 
-}
+}// Database Class
