@@ -131,6 +131,7 @@ public class ViewBookActivity extends AppCompatActivity {
                 intent.putExtra("ID", userID);
                 intent.putExtra("bookNumber", bookNumber);
                 startActivity(intent);
+                setResult(1, intent);
             }
         });
 
@@ -270,6 +271,10 @@ public class ViewBookActivity extends AppCompatActivity {
     // when click the image on the photo, change it
     public void changeBookPhoto(View view) {
         // Toast.makeText(getBaseContext(), "changePhoto", Toast.LENGTH_SHORT).show();
+        // if not the Owner, no response
+        if (isOwner == -1) {
+            return;
+        }
         showImagePickerDialog();
 
     }
