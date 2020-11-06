@@ -76,24 +76,21 @@ public class ViewBookActivity extends AppCompatActivity {
             edit_button.setVisibility(View.GONE);
             delete_button.setVisibility(View.GONE);
             bookISBN = intent.getStringExtra("BOOK_ISBN");
-            // Toast.makeText(getBaseContext(), String.valueOf(bookNumber), Toast.LENGTH_SHORT).show();
-            // Toast.makeText(getBaseContext(), userID, Toast.LENGTH_SHORT).show();
-
-            user = new User();
-            docRef = user.getDocumentReference();
-            db = FirebaseFirestore.getInstance();
-            getBookData();
-
-            edit_button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(ViewBookActivity.this, EditBookActivity.class);
-                    intent.putExtra("ID", userID);
-                    intent.putExtra("bookNumber", bookNumber);
-                    startActivity(intent);
-                }
-            });
         }
+        user = new User();
+        docRef = user.getDocumentReference();
+        db = FirebaseFirestore.getInstance();
+        getBookData();
+
+        edit_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ViewBookActivity.this, EditBookActivity.class);
+                intent.putExtra("ID", userID);
+                intent.putExtra("bookNumber", bookNumber);
+                startActivity(intent);
+            }
+        });
     }
 
 
