@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -56,15 +57,20 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Hide the top bar and make it full screen
+        requestWindowFeature(Window.FEATURE_NO_TITLE); //will hide the title
+        getSupportActionBar().hide(); // hide the title bar
+
         setContentView(R.layout.activity_add_or_edit_book_screen);
-        bookNameEditText = findViewById(R.id.editTextBookName);
-        authorEditText = findViewById(R.id.editTextAuthor);
-        dateEditText = findViewById(R.id.editTextDate);
-        isbnEditText = findViewById(R.id.editTextISBN);
+        bookNameEditText = findViewById(R.id.titleEditor);
+        authorEditText = findViewById(R.id.authorEditor);
+        dateEditText = findViewById(R.id.dateEditor);
+        isbnEditText = findViewById(R.id.isbnEditor);
 
         cancelButton = findViewById(R.id.cancelButton);
         completeButton = findViewById(R.id.completeButton);
-        scanButton = findViewById(R.id.scan_button);
+        scanButton = findViewById(R.id.scanButton);
         imageView = findViewById(R.id.imageView);
 
         db = FirebaseFirestore.getInstance();

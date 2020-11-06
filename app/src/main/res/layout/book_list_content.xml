@@ -19,13 +19,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/listBookAuthors"
+        android:id="@+id/listBookStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Author(s): Name"
+        android:text="Status: Available"
+        android:textColor="#1E9F01"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/listBookTitle"
-        android:textStyle="bold"/>
+        app:layout_constraintTop_toBottomOf="@+id/listBookDescription" />
 
     <TextView
         android:id="@+id/listBookDate"
@@ -44,13 +44,13 @@
         app:layout_constraintTop_toBottomOf="@+id/listBookDate"/>
 
     <TextView
-        android:id="@+id/listBookStatus"
+        android:id="@+id/listBookAuthors"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Status: Available"
-        android:textColor="#1E9F01"
+        android:text="Author(s): Name"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/listBookDescription" />
+        app:layout_constraintTop_toBottomOf="@+id/listBookTitle" />
 
     <ImageView
         android:id="@+id/imageView"

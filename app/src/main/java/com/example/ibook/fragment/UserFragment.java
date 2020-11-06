@@ -70,7 +70,7 @@ public class UserFragment extends Fragment {
         });
 
 
-        final Button editButton = root.findViewById(R.id.editButton);
+        final TextView editButton = root.findViewById(R.id.editButton);
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

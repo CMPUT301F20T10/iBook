@@ -3,9 +3,11 @@ package com.example.ibook.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ibook.R;
@@ -35,7 +37,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
+        //Hide the top bar and make it full screen
+        requestWindowFeature(Window.FEATURE_NO_TITLE); //will hide the title
+        getSupportActionBar().hide(); // hide the title bar
+
         setContentView(R.layout.activity_login);
 
         signInProgressBar = findViewById(R.id.progressBar);
@@ -60,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void setupSignInListener() {
-        final Button signInButton = findViewById(R.id.signIn);
+        final Button signInButton = findViewById(R.id.loginIn);
         signInButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
@@ -149,8 +157,8 @@ public class MainActivity extends AppCompatActivity {
     }// valid
 
     public void setupSignUpListener() {
-        Button signInButton = findViewById(R.id.signUp);
-        signInButton.setOnClickListener(new View.OnClickListener() {
+        TextView signUpButton = findViewById(R.id.signUp);
+        signUpButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 System.out.println("Clicked on Sign Up!");
                 Intent intent = new Intent(MainActivity.this, SignUpActivity.class);

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -48,9 +49,13 @@ public class ViewBookActivity extends AppCompatActivity {
     private TextView dateTextView;
     private TextView isbnTextView;
     private ImageView imageView;
-    private Button edit_button;
+
+    private TextView edit_button;
+    private Button backButton;
+    //private Button delete_button;
     private Button delete_button;
     private Button request_button;
+
     private FirebaseFirestore db;
     private User user;
     private DocumentReference docRef;
@@ -61,18 +66,25 @@ public class ViewBookActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+        //Hide the top bar and make it full screen
+        requestWindowFeature(Window.FEATURE_NO_TITLE); //will hide the title
+        getSupportActionBar().hide(); // hide the title bar
         setContentView(R.layout.activity_view_book);
 
         bookNameTextView = findViewById(R.id.ViewBookName);
         authorTextView = findViewById(R.id.ViewAuthor);
         dateTextView = findViewById(R.id.ViewDate);
         isbnTextView = findViewById(R.id.ViewISBN);
-        edit_button = findViewById(R.id.btn_edit_book);
+
+        edit_button = findViewById(R.id.editButton);
         delete_button = findViewById(R.id.btn_delete_book);
         request_button = findViewById(R.id.btn_request_book);
-        imageView = findViewById(R.id.imageView);
 
-       user = new User();
+        imageView = findViewById(R.id.imageView);
+        backButton = findViewById(R.id.cancelButton);
+
+        user = new User();
         uAuth = FirebaseAuth.getInstance();
         userID = uAuth.getCurrentUser().getUid();
         db = FirebaseFirestore.getInstance();
@@ -118,6 +130,13 @@ public class ViewBookActivity extends AppCompatActivity {
                 intent.putExtra("ID", userID);
                 intent.putExtra("bookNumber", bookNumber);
                 startActivity(intent);
+            }
+        });
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
 

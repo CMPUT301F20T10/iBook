@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -30,13 +31,17 @@ import java.util.Map;
 public class EditProfile extends AppCompatActivity {
 
 
-    Button saveButton;
+    Button saveButton,backButton;
     EditText usernameEditText, phoneEditText, emailEditText;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Hide the top bar and make it full screen
+        requestWindowFeature(Window.FEATURE_NO_TITLE); //will hide the title
+        getSupportActionBar().hide(); // hide the title bar
+
         setContentView(R.layout.activity_edit_profile);
 
         Intent intent = getIntent();
@@ -48,12 +53,21 @@ public class EditProfile extends AppCompatActivity {
         emailEditText = findViewById(R.id.emailEditText);
         phoneEditText = findViewById(R.id.phoneEditText);
         saveButton = findViewById(R.id.saveButton);
+        backButton=findViewById(R.id.backButton);
+
 
         usernameEditText.setText(username);
         emailEditText.setText(email);
         phoneEditText.setText(phone);
 
         final String userID = MainActivity.database.getCurrentUserUID();
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
