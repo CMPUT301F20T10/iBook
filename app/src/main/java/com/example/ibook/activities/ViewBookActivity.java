@@ -40,6 +40,8 @@ public class ViewBookActivity extends AppCompatActivity {
     private int bookNumber;
     private int isOwner;
     private String bookISBN;
+    private final int REQ_CAMERA_IMAGE = 1;
+    private final int REQ_GALLERY_IMAGE = 2;
 
     private TextView bookNameTextView;
     private TextView authorTextView;
@@ -77,15 +79,23 @@ public class ViewBookActivity extends AppCompatActivity {
 
 
 
+
         Intent intent = getIntent();
         userID = intent.getStringExtra("USER_ID");
+
+        // The number of clicked book on the booklist
         bookNumber = intent.getIntExtra("BOOK_NUMBER", 0);
+
+        // if isOwner = 0, the activity is being visited from user's own bookList page
+        // if isOwner = -1, the activity is being visited by other users (a random visit)
         isOwner = intent.getIntExtra("IS_OWNER", 0);
 
         if (isOwner == -1) {
+            // we hide edit/delete button if it's not the owner
             edit_button.setVisibility(View.GONE);
             delete_button.setVisibility(View.GONE);
             bookISBN = intent.getStringExtra("BOOK_ISBN");
+
             // Toast.makeText(getBaseContext(), String.valueOf(bookNumber), Toast.LENGTH_SHORT).show();
             // Toast.makeText(getBaseContext(), userID, Toast.LENGTH_SHORT).show();
 
@@ -96,6 +106,8 @@ public class ViewBookActivity extends AppCompatActivity {
 
 
         }
+
+
         edit_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,6 +127,7 @@ public class ViewBookActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
+                    // if the book exists, delete it
                     if (document.exists()) {
                         Map<String, Object> data;
                         data = document.getData();
@@ -139,12 +152,15 @@ public class ViewBookActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        // get data again when resume
         SystemClock.sleep(500);
         getBookData();
     }
 
 
     private void getBookData() {
+        // if it's not owner's book, we cannot access the book from user
+        // so find the book from book collection
         if (isOwner == -1) {
             db.collection("books")
                     .get()
@@ -157,7 +173,6 @@ public class ViewBookActivity extends AppCompatActivity {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     String checkISBN = (String)document.get("isbn");
                                     if (checkISBN.equals(bookISBN)){
-                                        // todo: change email key word to username
                                         selectedBook = new Book(
                                                 String.valueOf(document.get("title")),
                                                 String.valueOf(document.get("authors")),
@@ -184,6 +199,7 @@ public class ViewBookActivity extends AppCompatActivity {
                     });
 
         } else {
+            // if it's owner's book, find it from user's collection
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -216,16 +232,15 @@ public class ViewBookActivity extends AppCompatActivity {
         }
     }
 
-
+    // when click the image on the photo, change it
     public void changeBookPhoto(View view) {
         // Toast.makeText(getBaseContext(), "changePhoto", Toast.LENGTH_SHORT).show();
         showImagePickerDialog();
 
     }
 
+    // let user choose to use camera or gallery
     private void showImagePickerDialog() {
-        final int REQ_CAMERA_IMAGE = 1;
-        final int REQ_GALLERY_IMAGE = 2;
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle("Upload Image")
                 .setPositiveButton("Camera", new DialogInterface.OnClickListener() {
@@ -234,9 +249,9 @@ public class ViewBookActivity extends AppCompatActivity {
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         // second parameter : request code
 
-                        Toast.makeText(getBaseContext(), "There is a bug when using camera", Toast.LENGTH_SHORT).show();
-                        // TODO: there is a bug when using camera!
-                        //startActivityForResult(intent, REQ_CAMERA_IMAGE);
+                        Toast.makeText(getBaseContext(), "There is a bug with camera, please use gallery", Toast.LENGTH_SHORT).show();
+                        // TODO: there is a bug when using camera, maybe because of MediaStore library
+                        // startActivityForResult(intent, REQ_CAMERA_IMAGE);
 
                     }
                 })
@@ -263,11 +278,10 @@ public class ViewBookActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        final int REQ_CAMERA_IMAGE = 1;
-        final int REQ_GALLERY_IMAGE = 2;
         if (requestCode == REQ_CAMERA_IMAGE) {
             // result of camera
             if (resultCode == RESULT_OK) {
+                // get image data
                 Bitmap bitmap = (Bitmap) data.getExtras().get("data");
                 imageView.setImageBitmap(bitmap);
                 onSuccessChangePhoto(bitmap);
@@ -275,7 +289,7 @@ public class ViewBookActivity extends AppCompatActivity {
 
         } else if (requestCode == REQ_GALLERY_IMAGE) {
             if (resultCode == RESULT_OK) {
-
+                // get image data
                 Uri selectedImage = data.getData();
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
@@ -293,6 +307,8 @@ public class ViewBookActivity extends AppCompatActivity {
         //Intent intent = new Intent();
         //intent.putExtra("PHOTO_CHANGE", bitmap);
         //setResult(1, intent);
-        // TODO: store images to database
+        // Comment: so far, we can only let user upload photo, but can't store it
+        //      Thus, unfortunately, it won't be passed back to the previous activity
+        // TODO: figure out how to scale image, compress it and store it to database
     }
 }

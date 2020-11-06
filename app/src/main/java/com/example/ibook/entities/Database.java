@@ -21,7 +21,7 @@ public class Database {
         this.db = FirebaseFirestore.getInstance();
 
     }
-    
+
     public DocumentReference getUserDocumentReference() {
         return this.db.collection("users").document(getCurrentUserUID());
     }
