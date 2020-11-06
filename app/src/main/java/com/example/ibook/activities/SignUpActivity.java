@@ -128,9 +128,7 @@ public class SignUpActivity extends AppCompatActivity {
         }
       }
     });
-
-
-  }
+  }// confirm_signup
 
   /**
    * Method called when user clicks cancel button on sign up screen
@@ -140,5 +138,6 @@ public class SignUpActivity extends AppCompatActivity {
   public void cancel_signup(View view) {
     //Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
     finish();
-  }
-}
+  }// cancel_signup
+
+} //Class - SignUpActivity
