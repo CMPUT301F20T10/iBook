@@ -222,7 +222,7 @@ public class ViewBookActivity extends AppCompatActivity {
 
                         Toast.makeText(getBaseContext(), "There is a bug when using camera", Toast.LENGTH_SHORT).show();
                         // TODO: there is a bug when using camera!
-                        //startActivityForResult(intent, REQ_CAMERA_IMAGE);
+                        // startActivityForResult(intent, REQ_CAMERA_IMAGE);
 
                     }
                 })
