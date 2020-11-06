@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.example.ibook.BookListAdapter;
@@ -44,22 +46,22 @@ public class BookListFragment extends Fragment {
     private String userID;
     private String userName;
     private FirebaseAuth uAuth;
-
+    private RadioGroup radioGroup;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_booklist, container, false);
-        // Set up the view
         bookListView = root.findViewById(R.id.bookList);
         btn_addBook = root.findViewById(R.id.button_add);
+
         datalist = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
         uAuth = FirebaseAuth.getInstance();
-
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+
 
         //default username = "yzhang24@gmail.com";
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -124,11 +126,29 @@ public class BookListFragment extends Fragment {
                             }
                         } else {
                             Toast.makeText(getContext(), "got an error", Toast.LENGTH_SHORT).show();
-
                         }
                     }
                 });
 
+
+        // set radioButtons for book filter
+        radioGroup = root.findViewById(R.id.selectState);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton radioButton = group.findViewById(checkedId);
+                if(radioButton.getText().toString().equals("Own")){
+                    adapter = new BookListAdapter(datalist, getActivity());
+                    bookListView.setAdapter(adapter);
+                }
+                else{
+                    // TODO: deal with other three filters
+                    // empty now for other three
+                    adapter = new BookListAdapter(new ArrayList<Book>(), getActivity());
+                    bookListView.setAdapter(adapter);
+                }
+            }
+        });
 
         // view book on the list
         bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -168,8 +188,8 @@ public class BookListFragment extends Fragment {
             }
             */
 
-
-            Toast.makeText(getContext(), "updated", Toast.LENGTH_SHORT).show();
+            // update the change
+            // Toast.makeText(getContext(), "updated", Toast.LENGTH_SHORT).show();
             DocumentReference docRef = db.collection("users").document(userID);
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override

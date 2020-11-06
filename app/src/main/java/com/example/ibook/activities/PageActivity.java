@@ -52,7 +52,6 @@ public class PageActivity extends AppCompatActivity {
         // Build the navigation bar
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_home,
-                R.id.navigation_topic,
                 R.id.navigation_notifications,
                 R.id.navigation_booklist,
                 R.id.navigation_user
@@ -71,5 +70,6 @@ public class PageActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
+        // TODO: double click back button to exit the program
     } //onBackPressed
 }

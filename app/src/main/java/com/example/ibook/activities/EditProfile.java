@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -22,17 +23,25 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Activity for letting users update their profile information
+ * such as username, email-id, phone number
+ * updates the database with the edited information and stores it
+ */
 public class EditProfile extends AppCompatActivity {
 
-    FirebaseAuth uAuth;
-    FirebaseFirestore db;
-    Button saveButton;
+
+    Button saveButton,backButton;
     EditText usernameEditText, phoneEditText, emailEditText;
-    FirebaseUser user;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Hide the top bar and make it full screen
+        requestWindowFeature(Window.FEATURE_NO_TITLE); //will hide the title
+        getSupportActionBar().hide(); // hide the title bar
+
         setContentView(R.layout.activity_edit_profile);
 
         Intent intent = getIntent();
@@ -44,15 +53,21 @@ public class EditProfile extends AppCompatActivity {
         emailEditText = findViewById(R.id.emailEditText);
         phoneEditText = findViewById(R.id.phoneEditText);
         saveButton = findViewById(R.id.saveButton);
+        backButton=findViewById(R.id.backButton);
+
 
         usernameEditText.setText(username);
         emailEditText.setText(email);
         phoneEditText.setText(phone);
 
-        uAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
-        user = uAuth.getCurrentUser();
-        final String userID = user.getUid();
+        final String userID = MainActivity.database.getCurrentUserUID();
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,7 +82,7 @@ public class EditProfile extends AppCompatActivity {
 
                 String email = emailEditText.getText().toString();
 
-                user.updateEmail(email)
+                MainActivity.database.getuAuth().getCurrentUser().updateEmail(email)
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
@@ -75,33 +90,32 @@ public class EditProfile extends AppCompatActivity {
                             }
                         })
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        DocumentReference documentReference = db.collection("users").document(userID);
-
-                        Map<String, Object> editedInfo = new HashMap();
-                        editedInfo.put("userName", usernameEditText.getText().toString());
-                        editedInfo.put("email", emailEditText.getText().toString());
-                        editedInfo.put("phoneNumber", phoneEditText.getText().toString());
-
-                        documentReference.update(editedInfo).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                Toast.makeText(EditProfile.this, "Database successfully updated", Toast.LENGTH_SHORT).show();
-                                finish();
-                            }// onSuccess
-                        }); //update the database
+                                // DocumentReference documentReference = db.collection("users").document(userID);
+                                MainActivity.user.setEmail(emailEditText.getText().toString());
+                                MainActivity.user.setUserName(usernameEditText.getText().toString());
+                                MainActivity.user.setPhoneNumber(phoneEditText.getText().toString());
 
-                        Toast.makeText(EditProfile.this, "Updated", Toast.LENGTH_SHORT).show();
-                    }//onSuccess
+//                        Map<String, Object> editedInfo = new HashMap();
+//                        editedInfo.put("userName", );
+//                        editedInfo.put("email", emailEditText.getText().toString());
+//                        editedInfo.put("phoneNumber", phoneEditText.getText().toString());
 
-                });
+                                MainActivity.database.getUserDocumentReference().set(MainActivity.user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(EditProfile.this, "Database successfully updated", Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    }
+                                }); //update the database
+
+                            }// onClick
+                        });
 
 
             }
         });
 
-
     }
 }
-

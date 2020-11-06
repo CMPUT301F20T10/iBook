@@ -3,16 +3,22 @@ package com.example.ibook.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ibook.R;
+import com.example.ibook.entities.Database;
+import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,18 +31,29 @@ public class MainActivity extends AppCompatActivity {
     EditText passwordEditText;
     private FirebaseAuth uAuth;
     private ProgressBar signInProgressBar;
+    public static Database database;
+    public static User user;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
+        //Hide the top bar and make it full screen
+        requestWindowFeature(Window.FEATURE_NO_TITLE); //will hide the title
+        getSupportActionBar().hide(); // hide the title bar
+
         setContentView(R.layout.activity_login);
-        uAuth = FirebaseAuth.getInstance();
+
         signInProgressBar = findViewById(R.id.progressBar);
         usernameEditText = findViewById(R.id.usernameEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
         setupSignInListener();
         setupSignUpListener();
+
+        //set up database object for the entire run
+
 
     }// onCreate
 
@@ -48,8 +65,10 @@ public class MainActivity extends AppCompatActivity {
     }// onResume
 
 
+
+
     public void setupSignInListener() {
-        final Button signInButton = findViewById(R.id.signIn);
+        final Button signInButton = findViewById(R.id.loginIn);
         signInButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
@@ -57,7 +76,11 @@ public class MainActivity extends AppCompatActivity {
                 String password = passwordEditText.getText().toString();
                 signInProgressBar.setVisibility(View.VISIBLE);
 
+                database = new Database();
+                uAuth = database.getuAuth();
+
                 if (valid(username, password)) {
+
 
                     // TODO: Go to Home Page
                     uAuth.signInWithEmailAndPassword(username, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -65,6 +88,12 @@ public class MainActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 Toast.makeText(MainActivity.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
+
+                                //TODO: when user sign in should I make a user object? Any Benefits?
+
+                                //create a user object of existing user by loading info from database
+                                createUserObject();
+
                                 Intent intent = new Intent(getApplicationContext(), PageActivity.class);
                                 intent.putExtra("curr_username", username);
                                 startActivity(intent);
@@ -128,8 +157,8 @@ public class MainActivity extends AppCompatActivity {
     }// valid
 
     public void setupSignUpListener() {
-        Button signInButton = findViewById(R.id.signUp);
-        signInButton.setOnClickListener(new View.OnClickListener() {
+        TextView signUpButton = findViewById(R.id.signUp);
+        signUpButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 System.out.println("Clicked on Sign Up!");
                 Intent intent = new Intent(MainActivity.this, SignUpActivity.class);
@@ -139,6 +168,21 @@ public class MainActivity extends AppCompatActivity {
             }// onClick
         }); // onClickListener
     }
+    public void createUserObject(){
+
+        //load data from database for existing user
+        database.getUserDocumentReference().get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if(documentSnapshot.exists()){
+                    //user object intialized
+                    user = documentSnapshot.toObject(User.class);
+
+                }// if
+
+            }
+        });
+    }//createUserObject
     //public void us
 
 }

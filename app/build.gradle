@@ -48,7 +48,12 @@ dependencies {
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
     androidTestImplementation 'com.jayway.android.robotium:robotium-solo:5.6.3'
+
+    androidTestImplementation 'androidx.test:runner:1.1.0'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+
 
     androidTestImplementation 'com.android.support.test:rules:1.02'
     implementation 'me.dm7.barcodescanner:zxing:1.9.13'
@@ -61,6 +66,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth' // for authenticating users
 
     implementation 'com.google.android.gms:play-services-maps:17.0.0' //For google maps services
+
+    androidTestImplementation 'com.jayway.android.robotium:robotium-solo:5.3.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.0.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.0.1'
 
 
 }

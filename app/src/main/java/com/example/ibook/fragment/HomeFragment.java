@@ -42,7 +42,7 @@ public class HomeFragment extends Fragment {
     private ArrayList<Book> bookList;
     private FirebaseFirestore db;
     private ProgressBar searchProgressBar;
-
+    boolean searchBarClosed = true;
 
     @Nullable
     @Override
@@ -56,6 +56,27 @@ public class HomeFragment extends Fragment {
         searchProgressBar = root.findViewById(R.id.progressBar);
 
         datalist = new ArrayList<>();
+        searchBarClosed = true;
+
+        //Makes fully clickable
+        searchBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //If its not been fully closed then we don't do anything
+                if(searchBarClosed) {
+                    searchBar.setIconified(false);
+                }
+            }
+        });
+
+        searchBar.setOnCloseListener(new SearchView.OnCloseListener() {
+             @Override
+             public boolean onClose() {
+                 //Let it be fully clickable so we can display it properly
+                 searchBarClosed= true;
+                 return false;
+             }
+        });
 
         searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -64,6 +85,7 @@ public class HomeFragment extends Fragment {
                 bookList = new ArrayList<>();
                 searchProgressBar.setVisibility(View.VISIBLE);
                 searchData(query);
+                searchBar.clearFocus(); //Fixes enter key pressed down and up on keyboard
                 return false;
             }
 
@@ -127,12 +149,13 @@ public class HomeFragment extends Fragment {
                 Intent intent = new Intent(getContext(), ViewBookActivity.class);
                 User user = new User();
                 intent.putExtra("BOOK_NUMBER", position);
-                intent.putExtra("USER_ID", user.getUserID());
+                intent.putExtra("USER_ID", user.getUserName());
                 intent.putExtra("IS_OWNER", -1);
                 intent.putExtra("BOOK_ISBN", datalist.get(position).getIsbn());
                 startActivityForResult(intent, 0);
             }
         });
+
 
         return root;
     }

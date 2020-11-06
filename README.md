@@ -19,6 +19,14 @@ The UML is devided into 3 parts, since it's too complicated that having them in 
 
 The **[Product Backlog](https://github.com/CMPUT301F20T10/iBook/wiki)** is on the wiki page of this repo.
 
+## Mockup
+
+The ***[Mockup](./doc/Mockups.png)*** is in the doc folder 📂 
+
+## Contributors
+
+[![Contributors](https://contributors-img.web.app/image?repo=CMPUT301F20T10/iBook)](https://github.com/CMPUT301F20T10/iBook/graphs/contributors)
+
 ## License
 
 [MIT](https://opensource.org/licenses/MIT)
