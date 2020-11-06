@@ -94,31 +94,38 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                                 DocumentSnapshot document = task.getResult();
 
                                 if (document.exists()) {
-                                    Map<String, Object> data = new HashMap();
+                                    Map<String, Object> data;
                                     data = document.getData();
 
                                     //make a new book object
-                                    Book book = new Book(bookName,authorName,date,isbn);
+//                                    Book book = new Book(bookName,authorName,date,isbn);
+//
+//                                    // add book to current users booklist
+//                                    SignUpActivity.user.addBook(book);
+//
+//                                    //Add to "book" collections in database
+//                                    SignUpActivity.database.getBookDocumentReference().set(book);
+//                                    //Add the book to  "user" Collections in database
+//                                    SignUpActivity.database.getUserDocumentReference().set(SignUpActivity.user);
 
-                                    // add book to current users booklist
-                                    SignUpActivity.user.addBook(book);
+                                    books = (ArrayList<Book>) document.getData().get("BookList");
+                                    books.add(new Book(bookName, authorName, date, isbn));
 
-                                    //Add to "book" collections in database
-                                    SignUpActivity.database.getBookDocumentReference().set(book);
-                                    //Add the book to  "user" Collections in database
-                                    SignUpActivity.database.getUserDocumentReference().set(SignUpActivity.user);
-
-//                                    books = (ArrayList<Book>) document.getData().get("BookList");
-//                                    books.add(new Book(bookName, authorName, date, isbn));
-
-
-
-
-
-//                                    data.put("BookList", books);
-//                                    db.collection("users")
-//                                            .document(userID).update(data);
+                                    data.put("BookList", books);
+                                    db.collection("users")
+                                            .document(userID).update(data);
                                     Toast.makeText(getBaseContext(), "Add book successfully!", Toast.LENGTH_LONG).show();
+
+                                    data = new HashMap();
+                                    data.put("authors", authorName);
+                                    data.put("date", date);
+                                    data.put("description", "nothing");
+                                    data.put("isbn", isbn);
+                                    data.put("owner", "personA");
+                                    data.put("status", "Available");
+                                    data.put("title", bookName);
+                                    db.collection("books").document().set(data);
+
                                     Intent intent = new Intent();
                                     setResult(1, intent);
                                     finish();
@@ -130,6 +137,34 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                             }
                         }
                     });
+
+                    /*
+
+                    docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+                                if (document.exists()) {
+                                    Map<String, Object> data = new HashMap();
+                                    data = document.getData();
+                                    books = (ArrayList<Book>) document.getData().get("BookList");
+                                    books.add(new Book(bookName, authorName, date, isbn));
+                                    data.put("BookList", books);
+                                    db.collection("users")
+                                            .document(userID).set(data);
+                                    Toast.makeText(getBaseContext(), "Add book successfully!", Toast.LENGTH_LONG).show();
+                                    Intent intent = new Intent();
+                                    setResult(1, intent);
+                                    finish();
+                                } else {
+                                    Toast.makeText(getBaseContext(), "No such document", Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                Toast.makeText(getBaseContext(), "got an error", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });*/
 
                 } else {
                     Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();

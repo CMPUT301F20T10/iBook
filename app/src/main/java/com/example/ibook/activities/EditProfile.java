@@ -53,7 +53,7 @@ public class EditProfile extends AppCompatActivity {
         emailEditText.setText(email);
         phoneEditText.setText(phone);
 
-        final String userID = SignUpActivity.database.getCurrentUserUID();
+        final String userID = MainActivity.database.getCurrentUserUID();
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +68,7 @@ public class EditProfile extends AppCompatActivity {
 
                 String email = emailEditText.getText().toString();
 
-                SignUpActivity.database.getcurrentUser().updateEmail(email)
+                MainActivity.database.getuAuth().getCurrentUser().updateEmail(email)
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
@@ -79,16 +79,16 @@ public class EditProfile extends AppCompatActivity {
                             @Override
                             public void onSuccess(Void aVoid) {
                                 // DocumentReference documentReference = db.collection("users").document(userID);
-                                SignUpActivity.user.setEmail(emailEditText.getText().toString());
-                                SignUpActivity.user.setUserName(usernameEditText.getText().toString());
-                                SignUpActivity.user.setPhoneNumber(phoneEditText.getText().toString());
+                                MainActivity.user.setEmail(emailEditText.getText().toString());
+                                MainActivity.user.setUserName(usernameEditText.getText().toString());
+                                MainActivity.user.setPhoneNumber(phoneEditText.getText().toString());
 
 //                        Map<String, Object> editedInfo = new HashMap();
 //                        editedInfo.put("userName", );
 //                        editedInfo.put("email", emailEditText.getText().toString());
 //                        editedInfo.put("phoneNumber", phoneEditText.getText().toString());
 
-                                SignUpActivity.database.getUserDocumentReference().set(SignUpActivity.user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                MainActivity.database.getUserDocumentReference().set(MainActivity.user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Toast.makeText(EditProfile.this, "Database successfully updated", Toast.LENGTH_SHORT).show();

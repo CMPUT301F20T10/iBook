@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -28,7 +29,6 @@ import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 
 
 public class HomeFragment extends Fragment {
@@ -73,7 +73,7 @@ public class HomeFragment extends Fragment {
                 return false;
             }
         });
-        // TODO: transfer into the database
+        /*
         Book newBook = new Book("Watchmen", "Alan Moore, Dave Gibbons", "2014", "Psychologically moving comic book...", Book.Status.Available, "temp isbn 1");
 
         Book newBook2 = new Book("The Millionaire Maker", "Loral Langemeier", "2006", "You - A Millionaire? (It's true, and you might be closer than you think.)\n " +
@@ -86,21 +86,54 @@ public class HomeFragment extends Fragment {
         datalist.add(newBook);
         datalist.add(newBook2);
         datalist.add(newBook);
+
+        */
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
 
+        db.collection("books")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                // todo: change email key word to username
+                                datalist.add(new Book(
+                                        String.valueOf(document.get("title")),
+                                        String.valueOf(document.get("authors")),
+                                        String.valueOf(document.get("date")),
+                                        (String.valueOf(document.get("description"))),
+                                        from_string_to_enum(String.valueOf(document.get("status"))),
+                                        String.valueOf(document.get("isbn"))
+                                ));
+                                //Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
+                            }
+                            adapter.notifyDataSetChanged();
+                        } else {
+                            Toast.makeText(getContext(), "got an error", Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+                });
+
+
+
 
         // view book on the list
-//        bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Intent intent = new Intent(getContext(), ViewBookActivity.class);
-//                User user = new User();
-//                intent.putExtra("BOOK_NUMBER", position);
-//                intent.putExtra("USER_ID", user.getUserID());
-//                startActivityForResult(intent, 0);
-//            }
-//        });
+        bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getContext(), ViewBookActivity.class);
+                User user = new User();
+                intent.putExtra("BOOK_NUMBER", position);
+                intent.putExtra("USER_ID", user.getUserName());
+                intent.putExtra("IS_OWNER", -1);
+                intent.putExtra("BOOK_ISBN", datalist.get(position).getIsbn());
+                startActivityForResult(intent, 0);
+            }
+        });
+
 
         return root;
     }
@@ -153,8 +186,8 @@ public class HomeFragment extends Fragment {
 
                     }
                 }
-                if (resultList.isEmpty()){
-                    Toast.makeText(getContext(),"No results found", Toast.LENGTH_SHORT).show();
+                if (resultList.isEmpty()) {
+                    Toast.makeText(getContext(), "No results found", Toast.LENGTH_SHORT).show();
                 } else {
                     Intent intent = new Intent(getContext(), SearchedBooksActivity.class);
                     intent.putExtra("books", resultList);
@@ -164,6 +197,22 @@ public class HomeFragment extends Fragment {
 
             }
         });
+    }
+
+    public Book.Status from_string_to_enum(String input) {
+        if (input.equals("Available"))
+            return Book.Status.Available;
+
+        if (input.equals("Available"))
+            return Book.Status.Available;
+
+        if (input.equals("Available"))
+            return Book.Status.Available;
+
+        if (input.equals("Available"))
+            return Book.Status.Available;
+        // todo: change later
+        return Book.Status.Available;
     }
 }
 

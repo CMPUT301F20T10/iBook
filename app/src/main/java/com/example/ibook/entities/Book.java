@@ -20,6 +20,9 @@ public class Book implements Serializable {
     private String holder;
 
 //Need to add picture data somehow
+    public Book(){
+
+    }
 
     //Constructor
     public Book(String title, String authors, String date, String isbn) {

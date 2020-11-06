@@ -20,7 +20,7 @@ public class User {
     private String password;
     private String email;
     private String phoneNumber;
-    private ArrayList<Book> booklist; //made it capitalized B because someone named key in database colloction to be capital, have to see later
+    private ArrayList<Book> BookList; //made it capitalized B because someone named key in database colloction to be capital, have to see later
 
     public User() {
 
@@ -31,12 +31,12 @@ public class User {
         this.password = password;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.booklist = new ArrayList<Book>();
+        this.BookList = new ArrayList<Book>();
     }
 
 
     public void setBooklist(ArrayList<Book> booklist) {
-        this.booklist = booklist;
+        this.BookList = booklist;
     }
 
     public String getUserName() {
@@ -68,7 +68,7 @@ public class User {
     }
 
     public ArrayList<Book> getBooklist() {
-        return booklist;
+        return BookList;
     }
 
     public void setPhoneNumber(String phoneNumber) {
@@ -76,6 +76,6 @@ public class User {
     }
 
     public void addBook(Book book){
-        booklist.add(book);
+        BookList.add(book);
     }// addBook
 }

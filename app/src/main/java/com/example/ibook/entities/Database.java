@@ -7,52 +7,40 @@ import com.example.ibook.activities.EditProfile;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Database {
     private FirebaseAuth uAuth;
-    private FirebaseFirestore bb;
-    private FirebaseUser currentUser;
-    private DocumentReference userDocumentReference;
-    private DocumentReference bookDocumentReference;
-    private String currentUserUID;
+    private FirebaseFirestore db;
+
 
     public Database(){
         this.uAuth = FirebaseAuth.getInstance();
-        this.bb = FirebaseFirestore.getInstance();
-        this.currentUser = uAuth.getCurrentUser();
-        this.userDocumentReference = this.bb.collection("users").document(this.currentUser.getUid());
-        this.bookDocumentReference = this.bb.collection("books").document();
-        this.currentUserUID = this.currentUser.getUid();
-    }
+        this.db = FirebaseFirestore.getInstance();
 
-    public FirebaseUser getcurrentUser(){
-        return currentUser;
     }
-
+    
     public DocumentReference getUserDocumentReference() {
-        return userDocumentReference;
+        return this.db.collection("users").document(getCurrentUserUID());
     }
 
-    public DocumentReference getBookDocumentReference() {
-        return bookDocumentReference;
-    }
 
     public FirebaseAuth getuAuth() {
         return uAuth;
     }
 
     public FirebaseFirestore getDb() {
-        return bb;
+        return db;
     }
 
     public void addUser(User user){
-        userDocumentReference.set(user);
+        this.db.collection("users").document(getCurrentUserUID()).set(user);
     }
 
     public String getCurrentUserUID() {
-        return currentUserUID;
+        return this.uAuth.getCurrentUser().getUid();
     }
 
 

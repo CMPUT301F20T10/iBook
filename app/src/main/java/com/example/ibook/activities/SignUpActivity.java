@@ -41,8 +41,8 @@ public class SignUpActivity extends AppCompatActivity {
   private EditText ed_confirmPassword;
   private ProgressBar ed_progressBar;
   private FirebaseAuth uAuth;
-  public static User user; // user authentication
-  public static Database database;
+   // user authentication
+
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -108,10 +108,9 @@ public class SignUpActivity extends AppCompatActivity {
       @Override
       public void onComplete(@NonNull Task<AuthResult> task) {
         if(task.isSuccessful()){
-
-          user = new User(username, password, email, phoneNumber);
-          database = new Database();
-          database.addUser(user);
+          MainActivity.database = new Database();
+          MainActivity.user = new User(username, password, email, phoneNumber);
+          MainActivity.database.addUser(MainActivity.user);
 
           //We don't put in the password do we?
           Toast.makeText(SignUpActivity.this, "Created user successfully", Toast.LENGTH_SHORT).show();

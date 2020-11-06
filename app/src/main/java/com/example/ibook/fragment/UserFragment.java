@@ -64,6 +64,7 @@ public class UserFragment extends Fragment {
         logOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 logout(root);
             }
         });
