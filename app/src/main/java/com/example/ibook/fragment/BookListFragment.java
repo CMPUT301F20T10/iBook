@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.example.ibook.BookListAdapter;
@@ -44,7 +46,7 @@ public class BookListFragment extends Fragment {
     private String userID;
     private String userName;
     private FirebaseAuth uAuth;
-
+    private RadioGroup radioGroup;
 
     @Nullable
     @Override
@@ -59,7 +61,6 @@ public class BookListFragment extends Fragment {
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-
 
 
         //default username = "yzhang24@gmail.com";
@@ -129,6 +130,25 @@ public class BookListFragment extends Fragment {
                     }
                 });
 
+
+        // set radioButtons for book filter
+        radioGroup = root.findViewById(R.id.selectState);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton radioButton = group.findViewById(checkedId);
+                if(radioButton.getText().toString().equals("Own")){
+                    adapter = new BookListAdapter(datalist, getActivity());
+                    bookListView.setAdapter(adapter);
+                }
+                else{
+                    // TODO: deal with other three filters
+                    // empty now for other three
+                    adapter = new BookListAdapter(new ArrayList<Book>(), getActivity());
+                    bookListView.setAdapter(adapter);
+                }
+            }
+        });
 
         // view book on the list
         bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
