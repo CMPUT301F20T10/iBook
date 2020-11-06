@@ -70,6 +70,6 @@ public class PageActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
+        // TODO: double click back button to exit the program
     } //onBackPressed
 }
-

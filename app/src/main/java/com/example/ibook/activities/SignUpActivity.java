@@ -2,31 +2,28 @@ package com.example.ibook.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.ibook.entities.Book;
 import com.example.ibook.R;
+import com.example.ibook.entities.Database;
 import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * Activity for signing users up for the app
+ * registers the users in database firebase authentication
+ * creates a collection called "users" in cloud firestore
+ */
 public class SignUpActivity extends AppCompatActivity {
 
   private EditText ed_username;
@@ -35,7 +32,9 @@ public class SignUpActivity extends AppCompatActivity {
   private EditText ed_phoneNumber;
   private EditText ed_confirmPassword;
   private ProgressBar ed_progressBar;
-  private FirebaseAuth uAuth; // user authentication
+  private FirebaseAuth uAuth;
+   // user authentication
+
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -53,18 +52,16 @@ public class SignUpActivity extends AppCompatActivity {
     ed_confirmPassword = findViewById(R.id.ed_confirmPassword_signup);
     ed_progressBar = findViewById(R.id.signUpProgressBar);
     uAuth = FirebaseAuth.getInstance();
-    // Toast.makeText(getBaseContext(), "SignUp to be done", Toast.LENGTH_SHORT).show();
-
-    // if current user already is logged in
-   // if(uAuth.getCurrentUser() != null){
-     // System.out.println(uAuth.getCurrentUser());
-      //startActivity(new Intent(getApplicationContext(),PageActivity.class));
-      //finish();
-    //}// if
 
   }// onCreate
 
   //method gets called when confirm button is clicked in sign-up activity
+
+  /**
+   * This method is called when the sign up button is clicked on
+   * This method creates a user object and adds the user to the database(both cloud and authentication)
+   * @param view
+   */
   public void confirm_signup(View view) {
     final String username = ed_username.getText().toString();
     final String phoneNumber = ed_phoneNumber.getText().toString();
@@ -108,29 +105,38 @@ public class SignUpActivity extends AppCompatActivity {
       @Override
       public void onComplete(@NonNull Task<AuthResult> task) {
         if(task.isSuccessful()){
-          User user = new User(username, password, email, phoneNumber);
-          user.commit();
+          MainActivity.database = new Database();
+          MainActivity.user = new User(username, password, email, phoneNumber);
+          MainActivity.database.addUser(MainActivity.user);
 
-          //We don't put in the password do we?
+
+          // store user info to database
+
           Toast.makeText(SignUpActivity.this, "Created user successfully", Toast.LENGTH_SHORT).show();
+
+          // go to iBook homepage
           Intent intent = new Intent(getApplicationContext(),PageActivity.class);
-          intent.putExtra("curr_username", username);
           startActivity(intent);
         }
         else{
+          // when it goes unsuccessful,
+          // We show the reason, and restart the sign up activity to let user sign up again.
           Toast.makeText(SignUpActivity.this, "Unsuccessful" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
           Intent intent = getIntent();
           finish();
-          startActivity(intent); // when we get unsuccessful message here,
-                  // Idk why it continues waiting, so I restart the sign up activity.
-        }// else
+          startActivity(intent);
+        }
       }
     });
 
 
   }
 
-
+  /**
+   * Method called when user clicks cancel button on sign up screen
+   * Makes the user return to the log in activity
+   * @param view
+   */
   public void cancel_signup(View view) {
     //Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
     finish();

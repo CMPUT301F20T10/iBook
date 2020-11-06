@@ -195,16 +195,33 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/photoView"
-                app:srcCompat="@android:drawable/ic_input_add" />
+                app:srcCompat="@android:drawable/ic_menu_gallery"
+                android:onClick="changeBookPhoto" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Button
-            android:id="@+id/completeButton"
-            android:layout_width="match_parent"
+            android:id="@+id/btn_request_book"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginLeft="32dp"
             android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginRight="32dp"
+            android:text="Request"
+            android:background="@color/blue"
+            android:textColor="#FFF"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
+        <Button
+            android:id="@+id/btn_delete_book"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="32dp"
             android:layout_marginRight="32dp"
             android:layout_marginBottom="32dp"
@@ -214,10 +231,13 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
+            app:layout_constraintTop_toBottomOf="@+id/btn_request_book"
             tools:text="Delete" />
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </ScrollView>
+
