@@ -22,11 +22,15 @@ public class Database {
     private FirebaseAuth uAuth;
     private FirebaseFirestore db;
 
+    public Database(FirebaseAuth uAuth, FirebaseFirestore db) {
+        this.uAuth = uAuth;
+        this.db = db;
+    }
 
     public Database(){
         this.uAuth = FirebaseAuth.getInstance();
         this.db = FirebaseFirestore.getInstance();
-    }// constructor
+    }
 
     /**
      *
