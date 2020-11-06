@@ -104,6 +104,7 @@ public class ViewBookActivity extends AppCompatActivity {
 //            db = FirebaseFirestore.getInstance();
         }
         else {
+            // hide request button if the current user is the owner.
             request_button.setVisibility(View.GONE);
         }
 
