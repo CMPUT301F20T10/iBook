@@ -137,6 +137,7 @@
             android:layout_height="match_parent"
             android:orientation="horizontal"
             android:layout_marginTop="20dp">
+
             <TextView
                 android:id="@+id/textView5"
                 android:layout_width="100dp"
@@ -185,6 +186,27 @@
                 android:background="@drawable/selector_orange"
                 android:clickable="true"
                 android:text="edit"
+                android:textColor="#FFF"
+                android:visibility="visible" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+
+            <Button
+                android:id="@+id/btn_request_book"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginLeft="0dp"
+                android:background="@drawable/selector_orange"
+                android:clickable="true"
+                android:text="request"
                 android:textColor="#FFF"
                 android:visibility="visible" />
         </LinearLayout>

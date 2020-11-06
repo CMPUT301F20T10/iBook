@@ -50,6 +50,7 @@ public class ViewBookActivity extends AppCompatActivity {
     private ImageView imageView;
     private Button edit_button;
     private Button delete_button;
+    private Button request_button;
     private FirebaseFirestore db;
     private User user;
     private DocumentReference docRef;
@@ -68,6 +69,7 @@ public class ViewBookActivity extends AppCompatActivity {
         isbnTextView = findViewById(R.id.ViewISBN);
         edit_button = findViewById(R.id.btn_edit_book);
         delete_button = findViewById(R.id.btn_delete_book);
+        request_button = findViewById(R.id.btn_request_book);
         imageView = findViewById(R.id.imageView);
 
        user = new User();
@@ -94,19 +96,19 @@ public class ViewBookActivity extends AppCompatActivity {
             // we hide edit/delete button if it's not the owner
             edit_button.setVisibility(View.GONE);
             delete_button.setVisibility(View.GONE);
-            bookISBN = intent.getStringExtra("BOOK_ISBN");
-
             // Toast.makeText(getBaseContext(), String.valueOf(bookNumber), Toast.LENGTH_SHORT).show();
             // Toast.makeText(getBaseContext(), userID, Toast.LENGTH_SHORT).show();
 
 //            user = new User();
 //            docRef = user.getDocumentReference();
 //            db = FirebaseFirestore.getInstance();
-            getBookData();
-
-
+        }
+        else {
+            request_button.setVisibility(View.GONE);
         }
 
+        bookISBN = intent.getStringExtra("BOOK_ISBN");
+        getBookData();
 
         edit_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,6 +117,13 @@ public class ViewBookActivity extends AppCompatActivity {
                 intent.putExtra("ID", userID);
                 intent.putExtra("bookNumber", bookNumber);
                 startActivity(intent);
+            }
+        });
+
+        request_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getBaseContext(), "This function is coming soon!", Toast.LENGTH_SHORT).show();
             }
         });
     }
