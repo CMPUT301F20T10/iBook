@@ -37,7 +37,7 @@ public class MainActivityTest {
         solo.enterText((EditText) solo.getView(R.id.usernameEditText),"sim@gmail.com");
         solo.enterText((EditText) solo.getView(R.id.passwordEditText),"password");
 
-        solo.clickOnButton("Sign in");
+        solo.clickOnButton("Login In");
         solo.waitForActivity("Page Activity");
         //after successful sign up user should be in home screen
         solo.assertCurrentActivity("Should be page activity",PageActivity.class);
@@ -47,13 +47,13 @@ public class MainActivityTest {
     public void testWrongPassword() {
         solo.enterText((EditText) solo.getView(R.id.usernameEditText), "sim@gmail.com");
         solo.enterText((EditText) solo.getView(R.id.passwordEditText), "1");
-        solo.clickOnButton("Sign in");
+        solo.clickOnButton("Login In");
         //should not continue to home page
         solo.assertCurrentActivity("Stays in main activity",MainActivity.class);
     }
     @Test
     public void testEmptyFields(){
-        solo.clickOnButton("Sign in");
+        solo.clickOnButton("Login In");
         //should not continue to home page
         solo.assertCurrentActivity("Stays in main activity",MainActivity.class);
     }
@@ -62,7 +62,7 @@ public class MainActivityTest {
         //input wrong email format
         solo.enterText((EditText) solo.getView(R.id.usernameEditText),"sim");
         solo.enterText((EditText) solo.getView(R.id.passwordEditText),"password");
-        solo.clickOnButton("Sign in");
+        solo.clickOnButton("Login In");
         //should not continue to home page
         solo.assertCurrentActivity("Stays in main activity",MainActivity.class);
 
@@ -72,7 +72,7 @@ public class MainActivityTest {
         //input user that does ot exist
         solo.enterText((EditText) solo.getView(R.id.usernameEditText),"red@gmail.com");
         solo.enterText((EditText) solo.getView(R.id.passwordEditText),"123456");
-        solo.clickOnButton("Sign in");
+        solo.clickOnButton("Login In");
         //should not continue to home page
         solo.assertCurrentActivity("Stays in main activity",MainActivity.class);
 
@@ -80,8 +80,8 @@ public class MainActivityTest {
     @Test
     public void testSignUpButton(){
         //test sign up button goes to sign up screen
-        solo.clickOnButton("Sign up");
-        solo.waitForActivity("Sign up page");
+        solo.clickOnView(solo.getView(R.id.signUp));
+        solo.waitForActivity("Sign up page",2000);
         solo.assertCurrentActivity("Should be sign up page",SignUpActivity.class);
 
     }

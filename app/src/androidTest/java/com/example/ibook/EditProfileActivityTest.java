@@ -35,7 +35,7 @@ public class EditProfileActivityTest {
         solo = new Solo(InstrumentationRegistry.getInstrumentation(),rule.getActivity());
         solo.enterText((EditText) solo.getView(R.id.usernameEditText), "sim@gmail.com");
         solo.enterText((EditText) solo.getView(R.id.passwordEditText), "password");
-        solo.clickOnButton("Sign in");
+        solo.clickOnButton("Login In");
 
 
     }
@@ -49,13 +49,13 @@ public class EditProfileActivityTest {
         solo.clearEditText((EditText) solo.getView(R.id.emailEditText));
         solo.clearEditText((EditText) solo.getView(R.id.phoneEditText));
         //fill out new info
-        solo.enterText((EditText) solo.getView(R.id.usernameEditText),"sdhiman00");
+        solo.enterText((EditText) solo.getView(R.id.usernameEditText),"smriti");
         solo.enterText((EditText) solo.getView(R.id.emailEditText),"sim@gmail.com");
         solo.enterText((EditText) solo.getView(R.id.phoneEditText),"7801113333");
 
-        solo.clickOnButton("SAVE CHANGES");
+        solo.clickOnButton("SAve");
         //user fragment should be updated with new username and new phone number
-        assertTrue(solo.searchText("sdhiman00"));
+        assertTrue(solo.searchText("smriti"));
 
         TextView phoneTextView = (TextView) solo.getView(R.id.phoneNumber);
         assertEquals("7801113333", phoneTextView.getText().toString());
@@ -76,7 +76,7 @@ public class EditProfileActivityTest {
         //leave some fields blank
         solo.enterText((EditText) solo.getView(R.id.usernameEditText),"sdhiman");
 
-        solo.clickOnButton("SAVE CHANGES");
+        solo.clickOnButton("SAve");
         //activity should not change because all fields were'nt filled out
         solo.assertCurrentActivity("Should stay in edit profile activity",EditProfile.class);
 
@@ -86,7 +86,7 @@ public class EditProfileActivityTest {
     public void finish() {
         solo.goBack();
         solo.clickOnView(solo.getView(R.id.navigation_user));
-        solo.clickOnButton("Log out");
+        solo.clickOnButton("Sign out");
     }
 
 }
