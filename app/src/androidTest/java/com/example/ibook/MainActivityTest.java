@@ -32,53 +32,60 @@ public class MainActivityTest {
     }
     @Test
     //after a successful login the user clicks on sign in and goes to homepage
-    public void checkSuccessfulLogin(){
+    public void testSuccessfulLogin(){
         solo.assertCurrentActivity("Wrong activity",MainActivity.class);
-        solo.enterText((EditText) solo.getView(R.id.usernameEditText),"yzhang24@gmail.com");
-        solo.enterText((EditText) solo.getView(R.id.passwordEditText),"123456");
+        solo.enterText((EditText) solo.getView(R.id.usernameEditText),"sim@gmail.com");
+        solo.enterText((EditText) solo.getView(R.id.passwordEditText),"password");
 
         solo.clickOnButton("Sign in");
         solo.waitForActivity("Page Activity");
+        //after successful sign up user should be in home screen
         solo.assertCurrentActivity("Should be page activity",PageActivity.class);
 
     }
     @Test
-    public void checkUnsuccessfulLogin() {
-        solo.enterText((EditText) solo.getView(R.id.usernameEditText), "yzhang24@gmail.com");
+    public void testWrongPassword() {
+        solo.enterText((EditText) solo.getView(R.id.usernameEditText), "sim@gmail.com");
         solo.enterText((EditText) solo.getView(R.id.passwordEditText), "1");
         solo.clickOnButton("Sign in");
+        //should not continue to home page
         solo.assertCurrentActivity("Stays in main activity",MainActivity.class);
     }
     @Test
-    public void checkEmptyFields(){
+    public void testEmptyFields(){
         solo.clickOnButton("Sign in");
+        //should not continue to home page
         solo.assertCurrentActivity("Stays in main activity",MainActivity.class);
     }
     @Test
-    public void emailFormat() {
-        solo.enterText((EditText) solo.getView(R.id.usernameEditText),"yzhang24");
-        solo.enterText((EditText) solo.getView(R.id.passwordEditText),"123456");
+    public void testEmailFormat() {
+        //input wrong email format
+        solo.enterText((EditText) solo.getView(R.id.usernameEditText),"sim");
+        solo.enterText((EditText) solo.getView(R.id.passwordEditText),"password");
         solo.clickOnButton("Sign in");
+        //should not continue to home page
         solo.assertCurrentActivity("Stays in main activity",MainActivity.class);
 
     }
     @Test
-    public void checkInvalidUser(){
-        solo.enterText((EditText) solo.getView(R.id.usernameEditText),"smriti@gmail.com");
+    public void testInvalidUser(){
+        //input user that does ot exist
+        solo.enterText((EditText) solo.getView(R.id.usernameEditText),"red@gmail.com");
         solo.enterText((EditText) solo.getView(R.id.passwordEditText),"123456");
         solo.clickOnButton("Sign in");
+        //should not continue to home page
         solo.assertCurrentActivity("Stays in main activity",MainActivity.class);
 
     }
     @Test
-    //check if cancel button in sign up activity returns back to main activity
-    public void checkCancelButton(){
+    public void testSignUpButton(){
+        //test sign up button goes to sign up screen
         solo.clickOnButton("Sign up");
-        solo.assertCurrentActivity("Should be sign up activity",SignUpActivity.class);
-        solo.clickOnButton("Cancel");
-        solo.waitForActivity("Main Activity");
-        solo.assertCurrentActivity("Main activity",MainActivity.class);
+        solo.waitForActivity("Sign up page");
+        solo.assertCurrentActivity("Should be sign up page",SignUpActivity.class);
+
     }
+
     @After
     public void tearDown(){
         solo.finishOpenedActivities();
