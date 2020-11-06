@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -39,6 +40,11 @@ public class SignUpActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    //Hide the top bar and make it full screen
+    requestWindowFeature(Window.FEATURE_NO_TITLE); //will hide the title
+    getSupportActionBar().hide(); // hide the title bar
+
     setContentView(R.layout.activity_sign_up);
     ed_username = findViewById(R.id.ed_username_signup);
     ed_email = findViewById(R.id.ed_email_signup);

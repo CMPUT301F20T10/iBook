@@ -3,6 +3,7 @@ package com.example.ibook.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -44,6 +45,10 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Hide the top bar and make it full screen
+        requestWindowFeature(Window.FEATURE_NO_TITLE); //will hide the title
+        getSupportActionBar().hide(); // hide the title bar
+
         setContentView(R.layout.activity_add_or_edit_book_screen);
 
         bookNameEditText = findViewById(R.id.titleEditor);
