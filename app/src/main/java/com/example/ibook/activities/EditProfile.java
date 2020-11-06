@@ -73,21 +73,17 @@ public class EditProfile extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 // if  left empty
-                if (usernameEditText.getText().toString().isEmpty() || emailEditText.getText().toString().isEmpty()
-                        || phoneEditText.getText().toString().isEmpty()) {
-
+                if (usernameEditText.getText().toString().isEmpty() || emailEditText.getText().toString().isEmpty() || phoneEditText.getText().toString().isEmpty()) {
                     Toast.makeText(EditProfile.this, "Cannot be left empty", Toast.LENGTH_SHORT).show();
                     return;
                 }// if
-
                 String email = emailEditText.getText().toString();
-
                 MainActivity.database.getuAuth().getCurrentUser().updateEmail(email)
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Toast.makeText(EditProfile.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
+                            }//onFailure
                         })
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
@@ -97,11 +93,6 @@ public class EditProfile extends AppCompatActivity {
                                 MainActivity.user.setUserName(usernameEditText.getText().toString());
                                 MainActivity.user.setPhoneNumber(phoneEditText.getText().toString());
 
-//                        Map<String, Object> editedInfo = new HashMap();
-//                        editedInfo.put("userName", );
-//                        editedInfo.put("email", emailEditText.getText().toString());
-//                        editedInfo.put("phoneNumber", phoneEditText.getText().toString());
-
                                 MainActivity.database.getUserDocumentReference().set(MainActivity.user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
@@ -109,13 +100,10 @@ public class EditProfile extends AppCompatActivity {
                                         finish();
                                     }
                                 }); //update the database
-
                             }// onClick
                         });
-
-
-            }
+            }//onClick
         });
+    }//onCreate
 
-    }
-}
+}// Class - EditProfile
