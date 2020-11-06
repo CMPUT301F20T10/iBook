@@ -11,8 +11,12 @@ import androidx.fragment.app.Fragment;
 
 import com.example.ibook.R;
 
+/**
+ * The class for the notification fragment
+ */
 public class NotificationsFragment extends Fragment {
 
+    //TODO: implement other method
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

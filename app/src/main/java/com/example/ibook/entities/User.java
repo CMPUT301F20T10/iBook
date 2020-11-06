@@ -26,6 +26,10 @@ public class User {
 
     private DocumentReference documentReference;
 
+    /**
+     * This default constructor will use fetch() to get data of the current user from database
+     * , and build the User object accordingly.
+     * */
     public User() {
         this.uAuth = FirebaseAuth.getInstance();
         this.userID = this.uAuth.getCurrentUser().getUid();
@@ -38,7 +42,8 @@ public class User {
     }
 
     /**
-     * This constructor is used to create an user object
+     * This constructor builds a User object based on the given parameters
+     * , and then uploads the data to the database, using commit().
      * */
     public User(String userName, String password, String email, String phoneNumber) {
         this.userName = userName;
@@ -56,6 +61,7 @@ public class User {
 
     /**
      * This Method should update the data on database according to the data it has.
+     * It creates a document for the current user if it doesn't exist, or update the document otherwise.
      * @Parameter - None
      * @Return - None
      * */
@@ -78,6 +84,13 @@ public class User {
         });
     }
 
+    /**
+     * This method will fetch data of the current user from the database, and
+     * updates the attributes of the User object accordingly.
+     * Note that this method works under the assumption that there is indeed an authenticated user.
+     * @Parameter - None
+     * @Return - None
+     * */
     public void fetch() {
 
         Task get = this.documentReference.get();
