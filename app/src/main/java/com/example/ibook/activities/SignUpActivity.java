@@ -2,26 +2,17 @@ package com.example.ibook.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.ibook.entities.Book;
 import com.example.ibook.R;
 import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,14 +38,6 @@ public class SignUpActivity extends AppCompatActivity {
     ed_confirmPassword = findViewById(R.id.ed_confirmPassword_signup);
     ed_progressBar = findViewById(R.id.signUpProgressBar);
     uAuth = FirebaseAuth.getInstance();
-    // Toast.makeText(getBaseContext(), "SignUp to be done", Toast.LENGTH_SHORT).show();
-
-    // if current user already is logged in
-   // if(uAuth.getCurrentUser() != null){
-     // System.out.println(uAuth.getCurrentUser());
-      //startActivity(new Intent(getApplicationContext(),PageActivity.class));
-      //finish();
-    //}// if
 
   }// onCreate
 
@@ -103,21 +86,23 @@ public class SignUpActivity extends AppCompatActivity {
       public void onComplete(@NonNull Task<AuthResult> task) {
         if(task.isSuccessful()){
           User user = new User(username, password, email, phoneNumber);
-          user.commit();
 
-          //We don't put in the password do we?
+          // store user info to database
+          user.commit();
           Toast.makeText(SignUpActivity.this, "Created user successfully", Toast.LENGTH_SHORT).show();
+
+          // go to iBook homepage
           Intent intent = new Intent(getApplicationContext(),PageActivity.class);
-          intent.putExtra("curr_username", username);
           startActivity(intent);
         }
         else{
+          // when it goes unsuccessful,
+          // We show the reason, and restart the sign up activity to let user sign up again.
           Toast.makeText(SignUpActivity.this, "Unsuccessful" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
           Intent intent = getIntent();
           finish();
-          startActivity(intent); // when we get unsuccessful message here,
-                  // Idk why it continues waiting, so I restart the sign up activity.
-        }// else
+          startActivity(intent);
+        }
       }
     });
 

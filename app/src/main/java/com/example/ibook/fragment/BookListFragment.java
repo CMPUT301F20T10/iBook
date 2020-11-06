@@ -50,16 +50,17 @@ public class BookListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_booklist, container, false);
-        // Set up the view
         bookListView = root.findViewById(R.id.bookList);
         btn_addBook = root.findViewById(R.id.button_add);
+
         datalist = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
         uAuth = FirebaseAuth.getInstance();
-
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+
+
 
         //default username = "yzhang24@gmail.com";
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -124,7 +125,6 @@ public class BookListFragment extends Fragment {
                             }
                         } else {
                             Toast.makeText(getContext(), "got an error", Toast.LENGTH_SHORT).show();
-
                         }
                     }
                 });

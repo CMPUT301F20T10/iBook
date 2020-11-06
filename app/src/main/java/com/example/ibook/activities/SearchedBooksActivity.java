@@ -6,14 +6,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
 import com.example.ibook.entities.Book;
 import com.example.ibook.entities.User;
 
 import java.util.ArrayList;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class SearchedBooksActivity extends AppCompatActivity {
     private BookListAdapter adapter;
@@ -38,6 +38,8 @@ public class SearchedBooksActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), ViewBookActivity.class);
                 intent.putExtra("USER_ID", user.getUserID());
                 intent.putExtra("BOOK_NUMBER", position);
+                intent.putExtra("IS_OWNER", -1);
+                intent.putExtra("BOOK_ISBN", resultList.get(position).getIsbn());
                 startActivityForResult(intent, 0);
             }
         });
