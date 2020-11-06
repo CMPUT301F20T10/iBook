@@ -55,14 +55,11 @@ public class ViewBookActivityTest {
         solo = new Solo(InstrumentationRegistry.getInstrumentation(),rule.getActivity());
         solo.enterText((EditText) solo.getView(R.id.usernameEditText), "ztan7@gmail.com");
         solo.enterText((EditText) solo.getView(R.id.passwordEditText), "123456");
-        solo.clickOnButton("Sign in");
+        solo.clickOnButton("Login In");
     }
 
     @After
     public void finish() {
-        solo.goBack();
-        solo.clickOnView(solo.getView(R.id.navigation_user));
-        solo.clickOnButton("Log out");
     }
 
     @Test
@@ -97,7 +94,7 @@ public class ViewBookActivityTest {
         assertEquals(bookClicked.getDate(), actualDate);
         assertEquals(bookClicked.getIsbn(), actualISBN);
 
-        assertEquals(View.GONE, solo.getView(R.id.btn_edit_book).getVisibility());
+        assertEquals(View.GONE, solo.getView(R.id.editButton).getVisibility());
         assertEquals(View.GONE, solo.getView(R.id.btn_delete_book).getVisibility());
     }
 
@@ -139,8 +136,8 @@ public class ViewBookActivityTest {
 
         // Edit Book Name/Title
         assertEquals("ztan7_test", ((TextView) solo.getView(R.id.ViewBookName)).getText().toString());
-        solo.clickOnButton("edit");
-        solo.enterText((EditText) solo.getView(R.id.editTextBookName), "_new");
+        solo.clickOnView(solo.getView(R.id.editButton));
+        solo.enterText((EditText) solo.getView(R.id.titleEditor), "_new");
         solo.clickOnButton("Complete");
         // delay 1 second t avoid failure caused by the network lag
         SystemClock.sleep(1000);
@@ -148,8 +145,8 @@ public class ViewBookActivityTest {
 
         // Edit Author
         assertEquals("ztan7", ((TextView) solo.getView(R.id.ViewAuthor)).getText().toString());
-        solo.clickOnButton("edit");
-        solo.enterText((EditText) solo.getView(R.id.editTextAuthor), "_new");
+        solo.clickOnView(solo.getView(R.id.editButton));
+        solo.enterText((EditText) solo.getView(R.id.authorEditor), "_new");
         solo.clickOnButton("Complete");
         // delay 1 second t avoid failure caused by the network lag
         SystemClock.sleep(1000);
@@ -157,8 +154,8 @@ public class ViewBookActivityTest {
 
         // Edit Date
         assertEquals("12-23", ((TextView) solo.getView(R.id.ViewDate)).getText().toString());
-        solo.clickOnButton("edit");
-        solo.enterText((EditText) solo.getView(R.id.editTextDate), ", 20:23");
+        solo.clickOnView(solo.getView(R.id.editButton));
+        solo.enterText((EditText) solo.getView(R.id.dateEditor), ", 20:23");
         solo.clickOnButton("Complete");
         // delay 1 second t avoid failure caused by the network lag
         SystemClock.sleep(1000);
@@ -166,8 +163,8 @@ public class ViewBookActivityTest {
 
         // Edit Date
         assertEquals("asd", ((TextView) solo.getView(R.id.ViewISBN)).getText().toString());
-        solo.clickOnButton("edit");
-        solo.enterText((EditText) solo.getView(R.id.editTextISBN), "fghjkl");
+        solo.clickOnView(solo.getView(R.id.editButton));
+        solo.enterText((EditText) solo.getView(R.id.isbnEditor), "fghjkl");
         solo.clickOnButton("Complete");
         // delay 1 second t avoid failure caused by the network lag
         SystemClock.sleep(1000);
@@ -175,11 +172,11 @@ public class ViewBookActivityTest {
 
 
         // recover
-        solo.clickOnButton("edit");
-        ((EditText) solo.getView(R.id.editTextBookName)).setText("ztan7_test");
-        ((EditText) solo.getView(R.id.editTextAuthor)).setText("ztan7");
-        ((EditText) solo.getView(R.id.editTextDate)).setText("12-23");
-        ((EditText) solo.getView(R.id.editTextISBN)).setText("asd");
+        solo.clickOnView(solo.getView(R.id.editButton));
+        ((EditText) solo.getView(R.id.titleEditor)).setText("ztan7_test");
+        ((EditText) solo.getView(R.id.authorEditor)).setText("ztan7");
+        ((EditText) solo.getView(R.id.dateEditor)).setText("12-23");
+        ((EditText) solo.getView(R.id.isbnEditor)).setText("asd");
         solo.clickOnButton("Complete");
 
         // TODO: test editing description after it is finished.
@@ -195,10 +192,10 @@ public class ViewBookActivityTest {
 
         // add a new book to test
         solo.clickOnView((Button) solo.getView(R.id.button_add));
-        solo.enterText((EditText) solo.getView(R.id.editTextBookName), newBook.getTitle());
-        solo.enterText((EditText) solo.getView(R.id.editTextAuthor), newBook.getAuthor());
-        solo.enterText((EditText) solo.getView(R.id.editTextDate), newBook.getDate());
-        solo.enterText((EditText) solo.getView(R.id.editTextISBN), newBook.getIsbn());
+        solo.enterText((EditText) solo.getView(R.id.titleEditor), newBook.getTitle());
+        solo.enterText((EditText) solo.getView(R.id.authorEditor), newBook.getAuthor());
+        solo.enterText((EditText) solo.getView(R.id.dateEditor), newBook.getDate());
+        solo.enterText((EditText) solo.getView(R.id.isbnEditor), newBook.getIsbn());
         solo.clickOnButton("Complete");
 
         // try to delete the book
@@ -211,7 +208,7 @@ public class ViewBookActivityTest {
         assertEquals(newBook.getAuthor(), actualAuthor);
         assertEquals(newBook.getDate(), actualDate);
         assertEquals(newBook.getIsbn(), actualISBN);
-        solo.clickOnButton("delete");
+        solo.clickOnButton("Delete");
 
         // check the rest book in the list to see if we delete successfully
         solo.clickInList(1);
