@@ -8,6 +8,13 @@
     tools:context=".activities.MainActivity">
 
 
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="432dp"
+        android:layout_height="270dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/background" />
+
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
@@ -16,7 +23,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
         android:text="Account"
-        android:textColor="#000000"
+        android:textColor="#FFF"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -25,95 +32,129 @@
         android:id="@+id/profilePicture"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="48dp"
+        android:layout_marginLeft="48dp"
+        android:layout_marginTop="48dp"
+        android:baseline="@android:dimen/app_icon_size"
         android:src="@drawable/profile_image"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        tools:srcCompat="@tools:sample/avatars" />
 
     <ImageView
         android:id="@+id/emailLabel"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="32dp"
+        android:baseline="?attr/dialogPreferredPadding"
+
         android:src="@drawable/email_icon"
-        android:text="Email id"
         android:textStyle="bold"
-        tools:layout_editor_absoluteX="35dp"
-        tools:layout_editor_absoluteY="207dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
 
     <ImageView
         android:id="@+id/phoneLabel"
-        android:layout_width="69dp"
-        android:layout_height="41dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="8dp"
+        android:baseline="?attr/dialogPreferredPadding"
         android:src="@drawable/mobile_icon"
         android:text="Phone Number "
         android:textStyle="bold"
-        tools:layout_editor_absoluteX="292dp"
-        tools:layout_editor_absoluteY="251dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/emailLabel" />
 
     <TextView
         android:id="@+id/username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
-        android:layout_marginLeft="36dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginLeft="28dp"
         android:text="Hi, Saadmani Islam Khan "
+        android:textColor="#FFF"
+        android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/profilePicture"
-        tools:layout_editor_absoluteY="91dp" />
+        app:layout_constraintBaseline_toBaselineOf="@id/profilePicture"
+        app:layout_constraintStart_toEndOf="@+id/profilePicture" />
 
     <TextView
         android:id="@+id/emailID"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
         android:text="saadmani@gmail.com"
         android:textStyle="bold"
-        tools:layout_editor_absoluteX="102dp"
-        tools:layout_editor_absoluteY="218dp" />
+        app:layout_constraintBaseline_toBaselineOf="@+id/emailLabel"
+        app:layout_constraintStart_toEndOf="@+id/emailLabel" />
 
     <TextView
         android:id="@+id/phoneNumber"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
         android:text="78012321123"
         android:textStyle="bold"
-        tools:layout_editor_absoluteX="118dp"
-        tools:layout_editor_absoluteY="356dp" />
+        app:layout_constraintBaseline_toBaselineOf="@id/phoneLabel"
+        app:layout_constraintStart_toEndOf="@+id/phoneLabel" />
 
     <Button
         android:id="@+id/editButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/selector_orange"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginRight="32dp"
+        android:background="@color/blue"
         android:text="EDIT"
         android:textColor="#FFF"
-        tools:layout_editor_absoluteX="35dp"
-        tools:layout_editor_absoluteY="327dp"></Button>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/phoneLabel" />
 
     <Button
         android:id="@+id/resetPasswordButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginRight="32dp"
         android:background="@drawable/selector_orange"
         android:clickable="true"
         android:paddingHorizontal="2.0dp"
         android:text="Reset Password"
         android:textColor="@color/common_google_signin_btn_text_dark_pressed"
-        tools:layout_editor_absoluteX="217dp"
-        tools:layout_editor_absoluteY="525dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editButton">
 
     </Button>
 
     <Button
         android:id="@+id/logOutbutton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/holo_orange_dark"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginRight="32dp"
+        android:background="@android:color/holo_red_light"
         android:text="Log out"
         android:textColor="@android:color/white"
-        tools:layout_editor_absoluteX="102dp"
-        tools:layout_editor_absoluteY="625dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/resetPasswordButton" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
