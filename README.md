@@ -21,7 +21,7 @@ The **[Product Backlog](https://github.com/CMPUT301F20T10/iBook/wiki)** is on th
 
 ## Mockup
 
-The **[Mockup]()** is on the wiki page of this repo.
+The ***[Mockup](./doc/Mockups.png)*** is in the doc folder 📂 
 
 ## Contributors
 
