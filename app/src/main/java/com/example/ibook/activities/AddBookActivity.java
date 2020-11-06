@@ -92,6 +92,45 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                             if (task.isSuccessful()) {
                                 DocumentSnapshot document = task.getResult();
                                 if (document.exists()) {
+                                    Map<String, Object> data;
+                                    data = document.getData();
+                                    books = (ArrayList<Book>) document.getData().get("BookList");
+                                    books.add(new Book(bookName, authorName, date, isbn));
+                                    data.put("BookList", books);
+                                    db.collection("users")
+                                            .document(userID).set(data);
+                                    Toast.makeText(getBaseContext(), "Add book successfully!", Toast.LENGTH_LONG).show();
+
+                                    data = new HashMap();
+                                    data.put("authors", authorName);
+                                    data.put("date", date);
+                                    data.put("description", "nothing");
+                                    data.put("isbn", isbn);
+                                    data.put("owner", "personA");
+                                    data.put("status", "Available");
+                                    data.put("title", bookName);
+                                    db.collection("books").document().set(data);
+
+                                    Intent intent = new Intent();
+                                    setResult(1, intent);
+                                    finish();
+                                } else {
+                                    Toast.makeText(getBaseContext(), "No such document", Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                Toast.makeText(getBaseContext(), "got an error", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+                    /*
+
+                    docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+                                if (document.exists()) {
                                     Map<String, Object> data = new HashMap();
                                     data = document.getData();
                                     books = (ArrayList<Book>) document.getData().get("BookList");
@@ -110,7 +149,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                                 Toast.makeText(getBaseContext(), "got an error", Toast.LENGTH_SHORT).show();
                             }
                         }
-                    });
+                    });*/
 
                 } else {
                     Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();
