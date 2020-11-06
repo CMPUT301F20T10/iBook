@@ -168,8 +168,8 @@ public class BookListFragment extends Fragment {
             }
             */
 
-
-            Toast.makeText(getContext(), "updated", Toast.LENGTH_SHORT).show();
+            // update the change
+            // Toast.makeText(getContext(), "updated", Toast.LENGTH_SHORT).show();
             DocumentReference docRef = db.collection("users").document(userID);
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
