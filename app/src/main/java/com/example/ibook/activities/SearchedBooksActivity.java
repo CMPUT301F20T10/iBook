@@ -14,11 +14,21 @@ import com.example.ibook.entities.User;
 import java.util.ArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
-
+/***
+ *This activity displays the results for the search results in a list view.
+ * When the items are clicked on the book info is passed to the view
+ * book activity and displayed there.
+ */
 public class SearchedBooksActivity extends AppCompatActivity {
     private BookListAdapter adapter;
     private ArrayList<Book> resultList = new ArrayList<>();
     private ListView listView;
+
+    //list view getter
+    public ListView getListView() {
+        return listView;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +41,7 @@ public class SearchedBooksActivity extends AppCompatActivity {
         adapter = new BookListAdapter(resultList,getApplicationContext());
         listView.setAdapter(adapter);
 
+        //click on list view item
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

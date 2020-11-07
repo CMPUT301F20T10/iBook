@@ -30,7 +30,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-
+/***
+ *This fragment contains the view for the home page and
+ * displays the list of all books from the database as a list view.
+ * This also contains the searching functionalities of the
+ * searchView.
+ */
 public class HomeFragment extends Fragment {
 
     //Private variables
@@ -159,7 +164,14 @@ public class HomeFragment extends Fragment {
 
         return root;
     }
-
+    /***
+     *This method searches the database for the keyword entered
+     * in the books collection and users collection.
+     * It gets the title, description, author and owner of the books and
+     * searches if the  keyword appears in them.
+     * If the keyword appears it adds the book object to a list that gets passed to
+     * the activity that shows the results.
+     */
     public void searchData(final String query) {
         //searches for owner
         db.collection("books").whereEqualTo("owner", query)
@@ -175,17 +187,17 @@ public class HomeFragment extends Fragment {
                                     document.getString("description"),
                                     Book.Status.valueOf(document.getString("status")),
                                     document.getString("isbn"));
-
+                            //if book has owner specified add book to resultList
                             resultList.add(book);
                         }
                     }
                 });
-        //searches for keyword in title, author or description
+        //get all books from book collection
+        //add to a bookList
         db.collection("books").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 for (DocumentSnapshot document : task.getResult()) {
-
                     Book book = new Book(document.getString("title"),
                             document.getString("authors"),
                             document.getString("date"),
@@ -202,7 +214,7 @@ public class HomeFragment extends Fragment {
                     String title = book.getTitle();
                     //make one whole string that contains title author and description
                     String string = author.concat(desc).concat(title).toLowerCase();
-
+                    //if string contains keyword add it to the resultList
                     if (string.contains(query.toLowerCase()) && book.getStatus() != Book.Status.Borrowed && book.getStatus() != Book.Status.Accepted) {
                         resultList.add(book);
 
@@ -211,6 +223,7 @@ public class HomeFragment extends Fragment {
                 if (resultList.isEmpty()) {
                     Toast.makeText(getContext(), "No results found", Toast.LENGTH_SHORT).show();
                 } else {
+                    //pass resultList to SearchBooksActivity for adapter to display
                     Intent intent = new Intent(getContext(), SearchedBooksActivity.class);
                     intent.putExtra("books", resultList);
                     startActivity(intent);
