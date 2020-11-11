@@ -161,65 +161,83 @@ public class HomeFragment extends Fragment {
     }
 
     public void searchData(final String query) {
+         boolean userSearch = false;
         //searches for owner
-        db.collection("books").whereEqualTo("owner", query)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        for (DocumentSnapshot document : task.getResult()) {
+        if(!userSearch) {
+            System.out.print("coming");
+            db.collection("books").whereEqualTo("owner", query)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            for (DocumentSnapshot document : task.getResult()) {
 
-                            Book book = new Book(document.getString("title"),
-                                    document.getString("authors"),
-                                    document.getString("date"),
-                                    document.getString("description"),
-                                    Book.Status.valueOf(document.getString("status")),
-                                    document.getString("isbn"));
+                                Book book = new Book(document.getString("title"),
+                                        document.getString("authors"),
+                                        document.getString("date"),
+                                        document.getString("description"),
+                                        Book.Status.valueOf(document.getString("status")),
+                                        document.getString("isbn"));
 
+                                resultList.add(book);
+                            }
+
+                        }// onComplete
+                    });
+        }// if
+            if(!resultList.isEmpty()){
+                userSearch = true;
+            }
+
+        //searches for keyword in title, author or description
+        if(!userSearch) {
+            System.out.println("Comingg here to search");
+            db.collection("books").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    for (DocumentSnapshot document : task.getResult()) {
+
+                        Book book = new Book(document.getString("title"),
+                                document.getString("authors"),
+                                document.getString("date"),
+                                document.getString("description"),
+                                Book.Status.valueOf(document.getString("status")),
+                                document.getString("isbn"));
+
+                        bookList.add(book);
+
+                    }
+            // for
+
+                    for (Book book : bookList) {
+                        String author = book.getAuthor();
+                        String desc = book.getDescription();
+                        String title = book.getTitle();
+                        //make one whole string that contains title author and description
+                        String string = author.concat(desc).concat(title).toLowerCase();
+
+                        if (string.contains(query.toLowerCase()) && book.getStatus() != Book.Status.Borrowed && book.getStatus() != Book.Status.Accepted) {
                             resultList.add(book);
+
                         }
                     }
-                });
-        //searches for keyword in title, author or description
-        db.collection("books").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                for (DocumentSnapshot document : task.getResult()) {
-
-                    Book book = new Book(document.getString("title"),
-                            document.getString("authors"),
-                            document.getString("date"),
-                            document.getString("description"),
-                            Book.Status.valueOf(document.getString("status")),
-                            document.getString("isbn"));
-
-                    bookList.add(book);
-
                 }
-                for (Book book : bookList) {
-                    String author = book.getAuthor();
-                    String desc = book.getDescription();
-                    String title = book.getTitle();
-                    //make one whole string that contains title author and description
-                    String string = author.concat(desc).concat(title).toLowerCase();
+            });
+        }
 
-                    if (string.contains(query.toLowerCase()) && book.getStatus() != Book.Status.Borrowed && book.getStatus() != Book.Status.Accepted) {
-                        resultList.add(book);
 
+                    if (resultList.isEmpty()) {
+                        Toast.makeText(getContext(), "No results found", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Intent intent = new Intent(getContext(), SearchedBooksActivity.class);
+                        intent.putExtra("books", resultList);
+                        startActivity(intent);
                     }
-                }
-                if (resultList.isEmpty()) {
-                    Toast.makeText(getContext(), "No results found", Toast.LENGTH_SHORT).show();
-                } else {
-                    Intent intent = new Intent(getContext(), SearchedBooksActivity.class);
-                    intent.putExtra("books", resultList);
-                    startActivity(intent);
-                }
-                searchProgressBar.setVisibility(View.GONE);
+                    searchProgressBar.setVisibility(View.GONE);
 
-            }
-        });
-    }
+                }
+
+
 
     public Book.Status from_string_to_enum(String input) {
         if (input.equals("Available"))

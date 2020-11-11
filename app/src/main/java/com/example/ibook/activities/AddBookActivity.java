@@ -141,7 +141,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                                     data.put("date", date);
                                     data.put("description", "nothing");
                                     data.put("isbn", isbn);
-                                    data.put("owner", "personA");
+                                    data.put("owner", MainActivity.user.getUserName());
                                     data.put("status", "Available");
                                     data.put("title", bookName);
                                     db.collection("books").document().set(data);

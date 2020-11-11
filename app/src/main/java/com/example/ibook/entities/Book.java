@@ -15,11 +15,11 @@ public class Book implements Serializable {
     private String description;
     private Status status;
     private String isbn;
-    
-    private String owner;
-    private String holder;
+    private User owner;
 
-//Need to add picture data somehow
+
+
+    //Need to add picture data somehow
     public Book(){
 
     }
@@ -93,4 +93,12 @@ public class Book implements Serializable {
     public void setIsbn(String isbn) { this.isbn = isbn; }
 
     public void setAvailable(boolean available) { this.status = Status.Available; }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.ibook.entities;
 
+import android.app.Notification;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -25,7 +26,9 @@ public class User {
     private String email;
     private String phoneNumber;
     private ArrayList<Book> BookList; //made it capitalized B because someone named key in database colloction to be capital, have to see later
-
+    private ArrayList<Book> requestedBookList;
+    private ArrayList<Book> borrowedBookList;
+    private ArrayList<String> notificationList; //holds all the notifications for the user
     /**
      *   no argument constructor for the firebase cloud
      */
@@ -47,7 +50,6 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.BookList = new ArrayList<Book>();
     }// constructor
-
 
 
     public String getUserName() {
@@ -94,7 +96,39 @@ public class User {
      * This method is used to add books to the user's booklist
      * @param book
      */
-    public void addBook(Book book){
+    public void addBookToOwnedBooksList(Book book){
+
         BookList.add(book);
     }// addBook
-}
+
+    public void addBookToBorrowedBooksList(Book book){
+        borrowedBookList.add(book);
+    }// addBookToBorrowedBookList
+
+    public void addBookToRequestedBooksList(Book book){
+        requestedBookList.add(book);
+    }//addBookToBorrowedBookList
+
+    public void deleteFromRequestedBookList(Book book){
+       requestedBookList.remove(book);
+    }//deleteFromRequestedBookList
+
+    public ArrayList<String> getNotificationList() {
+        return notificationList;
+    }
+
+    public void addToNotificationList (String message){
+        notificationList.add(message);
+    }
+
+    public void deleteFromOwnedBookList(Book book){
+        BookList.remove(book);
+    }//deleteFromRequestedBookList
+
+    public void deleteFromBorrowedBookList(Book book){
+        borrowedBookList.remove(book);
+    }//deleteFromRequestedBookList
+
+
+
+}// users class
