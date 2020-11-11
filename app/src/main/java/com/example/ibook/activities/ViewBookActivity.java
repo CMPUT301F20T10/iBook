@@ -92,9 +92,6 @@ public class ViewBookActivity extends AppCompatActivity {
 
         docRef = db.collection("users").document(userID);//creating a document for the use
 
-
-
-
         Intent intent = getIntent();
         userID = intent.getStringExtra("USER_ID");
 
@@ -181,10 +178,13 @@ public class ViewBookActivity extends AppCompatActivity {
             }
         });
 
-
-
     }
 
+
+    /**
+     * This method will be invoked when the user's focus comes back to ViewBookActivity
+     * It will refresh the data from the database, so that if any data was updated, they will be displayed correctly
+     * */
     @Override
     protected void onResume() {
         super.onResume();
@@ -194,6 +194,10 @@ public class ViewBookActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * This method will retrieve the data from the database,
+     * and assign the data to the TextViews, so that they are displayed correctly.
+     * */
     private void getBookData() {
         // if it's not owner's book, we cannot access the book from user
         // so find the book from book collection
@@ -268,6 +272,10 @@ public class ViewBookActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This method will show the ImagePickerDialog if the current user is the owner of the book.
+     * The access to the image is provided by this dialog, so that the image can be changed.
+     * */
     // when click the image on the photo, change it
     public void changeBookPhoto(View view) {
         // Toast.makeText(getBaseContext(), "changePhoto", Toast.LENGTH_SHORT).show();
@@ -276,10 +284,12 @@ public class ViewBookActivity extends AppCompatActivity {
             return;
         }
         showImagePickerDialog();
-
     }
 
-    // let user choose to use camera or gallery
+    /**
+     * This method will show a dialog and prompts the user to select an image from gallery/camera
+     * It invokes the API of MediaStore to finish the taking picture action.
+     * */
     private void showImagePickerDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle("Upload Image")
@@ -315,6 +325,11 @@ public class ViewBookActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    /**
+     * This method processes the image after the user finishes taking picture/selecting image
+     * , based on the method used to upload the picture (camera/gallery).
+     * It calls onSuccessChangePhoto to store the changed image into the database.
+     * */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -343,6 +358,9 @@ public class ViewBookActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * This method will process the given image and store it in the database.
+     * */
     private void onSuccessChangePhoto(Bitmap bitmap) {
         //Intent intent = new Intent();
         //intent.putExtra("PHOTO_CHANGE", bitmap);
