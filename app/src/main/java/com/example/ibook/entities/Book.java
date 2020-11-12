@@ -16,6 +16,7 @@ public class Book implements Serializable {
     private Status status;
     private String isbn;
     private User owner;
+    private String bookID;
 
 
 
@@ -25,12 +26,13 @@ public class Book implements Serializable {
     }
 
     //Constructor
-    public Book(String title, String authors, String date, String isbn) {
+    public Book(String title, String authors, String date, String isbn,User owner) {
         this.title = title;
         this.authors = authors;
         this.date = date;
         this.status = Status.Available;    // Attribute status denotes the status of the book, and thus we don't actually need
         this.isbn = isbn;
+        this.owner = owner;
     }
 
     public Book(String title, String authors, String date, String description, Status status, String isbn) {
@@ -96,6 +98,14 @@ public class Book implements Serializable {
 
     public User getOwner() {
         return owner;
+    }
+
+    public String getBookID() {
+        return bookID;
+    }
+
+    public void setBookID(String bookID) {
+        this.bookID = bookID;
     }
 
     public void setOwner(User owner) {

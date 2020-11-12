@@ -5,11 +5,12 @@ public class BookRequest {
     private User requestSender;
     private Book requestedBook;
 
+
     public BookRequest(){
 
     }// no arg constructor for database
 
-    public BookRequest(User requestReceiver, User requestSender, Book requestedBook) {
+    public BookRequest(User requestSender, User requestReceiver, Book requestedBook) {
         this.requestReceiver = requestReceiver;
         this.requestSender = requestSender;
         this.requestedBook = requestedBook;
