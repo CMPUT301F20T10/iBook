@@ -6,6 +6,8 @@
 
 ## UML
 
+### Note: The [UML](.doc/UML_Updated.png) has been updated for the Half-Way Checkpoint
+
 The UML is devided into 3 parts, since it's too complicated that having them in one single diagram would make it really hard to read.
 
 * ***[UML_Overall](./doc/UML_Overall.png)*** focuses on the most important anticipated classes
@@ -21,7 +23,10 @@ The **[Product Backlog](https://github.com/CMPUT301F20T10/iBook/wiki)** is on th
 
 ## Mockup
 
-The ***[Mockup](./doc/Mockups.png)*** is in the doc folder 📂 
+The ***[Mockup](./doc/Mockups.png)*** is in the doc folder📂 
+
+## Javadoc
+The Javadoc is on the ***[GitHub Page](https://cmput301f20t10.github.io/iBook/)***, or you can find it in the ***[docs](./docs/)*** folder📂
 
 ## Contributors
 
