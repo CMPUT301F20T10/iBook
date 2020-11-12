@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.ibook.R;
 import com.example.ibook.entities.Book;
+import com.example.ibook.entities.BookRequest;
 import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -61,6 +62,8 @@ public class ViewBookActivity extends AppCompatActivity {
     private DocumentReference docRef;
     FirebaseAuth uAuth;
 
+    User bookOwner;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,7 +88,9 @@ public class ViewBookActivity extends AppCompatActivity {
         backButton = findViewById(R.id.cancelButton);
         delete_button = findViewById(R.id.btn_delete_book);
 
-        user = new User();
+
+
+
         uAuth = FirebaseAuth.getInstance();
         userID = uAuth.getCurrentUser().getUid();
         db = FirebaseFirestore.getInstance();
@@ -106,6 +111,7 @@ public class ViewBookActivity extends AppCompatActivity {
             // we hide edit/delete button if it's not the owner
             edit_button.setVisibility(View.GONE);
             delete_button.setVisibility(View.GONE);
+            delete_button.setEnabled(false); // make it disabled too
             // Toast.makeText(getBaseContext(), String.valueOf(bookNumber), Toast.LENGTH_SHORT).show();
             // Toast.makeText(getBaseContext(), userID, Toast.LENGTH_SHORT).show();
 
@@ -116,6 +122,7 @@ public class ViewBookActivity extends AppCompatActivity {
         else {
             // hide request button if the current user is the owner.
             request_button.setVisibility(View.GONE);
+            request_button.setEnabled(false); // disable the button too
         }
 
         bookISBN = intent.getStringExtra("BOOK_ISBN");
@@ -142,10 +149,15 @@ public class ViewBookActivity extends AppCompatActivity {
         request_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+               // bookOwner =
+                //BookRequest bookrequest = new BookRequest(MainActivity.user,)
                 Toast.makeText(getBaseContext(), "This function is coming soon!", Toast.LENGTH_SHORT).show();
-            }
-        });
+                
+
+            }//onClick
+        }); //requestButton SetOnClickListener
     }
+
 
 
     public void delete_book(View view) {

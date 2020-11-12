@@ -89,19 +89,7 @@ public class BookListFragment extends Fragment {
                                     //Toast.makeText(getContext(), "match", Toast.LENGTH_SHORT).show();\
 
                                     Map<String, Object> convertMap;
-                                    ArrayList<Book> hashList = (ArrayList<Book>) document.get("BookList");
-                                    if (document.getData().containsKey("BookList")) {
-                                        //Toast.makeText(getContext(), "exist", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        //Toast.makeText(getContext(), "not exist", Toast.LENGTH_SHORT).show();
-                                        Map<String, Object> data = new HashMap();
-                                        ArrayList<Book> bookList = new ArrayList<>();
-                                        data = document.getData();
-                                        data.put("BookList", bookList);
-                                        db.collection("users")
-                                                .document(userID).set(data);
-                                        return;
-                                    }
+                                    ArrayList<Book> hashList = (ArrayList<Book>) document.get("bookList");
 
 
                                     for (int i = 0; i < hashList.size(); i += 1) {
