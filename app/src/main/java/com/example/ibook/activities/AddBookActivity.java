@@ -19,6 +19,7 @@ import com.example.ibook.entities.Book;
 import com.example.ibook.entities.User;
 import com.example.ibook.fragment.ScanFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -53,7 +54,8 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
     private ArrayList<Book> books;
     private final int REQ_CAMERA_IMAGE = 1;
     private final int REQ_GALLERY_IMAGE = 2;
-
+    public static String bookID;
+    public static Boolean done;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,7 +104,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                         && date.length() > 0
                         && isbn.length() > 0) {
 
-                    DocumentReference docRef = db.collection("users").document(userID);
+                    final DocumentReference docRef = db.collection("users").document(userID);
                     docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -125,15 +127,18 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
 //                                    SignUpActivity.database.getBookDocumentReference().set(book);
 //                                    //Add the book to  "user" Collections in database
 //                                    SignUpActivity.database.getUserDocumentReference().set(SignUpActivity.user);
+                                   Book newbook = new Book(bookName, authorName, date, isbn,userID);
 
-                                    books = (ArrayList<Book>) document.getData().get("BookList");
-                                    books.add(new Book(bookName, authorName, date, isbn));
+                                    books = (ArrayList<Book>) document.getData().get("bookList");
+                                    books.add(newbook);
 
-                                    data.put("BookList", books);
+
+                                    data.put("bookList", books);
                                     db.collection("users")
                                             .document(userID).update(data);
                                     Toast.makeText(getBaseContext(), "Add book successfully!", Toast.LENGTH_LONG).show();
 
+                                    done = true;
                                     // TODO: use OOP to simplify it later
                                     // also put data to database with book collection
                                     data = new HashMap();
@@ -141,14 +146,25 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                                     data.put("date", date);
                                     data.put("description", "nothing");
                                     data.put("isbn", isbn);
-                                    data.put("owner", "personA");
+                                    data.put("owner", userID);
                                     data.put("status", "Available");
                                     data.put("title", bookName);
-                                    db.collection("books").document().set(data);
-
-                                    Intent intent = new Intent();
-                                    setResult(1, intent);
-                                    finish();
+                                    bookID = db.collection("books").document().getId();
+                                    db.collection("books").document(bookID).set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Toast.makeText(getBaseContext(), "got book id OUtside the scope too" + bookID, Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                    if(done) {
+                                        Toast.makeText(getBaseContext(), "got book id OUtside the scope too" + bookID, Toast.LENGTH_LONG).show();
+                                        newbook.setBookID(bookID);
+                                        MainActivity.user.addBookToOwnedBooksList(newbook);
+                                        MainActivity.database.getUserDocumentReference().set(MainActivity.user);
+                                        Intent intent = new Intent();
+                                        setResult(1, intent);
+                                        finish();
+                                    }// if
                                 } else {
                                     Toast.makeText(getBaseContext(), "No such document", Toast.LENGTH_SHORT).show();
                                 }

@@ -75,12 +75,12 @@ public class HomeFragment extends Fragment {
         });
 
         searchBar.setOnCloseListener(new SearchView.OnCloseListener() {
-             @Override
-             public boolean onClose() {
-                 //Let it be fully clickable so we can display it properly
-                 searchBarClosed= true;
-                 return false;
-             }
+            @Override
+            public boolean onClose() {
+                //Let it be fully clickable so we can display it properly
+                searchBarClosed= true;
+                return false;
+            }
         });
 
         searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -102,7 +102,6 @@ public class HomeFragment extends Fragment {
         });
         /*
         Book newBook = new Book("Watchmen", "Alan Moore, Dave Gibbons", "2014", "Psychologically moving comic book...", Book.Status.Available, "temp isbn 1");
-
         Book newBook2 = new Book("The Millionaire Maker", "Loral Langemeier", "2006", "You - A Millionaire? (It's true, and you might be closer than you think.)\n " +
                 "Even financial woes and a limited income can't stop you from creating real wealth and the freedom in buys.", Book.Status.Available, "temp isbn 2");
         datalist.add(newBook2);
@@ -113,7 +112,6 @@ public class HomeFragment extends Fragment {
         datalist.add(newBook);
         datalist.add(newBook2);
         datalist.add(newBook);
-
         */
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
@@ -132,7 +130,8 @@ public class HomeFragment extends Fragment {
                                         String.valueOf(document.get("date")),
                                         (String.valueOf(document.get("description"))),
                                         from_string_to_enum(String.valueOf(document.get("status"))),
-                                        String.valueOf(document.get("isbn"))
+                                        String.valueOf(document.get("isbn")),
+                                        String.valueOf(document.get("owner"))
                                 ));
                                 //Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
                             }
@@ -184,7 +183,9 @@ public class HomeFragment extends Fragment {
                                     document.getString("date"),
                                     document.getString("description"),
                                     Book.Status.valueOf(document.getString("status")),
-                                    document.getString("isbn"));
+                                    document.getString("isbn"),
+                            document.getString("owner"));
+
                             //if book has owner specified add book to resultList
                             resultList.add(book);
                         }
@@ -201,7 +202,8 @@ public class HomeFragment extends Fragment {
                             document.getString("date"),
                             document.getString("description"),
                             Book.Status.valueOf(document.getString("status")),
-                            document.getString("isbn"));
+                            document.getString("isbn"),
+                            document.getString("owner"));
 
                     bookList.add(book);
 

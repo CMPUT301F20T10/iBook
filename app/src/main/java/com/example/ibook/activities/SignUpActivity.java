@@ -107,8 +107,10 @@ public class SignUpActivity extends AppCompatActivity {
       public void onComplete(@NonNull Task<AuthResult> task) {
         if(task.isSuccessful()){
           MainActivity.database = new Database();
-          MainActivity.user = new User(username, password, email, phoneNumber);
+          String currentUserID = MainActivity.database.getCurrentUserUID();
+          MainActivity.user = new User(username, password, email, phoneNumber,currentUserID);
           MainActivity.database.addUser(MainActivity.user);
+
 
 
           // store user info to database
