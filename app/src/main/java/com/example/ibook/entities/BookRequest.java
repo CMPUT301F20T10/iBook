@@ -1,51 +1,44 @@
 package com.example.ibook.entities;
 
 public class BookRequest {
-    private User requestReceiver;
-    private User requestSender;
-    private Book requestedBook;
+    private String requestReceiverID;
+    private String requestSenderID;
+    private String requestedBookID;
 
 
     public BookRequest(){
 
     }// no arg constructor for database
 
-    public BookRequest(User requestSender, User requestReceiver, Book requestedBook) {
-        this.requestReceiver = requestReceiver;
-        this.requestSender = requestSender;
-        this.requestedBook = requestedBook;
+    public BookRequest(String requestSenderID, String requestReceiverID, String requestedBook) {
+        this.requestReceiverID = requestReceiverID;
+        this.requestSenderID = requestSenderID;
+        this.requestedBookID = requestedBook;
     }// constructor
 
-    public User getRequestReceiver() {
-        return requestReceiver;
+    public String getRequestReceiverID() {
+        return requestReceiverID;
     }
 
-    public void setRequestReceiver(User requestReceiver) {
-        this.requestReceiver = requestReceiver;
+    public void setRequestReceiverID(String requestReceiverID) {
+        this.requestReceiverID = requestReceiverID;
     }
 
-    public User getRequestSender() {
-        return requestSender;
+    public String getRequestSenderID() {
+        return requestSenderID;
     }
 
-    public void setRequestSender(User requestSender) {
-        this.requestSender = requestSender;
+    public void setRequestSenderID(String requestSenderID) {
+        this.requestSenderID = requestSenderID;
     }
 
-    public Book getRequestedBook() {
-        return requestedBook;
+    public String getRequestedBookID() {
+        return requestedBookID;
     }
 
-    public void setRequestedBook(Book requestedBook) {
-        this.requestedBook = requestedBook;
+    public void setRequestedBookID(String requestedBookID) {
+        this.requestedBookID = requestedBookID;
     }
+//use this two messages to populate the notification list in the user class when its appropriate
 
-    //use this two messages to populate the notification list in the user class when its appropriate
-    public String onRequestMessage(){
-        return this.requestSender.getUserName() + " wants to borrow your book called " + this.requestedBook.getTitle();
-    }//onRequestMessage
-
-    public String onAcceptMessage(){
-        return this.requestReceiver.getUserName() + " accepted your book request on the book called " + this.requestedBook.getTitle();
-    }// onAcceptMessage
 }// BookRequest class

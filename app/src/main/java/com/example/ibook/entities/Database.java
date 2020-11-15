@@ -41,6 +41,7 @@ public class Database {
     }//getUserDocumentReference
 
 
+
     public FirebaseAuth getuAuth() {
         return uAuth;
     }

@@ -26,10 +26,11 @@ public class User {
     private String password;
     private String email;
     private String phoneNumber;
-    private ArrayList<Book> ownedBooklist; //made it capitalized B because someone named key in database colloction to be capital, have to see later
+    private ArrayList<Book> bookList; //made it capitalized B because someone named key in database colloction to be capital, have to see later
     private ArrayList<Book> requestedBookList;
     private ArrayList<Book> borrowedBookList;
     private ArrayList<String> notificationList; //holds all the notifications for the user
+    private String userID;
     /**
      *   no argument constructor for the firebase cloud
      */
@@ -45,20 +46,29 @@ public class User {
      * @param email
      * @param phoneNumber
      */
-    public User(String userName, String password, String email, String phoneNumber) {
+    public User(String userName, String password, String email, String phoneNumber, String userID) {
         this.userName = userName;
         this.password = password;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.ownedBooklist = new ArrayList<Book>();
+        this.bookList = new ArrayList<Book>();
         this.borrowedBookList = new ArrayList<Book>();
         this.requestedBookList = new ArrayList<Book>();
         this.notificationList = new ArrayList<String>();
+        this.userID = userID;
     }// constructor
 
 
     public String getUserName() {
         return userName;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 
     public void setUserName(String userName) {
@@ -81,8 +91,8 @@ public class User {
         this.email = email;
     }
 
-    public ArrayList<Book> getBookList() {
-        return ownedBooklist;
+    public ArrayList<Book> getbookList() {
+        return this.bookList;
     }
 
 
@@ -105,7 +115,7 @@ public class User {
      */
     public void addBookToOwnedBooksList(Book book){
 
-        ownedBooklist.add(book);
+        this.bookList.add(book);
     }// addBook
 
 
@@ -126,8 +136,8 @@ public class User {
         requestedBookList.add(book);
     }//addBookToBorrowedBookList
 
-    public void setBookList(ArrayList<Book> bookList) {
-        ownedBooklist = bookList;
+    public void setbookList(ArrayList<Book> bookList) {
+        this.bookList= bookList;
     }
 
     public void deleteFromRequestedBookList(Book book){
@@ -143,7 +153,7 @@ public class User {
     }
 
     public void deleteFromOwnedBookList(Book book){
-        ownedBooklist.remove(book);
+        this.bookList.remove(book);
     }//deleteFromRequestedBookList
 
     public void deleteFromBorrowedBookList(Book book){

@@ -13,7 +13,6 @@ import com.example.ibook.R;
 import com.example.ibook.entities.Book;
 import com.example.ibook.fragment.ScanFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -42,7 +41,6 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
     private String userID;
     private int bookNumber;
     private Book originalBook;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,21 +74,19 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                 final String authorName = authorEditText.getText().toString();
                 final String date = dateEditText.getText().toString();
                 final String isbn = isbnEditText.getText().toString();
-
                 if (bookName.length() > 0
                         && authorName.length() > 0
                         && date.length() > 0
                         && isbn.length() > 0) {
 //                    TODO:add more value
-                    originalBook.setTitle(bookName);
-                    originalBook.setAuthor(authorName);
-                    originalBook.setDate(date);
-                    originalBook.setIsbn(isbn);
+                    Book currentBook = new Book(bookName, authorName, date, isbn,MainActivity.user.getUserID());
 
-                    updateBook(originalBook);
+                    // update book if there's a change
+                    if (!currentBook.equals(originalBook)) {
+                        updateBook(currentBook);
+                    }
                     finish();
-                } // if
-                else {
+                } else {
                     Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -113,31 +109,28 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
     }
 
     private void getBookData() {
+        db = FirebaseFirestore.getInstance();
+        DocumentReference docRef = db.collection("users").document(userID);
 
-        DocumentReference docRef = MainActivity.database.getUserDocumentReference();
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
 
-        Map<String, Object> convertMap = (Map<String, Object>) MainActivity.user.getBookList().get(bookNumber);
-        Book book = new Book(
+                        ArrayList<Book> hashList = (ArrayList<Book>) document.get("bookList");
+                        Map<String, Object> convertMap = (Map<String, Object>) hashList.get(bookNumber);
+                        Book book = new Book(
                                 String.valueOf(convertMap.get("title")),
                                 String.valueOf(convertMap.get("author")),
                                 String.valueOf(convertMap.get("date")),
                                 String.valueOf(convertMap.get("description")),
                                 //from_string_to_enum(String.valueOf(convertMap.get("status"))),
                                 Book.Status.Available,
-                                String.valueOf(convertMap.get("isbn"))
-                                );
-
-//        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                if (task.isSuccessful()) {
-//                    DocumentSnapshot document = task.getResult();
-//                    if (document.exists()) {
-//
-//                        ArrayList<Book> hashList = (ArrayList<Book>) document.get("BookList");
-//                        Map<String, Object> convertMap = (Map<String, Object>) hashList.get(bookNumber);
-
-//
+                                String.valueOf(convertMap.get("isbn")),
+                                String.valueOf(convertMap.get("owner"))
+                        );
                         originalBook = book;
 
                         bookNameEditText.setText(book.getTitle());
@@ -149,37 +142,41 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
 
                         // photoEditText todo: photo format path
 
-    }//getBookData
+                    } else {
+                        //Log.d(TAG, "No such document");
+                    }
+                } else {
+                    //Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
 
-
-
-
-
+    }
 
     // update book info
     private void updateBook(final Book book) {
-        DocumentReference docRef = MainActivity.database.getUserDocumentReference();
-        MainActivity.user.getBookList().set(bookNumber,book);
-        docRef.set(MainActivity.user).addOnSuccessListener(new OnSuccessListener<Void>() {
+        DocumentReference docRef = db.collection("users").document(userID);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(Void aVoid) {
-                Toast.makeText(getApplicationContext(), "Successfully updated users collection", Toast.LENGTH_SHORT).show();
-
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Map<String, Object> data = new HashMap();
+                        data = document.getData();
+                        ArrayList<Book> books = (ArrayList<Book>) document.getData().get("BookList");
+                        books.set(bookNumber, book);
+                        data.put("BookList", books);
+                        db.collection("users").document(userID).set(data);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "No such document", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "got an error", Toast.LENGTH_SHORT).show();
+                }
             }
-
         });
-        String bookId = book.getBookID();
-        DocumentReference bookDocRef = MainActivity.database.getBookDocumentReference(bookId);
-        bookDocRef.set(book).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Toast.makeText(getApplicationContext(), "Successfully updated book collection", Toast.LENGTH_SHORT).show();
-
-            }
-        });
-
-
-    }// updateBook
+    }
 
     @Override
     public void onOkPressed(String ISBN) {

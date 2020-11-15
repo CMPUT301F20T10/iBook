@@ -20,6 +20,7 @@ import com.example.ibook.entities.Book;
 import com.example.ibook.entities.BookRequest;
 import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -61,8 +62,13 @@ public class ViewBookActivity extends AppCompatActivity {
     private User user;
     private DocumentReference docRef;
     FirebaseAuth uAuth;
+    Book selectedBook;
 
-    User bookOwner;
+    public static String requestReceiverID;
+    public static User requestReceiver;
+    private User currentUser;
+    String userName;
+
 
 
     @Override
@@ -128,6 +134,7 @@ public class ViewBookActivity extends AppCompatActivity {
         bookISBN = intent.getStringExtra("BOOK_ISBN");
         getBookData();
 
+
         edit_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -149,8 +156,107 @@ public class ViewBookActivity extends AppCompatActivity {
         request_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // bookOwner =
-                //BookRequest bookrequest = new BookRequest(MainActivity.user,)
+
+
+                // add the book to requested list
+                final DocumentReference docRef = db.collection("users").document(userID);
+
+                docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+                            //user object intialized
+                            currentUser = documentSnapshot.toObject(User.class);
+
+                            final DocumentReference docRefRequestReceiver = db.collection("users").document(requestReceiverID);
+
+                            docRefRequestReceiver.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    requestReceiver = documentSnapshot.toObject(User.class);
+                                    currentUser.addBookToRequestedBooksList(selectedBook);
+                                    docRef.set(currentUser);
+
+                                    requestReceiver.addToNotificationList(currentUser.getUserName() + " wants to borrow your book " + selectedBook.getTitle());
+                                    docRefRequestReceiver.set(requestReceiver);
+                                    Toast.makeText(getBaseContext(), "Coming here!", Toast.LENGTH_SHORT).show();
+
+
+                                    BookRequest newRequest = new BookRequest(currentUser.getUserID(),requestReceiver.getUserID(),selectedBook.getBookID());
+                                    db.collection("bookRequest").document().set(newRequest);
+                                }
+                            });
+
+                        }// if
+                    }//onSuccess
+
+                });
+
+
+//                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//                                                       @Override
+//                                                       public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                                                           if (task.isSuccessful()) {
+//                                                               DocumentSnapshot document = task.getResult();
+//                                                               if (document.exists()) {
+//                                                                   ArrayList<Book> hashList = (ArrayList<Book>) document.get("requestedBookList");
+//                                                                   String userName = (String) document.get("userName");
+//                                                                   hashList.add(selectedBook);
+//                                                                   docRef.update("requestedBookList", hashList).addOnSuccessListener(new OnSuccessListener<Void>() {
+//                                                                       @Override
+//                                                                       public void onSuccess(Void aVoid) {
+//                                                                           Toast.makeText(ViewBookActivity.this, "Added to request book list successfully", Toast.LENGTH_SHORT).show();
+//                                                                       }
+//                                                                   });
+//                                                               }// if
+//                                                           }
+//                                                       }
+//                                                   });
+//
+//                requestReceiverID = selectedBook.getOwnerID();
+//
+//                final DocumentReference docRefRequestReceiver = db.collection("users").document(requestReceiverID);
+//
+//                docRefRequestReceiver.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+//                        if (task.isSuccessful()) {
+//                            DocumentSnapshot document = task.getResult();
+//                            if (document.exists()) {
+//                                ArrayList<String> hashList = (ArrayList<String>) document.get("notificationList");
+//                                String message = userName + "wants to borrow the book named" + selectedBook.getTitle();
+//                                hashList.add(message);
+//                                docRefRequestReceiver.update("notificationList", hashList).addOnSuccessListener(new OnSuccessListener<Void>() {
+//                                    @Override
+//                                    public void onSuccess(Void aVoid) {
+//                                        Toast.makeText(ViewBookActivity.this, "Added to request book list successfully", Toast.LENGTH_SHORT).show();
+//                                    }
+//                                });
+//                            }// if
+//                        }
+//                    }
+//                });
+
+
+                System.out.println("Coming beofre db");
+               db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                   @Override
+                   public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                   }
+               });
+
+//                System.out.println(requestReceiver.getEmail() + " " + clickedBook.getTitle() + " " +MainActivity.user.getUserName());
+//
+//                Toast.makeText(ViewBookActivity.this, "title: " + clickedBook.getTitle() + "Username: " + MainActivity.user.getUserName() , Toast.LENGTH_SHORT).show();
+//                requestReceiver.addToNotificationList(MainActivity.user.getUserName() + "wants to borrow the book" + clickedBook.getTitle());
+//                MainActivity.database.getDb().collection("users").document(requestReceiverID).set(requestReceiver).addOnSuccessListener(new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void aVoid) {
+//                        Toast.makeText(ViewBookActivity.this, "Added to notification list successfully", Toast.LENGTH_SHORT).show();
+//                        finish();
+//                    }
+//                });
                 Toast.makeText(getBaseContext(), "This function is coming soon!", Toast.LENGTH_SHORT).show();
                 
 
@@ -220,10 +326,11 @@ public class ViewBookActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                            Book selectedBook = null;
+                           selectedBook = null;
                             if (task.isSuccessful()) {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     String checkISBN = (String)document.get("isbn");
+                                    requestReceiverID = (String)document.get("owner");
                                     if (checkISBN.equals(bookISBN)){
                                         selectedBook = new Book(
                                                 String.valueOf(document.get("title")),
@@ -231,8 +338,12 @@ public class ViewBookActivity extends AppCompatActivity {
                                                 String.valueOf(document.get("date")),
                                                 String.valueOf(document.get("description")),
                                                 Book.Status.Available,
-                                                String.valueOf(document.get("isbn"))
+                                                String.valueOf(document.get("isbn")),
+                                                String.valueOf(document.get("owner"))
+
                                         );
+
+
                                         //Toast.makeText(getBaseContext(), "match book!", Toast.LENGTH_SHORT).show();
                                         break;
                                     }
@@ -258,7 +369,7 @@ public class ViewBookActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
-                            ArrayList<Book> hashList = (ArrayList<Book>) document.get("BookList");
+                            ArrayList<Book> hashList = (ArrayList<Book>) document.get("bookList");
                             Map<String, Object> convertMap = (Map<String, Object>) hashList.get(bookNumber);
                             book = new Book(
                                     String.valueOf(convertMap.get("title")),
@@ -267,7 +378,9 @@ public class ViewBookActivity extends AppCompatActivity {
                                     (String.valueOf(convertMap.get("description"))),
                                     //from_string_to_enum(String.valueOf(convertMap.get("status"))),
                                     Book.Status.Available,
-                                    String.valueOf(convertMap.get("isbn"))
+                                    String.valueOf(convertMap.get("isbn")),
+                                    String.valueOf(document.get("owner"))
+
                             );
                             bookNameTextView.setText(book.getTitle());
                             authorTextView.setText(book.getAuthor());

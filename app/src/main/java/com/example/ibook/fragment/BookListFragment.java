@@ -101,7 +101,8 @@ public class BookListFragment extends Fragment {
                                                 String.valueOf(convertMap.get("date")),
                                                 (String.valueOf(convertMap.get("description"))),
                                                 from_string_to_enum(String.valueOf(convertMap.get("status"))),
-                                                String.valueOf(convertMap.get("isbn"))
+                                                String.valueOf(convertMap.get("isbn")),
+                                                String.valueOf(convertMap.get("owner"))
                                         ));
                                     }
                                     if (datalist == null) {
@@ -187,7 +188,7 @@ public class BookListFragment extends Fragment {
                         if (document.exists()) {
                             Map<String, Object> convertMap;
 
-                            ArrayList<Book> hashList = (ArrayList<Book>) document.get("BookList");
+                            ArrayList<Book> hashList = (ArrayList<Book>) document.get("bookList");
                             datalist = new ArrayList<>();
                             for (int i = 0; i < hashList.size(); i += 1) {
                                 convertMap = (Map<String, Object>) hashList.get(i);
@@ -199,7 +200,8 @@ public class BookListFragment extends Fragment {
                                         String.valueOf(convertMap.get("date")),
                                         (String.valueOf(convertMap.get("description"))),
                                         from_string_to_enum(String.valueOf(convertMap.get("status"))),
-                                        String.valueOf(convertMap.get("isbn"))
+                                        String.valueOf(convertMap.get("isbn")),
+                                        String.valueOf(convertMap.get("owner"))
                                 ));
 
                             }
