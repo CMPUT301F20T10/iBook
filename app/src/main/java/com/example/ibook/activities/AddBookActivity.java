@@ -19,7 +19,6 @@ import com.example.ibook.entities.Book;
 import com.example.ibook.entities.User;
 import com.example.ibook.fragment.ScanFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
@@ -55,7 +54,8 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
     private ArrayList<Book> books;
     private final int REQ_CAMERA_IMAGE = 1;
     private final int REQ_GALLERY_IMAGE = 2;
-    String bookId;
+    public static String bookID;
+    public static Boolean done;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,7 +79,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
         books = new ArrayList<>();
 
         Intent intent = getIntent();
-       // userID = MainActivity.database.getCurrentUserUID();
+        userID = intent.getStringExtra("USER_ID");
 
         // go back when clicking cancel
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -104,46 +104,82 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                         && date.length() > 0
                         && isbn.length() > 0) {
 
-                    DocumentReference docRef = MainActivity.database.getUserDocumentReference();
-                                    // NEW BOOK OBJECT
+                    final DocumentReference docRef = db.collection("users").document(userID);
+                    docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+
+                                if (document.exists()) {
+                                    Map<String, Object> data;
+
+                                    // get data and overwrite it
+                                    data = document.getData();
+
+                                    //make a new book object
+//                                    Book book = new Book(bookName,authorName,date,isbn);
+//
+//                                    // add book to current users booklist
+//                                    SignUpActivity.user.addBook(book);
+//
+//                                    //Add to "book" collections in database
+//                                    SignUpActivity.database.getBookDocumentReference().set(book);
+//                                    //Add the book to  "user" Collections in database
+//                                    SignUpActivity.database.getUserDocumentReference().set(SignUpActivity.user);
+                                   Book newbook = new Book(bookName, authorName, date, isbn,userID);
+
+                                    books = (ArrayList<Book>) document.getData().get("bookList");
+                                    books.add(newbook);
 
 
-                                    Book newBook = new Book(bookName,authorName,date,isbn, MainActivity.user);
-
-
-                                    // add new book object to 'books' collection in database
-                                    MainActivity.database.getDb().collection("Books").add(newBook).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                        @Override
-                                        public void onSuccess(DocumentReference documentReference) {
-                                            // storing the firebase generated unique id in bookID
-                                            bookId = documentReference.getId();
-                                            Toast.makeText(getBaseContext(), "Add book successfully!", Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-
-                                    //adding bookid to the newbook object
-                                    newBook.setBookID(bookId);
-                                    //adding the new book to the user objects booklist
-                                    MainActivity.user.addBookToOwnedBooksList(newBook);
-
-                                    //updating the current user information in the database
-                    Toast.makeText(getBaseContext(), "Coming here okay!", Toast.LENGTH_LONG).show();
-                                    MainActivity.database.getUserDocumentReference().set(MainActivity.user);
+                                    data.put("bookList", books);
+                                    db.collection("users")
+                                            .document(userID).update(data);
                                     Toast.makeText(getBaseContext(), "Add book successfully!", Toast.LENGTH_LONG).show();
 
-                                    Intent intent = new Intent();
-                                    setResult(1, intent);
-                                    finish();
-                                }//if
-                                 else {
-                                 Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();
-                                 }
+                                    done = true;
+                                    // TODO: use OOP to simplify it later
+                                    // also put data to database with book collection
+                                    data = new HashMap();
+                                    data.put("authors", authorName);
+                                    data.put("date", date);
+                                    data.put("description", "nothing");
+                                    data.put("isbn", isbn);
+                                    data.put("owner", userID);
+                                    data.put("status", "Available");
+                                    data.put("title", bookName);
+                                    bookID = db.collection("books").document().getId();
+                                    db.collection("books").document(bookID).set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Toast.makeText(getBaseContext(), "got book id OUtside the scope too" + bookID, Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                    if(done) {
+                                        Toast.makeText(getBaseContext(), "got book id OUtside the scope too" + bookID, Toast.LENGTH_LONG).show();
+                                        newbook.setBookID(bookID);
+                                        MainActivity.user.addBookToOwnedBooksList(newbook);
+                                        MainActivity.database.getUserDocumentReference().set(MainActivity.user);
+                                        Intent intent = new Intent();
+                                        setResult(1, intent);
+                                        finish();
+                                    }// if
+                                } else {
+                                    Toast.makeText(getBaseContext(), "No such document", Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                Toast.makeText(getBaseContext(), "got an error", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
 
-                        }// onclick
-                    });//onClickListener
+                } else {
+                    Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();
+                }
 
-
-
+            }
+        });
 
         // choose a image
         imageView.setOnClickListener(new View.OnClickListener() {

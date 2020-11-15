@@ -130,7 +130,8 @@ public class HomeFragment extends Fragment {
                                         String.valueOf(document.get("date")),
                                         (String.valueOf(document.get("description"))),
                                         from_string_to_enum(String.valueOf(document.get("status"))),
-                                        String.valueOf(document.get("isbn"))
+                                        String.valueOf(document.get("isbn")),
+                                        String.valueOf(document.get("owner"))
                                 ));
                                 //Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
                             }
@@ -184,7 +185,9 @@ public class HomeFragment extends Fragment {
                                     document.getString("date"),
                                     document.getString("description"),
                                     Book.Status.valueOf(document.getString("status")),
-                                    document.getString("isbn"));
+                                    document.getString("isbn"),
+                            document.getString("owner"));
+
                             //if book has owner specified add book to resultList
                             resultList.add(book);
                         }
@@ -201,7 +204,8 @@ public class HomeFragment extends Fragment {
                             document.getString("date"),
                             document.getString("description"),
                             Book.Status.valueOf(document.getString("status")),
-                            document.getString("isbn"));
+                            document.getString("isbn"),
+                            document.getString("owner"));
 
                     bookList.add(book);
 

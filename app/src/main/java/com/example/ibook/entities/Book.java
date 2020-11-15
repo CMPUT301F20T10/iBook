@@ -5,43 +5,43 @@ import java.util.ArrayList;
 
 public class Book implements Serializable {
 
-    public enum Status{
+    public enum Status {
         Available, Requested, Borrowed, Return, Accepted
     }
 
     private String title;
-    private String authors;
+    private String author;
     private String date;
     private String description;
     private Status status;
     private String isbn;
-    private User owner;
+    private String owner;
     private String bookID;
 
 
-
     //Need to add picture data somehow
-    public Book(){
+    public Book() {
 
     }
 
     //Constructor
-    public Book(String title, String authors, String date, String isbn,User owner) {
+    public Book(String title, String author, String date, String isbn, String ownerID) {
         this.title = title;
-        this.authors = authors;
+        this.author = author;
         this.date = date;
         this.status = Status.Available;    // Attribute status denotes the status of the book, and thus we don't actually need
         this.isbn = isbn;
-        this.owner = owner;
+        this.owner = ownerID;
     }
 
-    public Book(String title, String authors, String date, String description, Status status, String isbn) {
+    public Book(String title, String author, String date, String description, Status status, String isbn,String ownerID) {
         this.title = title;
-        this.authors = authors;
+        this.author = author;
         this.date = date;
         this.description = description;
         this.status = status;    // Attribute status denotes the status of the book, and thus we don't actually need
         this.isbn = isbn;
+        this.owner = ownerID;
     }
 
     //Getters
@@ -50,7 +50,7 @@ public class Book implements Serializable {
     }
 
     public String getAuthor() {
-        return authors;
+        return author;
     }
 
     public String getDate() {
@@ -69,7 +69,9 @@ public class Book implements Serializable {
         return this.status == Status.Available;
     }
 
-    public String getIsbn() { return isbn; }
+    public String getIsbn() {
+        return isbn;
+    }
 
     //Setters
     public void setTitle(String title) {
@@ -77,7 +79,7 @@ public class Book implements Serializable {
     }
 
     public void setAuthor(String authors) {
-        this.authors = authors;
+        this.author = author;
     }
 
     public void setDate(String date) {
@@ -92,12 +94,20 @@ public class Book implements Serializable {
         this.status = status;
     }
 
-    public void setIsbn(String isbn) { this.isbn = isbn; }
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
 
-    public void setAvailable(boolean available) { this.status = Status.Available; }
+    public void setAvailable(boolean available) {
+        this.status = Status.Available;
+    }
 
-    public User getOwner() {
+    public String getOwnerID() {
         return owner;
+    }
+
+    public void setOwnerID(String ownerID) {
+        this.owner = ownerID;
     }
 
     public String getBookID() {
@@ -108,7 +118,4 @@ public class Book implements Serializable {
         this.bookID = bookID;
     }
 
-    public void setOwner(User owner) {
-        this.owner = owner;
-    }
 }
