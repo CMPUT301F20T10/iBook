@@ -79,7 +79,7 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                         && date.length() > 0
                         && isbn.length() > 0) {
 //                    TODO:add more value
-                    Book currentBook = new Book(bookName, authorName, date, isbn);
+                    Book currentBook = new Book(bookName, authorName, date, isbn,MainActivity.user.getUserID());
 
                     // update book if there's a change
                     if (!currentBook.equals(originalBook)) {
@@ -119,7 +119,7 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
 
-                        ArrayList<Book> hashList = (ArrayList<Book>) document.get("BookList");
+                        ArrayList<Book> hashList = (ArrayList<Book>) document.get("bookList");
                         Map<String, Object> convertMap = (Map<String, Object>) hashList.get(bookNumber);
                         Book book = new Book(
                                 String.valueOf(convertMap.get("title")),
@@ -128,7 +128,8 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                                 String.valueOf(convertMap.get("description")),
                                 //from_string_to_enum(String.valueOf(convertMap.get("status"))),
                                 Book.Status.Available,
-                                String.valueOf(convertMap.get("isbn"))
+                                String.valueOf(convertMap.get("isbn")),
+                                String.valueOf(convertMap.get("owner"))
                         );
                         originalBook = book;
 

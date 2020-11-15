@@ -37,8 +37,9 @@ public class Database {
      * @return DocumentReference - returns the document reference of the current user
      */
     public DocumentReference getUserDocumentReference() {
-        return this.db.collection("users").document(getCurrentUserUID());
+        return this.db.collection("users").document(this.getCurrentUserUID());
     }//getUserDocumentReference
+
 
 
     public FirebaseAuth getuAuth() {
@@ -54,7 +55,6 @@ public class Database {
      * @param user - a User class object
      */
     public void addUser(User user){
-
         this.db.collection("users").document(getCurrentUserUID()).set(user);
     }//addUser
 
@@ -66,6 +66,10 @@ public class Database {
 
         return this.uAuth.getCurrentUser().getUid();
     }//getCurrentUserUID
+
+    public DocumentReference getBookDocumentReference(String bookId){
+        return this.db.collection("books").document(bookId);
+    }//getBookDocumentReference
 
 
 }// Database

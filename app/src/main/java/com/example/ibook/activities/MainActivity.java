@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ibook.R;
+import com.example.ibook.entities.Book;
 import com.example.ibook.entities.Database;
 import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,6 +23,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 import static android.view.View.GONE;
 
@@ -89,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
                                 //create a user object of existing user by loading info from database
                                 createUserObject();
 
+
                                 Intent intent = new Intent(getApplicationContext(), PageActivity.class);
                                 intent.putExtra("curr_username", username);
                                 startActivity(intent);
@@ -110,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
     }// setupSignInListener
 
     /**
-     *
      * @param username - the username that the userInput while logging in (the var should actually
      *                 be called emailId --> will fix later)
      * @param password -
@@ -165,19 +169,22 @@ public class MainActivity extends AppCompatActivity {
     /**
      * This method gets the user object from the database for the current user upon logging in
      */
-    public void createUserObject(){
+    public void createUserObject() {
 
-        //load data from database for existing user
         database.getUserDocumentReference().get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if(documentSnapshot.exists()){
+                if (documentSnapshot.exists()) {
                     //user object intialized
                     user = documentSnapshot.toObject(User.class);
+                    System.out.println(user.getEmail());
 
                 }// if
             }//onSuccess
+
         });
+
     }//createUserObject
+
 
 }// Database Class
