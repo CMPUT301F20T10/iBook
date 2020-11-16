@@ -44,7 +44,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_maps);
-/*
+
         //Set content view for the map. Will probably be directly implemented in the view message part.
         //Check the type of action code:
         final Intent mapsIntent = getIntent();
@@ -91,7 +91,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }else{
                     intent.putExtra("locationIncluded", false);
                 }
-                setResult(AddEditGearActivity.ADD_EDIT_LOCATION_RESULT_CODE, intent);
+                //setResult(AddEditGearActivity.ADD_EDIT_LOCATION_RESULT_CODE, intent);
                 finish();
             }
         });
@@ -102,7 +102,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View v) {
                 finish();
             }
-        });*/
+        });
 
     }
 
