@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F2F6F9">
 
     <TextView
         android:id="@+id/header_notifications"
@@ -20,57 +20,37 @@
 
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/header_notifications" />
-    <RadioGroup
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/selectState"
-        android:orientation="horizontal"
+        android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/listView"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header_notifications">
 
-        <RadioButton
-            android:id="@+id/rb_1"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="50dp"
-            android:background="@drawable/selector_orange_radiobutton"
-            android:button="@null"
-            android:checked="true"
-            android:gravity="center"
-            android:text="Requests"
-            android:textColor="#000"
-            android:textSize="18sp" />
-        <RadioButton
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="50dp"
-            android:gravity="center"
-            android:id="@+id/rb_2"
-            android:text="Responses"
-            android:button="@null"
-            android:textSize="18sp"
-            android:textColor="#000"
-            android:background="@drawable/selector_orange_radiobutton"/>
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/tabBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    </RadioGroup>
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#F2F6F9" />
 
-    <ListView
-        android:id="@+id/listView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/selectState"/>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F2F6F9">
 
 
     <TextView
@@ -20,87 +21,40 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    <RadioGroup
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/selectState"
-        android:orientation="horizontal"
+        android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/bookList"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header_booklist">
 
-        <RadioButton
-            android:id="@+id/rb_1"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="50dp"
-            android:background="@drawable/selector_orange_radiobutton"
-            android:button="@null"
-            android:checked="true"
-            android:gravity="center"
-            android:text="Own"
-            android:textColor="#000"
-            android:textSize="18sp" />
-        <RadioButton
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="50dp"
-            android:gravity="center"
-            android:id="@+id/rb_2"
-            android:text="Borrow"
-            android:button="@null"
-            android:textSize="18sp"
-            android:textColor="#000"
-            android:background="@drawable/selector_orange_radiobutton"/>
-        <RadioButton
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="50dp"
-            android:gravity="center"
-            android:id="@+id/rb_3"
-            android:text="Request"
-            android:button="@null"
-            android:textSize="18sp"
-            android:textColor="#000"
-            android:background="@drawable/selector_orange_radiobutton"/>
-        <RadioButton
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="50dp"
-            android:gravity="center"
-            android:id="@+id/rb_4"
-            android:text="Accept"
-            android:button="@null"
-            android:textSize="18sp"
-            android:textColor="#000"
-            android:background="@drawable/selector_orange_radiobutton"/>
-    </RadioGroup>
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/tabBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#F2F6F9" />
 
-    <ListView
-        android:id="@+id/bookList"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_below="@+id/header_booklist"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/selectState" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/button_add"
         android:layout_width="70dp"
         android:layout_height="70dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
         android:background="@drawable/ic_baseline_add_circle_24"

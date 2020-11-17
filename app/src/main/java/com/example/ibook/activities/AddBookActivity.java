@@ -117,16 +117,6 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                                     // get data and overwrite it
                                     data = document.getData();
 
-                                    //make a new book object
-//                                    Book book = new Book(bookName,authorName,date,isbn);
-//
-//                                    // add book to current users booklist
-//                                    SignUpActivity.user.addBook(book);
-//
-//                                    //Add to "book" collections in database
-//                                    SignUpActivity.database.getBookDocumentReference().set(book);
-//                                    //Add the book to  "user" Collections in database
-//                                    SignUpActivity.database.getUserDocumentReference().set(SignUpActivity.user);
                                    Book newbook = new Book(bookName, authorName, date, isbn,userID);
 
                                     books = (ArrayList<Book>) document.getData().get("bookList");

@@ -40,8 +40,6 @@ public class Database {
         return this.db.collection("users").document(this.getCurrentUserUID());
     }//getUserDocumentReference
 
-
-
     public FirebaseAuth getuAuth() {
         return uAuth;
     }
