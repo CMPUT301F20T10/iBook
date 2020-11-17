@@ -26,11 +26,37 @@ public class User {
     private String password;
     private String email;
     private String phoneNumber;
-    private ArrayList<Book> bookList; //made it capitalized B because someone named key in database colloction to be capital, have to see later
-    private ArrayList<Book> requestedBookList;
-    private ArrayList<Book> borrowedBookList;
+    private ArrayList<Book> bookList;
     private ArrayList<String> notificationList; //holds all the notifications for the user
     private String userID;
+
+//
+//
+//    BookRequest
+//
+
+    public ArrayList<Book> getBookList() {
+        return bookList;
+    }
+
+    public void setBookList(ArrayList<Book> bookList) {
+        this.bookList = bookList;
+    }
+//    Sender;
+//    Receiver;
+//    Book;
+//
+//    for the current user, I will check in the book request collection.
+//    for everyplace where currentUserID matches the requestsender  docoument in bookRequest document
+//
+//    if book.status is requested,
+//    then i gather, then i display in requested toggle
+//
+//            the owner accepts it, delete all the documents where the bookID matches, except for the document where the senderID is the one i accepted of
+//
+//            if book.status is accepted
+//    then I put them in accepeted booklist
+
     /**
      *   no argument constructor for the firebase cloud
      */
@@ -52,8 +78,6 @@ public class User {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.bookList = new ArrayList<Book>();
-        this.borrowedBookList = new ArrayList<Book>();
-        this.requestedBookList = new ArrayList<Book>();
         this.notificationList = new ArrayList<String>();
         this.userID = userID;
     }// constructor
@@ -91,9 +115,6 @@ public class User {
         this.email = email;
     }
 
-    public ArrayList<Book> getbookList() {
-        return this.bookList;
-    }
 
 
     public String getPhoneNumber() {
@@ -109,40 +130,6 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    /**
-     * This method is used to add books to the user's booklist
-     * @param book
-     */
-    public void addBookToOwnedBooksList(Book book){
-
-        this.bookList.add(book);
-    }// addBook
-
-
-
-    public void addBookToBorrowedBooksList(Book book){
-        borrowedBookList.add(book);
-    }// addBookToBorrowedBookList
-
-    public ArrayList<Book> getRequestedBookList() {
-        return requestedBookList;
-    }
-
-    public ArrayList<Book> getBorrowedBookList() {
-        return borrowedBookList;
-    }
-
-    public void addBookToRequestedBooksList(Book book){
-        requestedBookList.add(book);
-    }//addBookToBorrowedBookList
-
-    public void setbookList(ArrayList<Book> bookList) {
-        this.bookList= bookList;
-    }
-
-    public void deleteFromRequestedBookList(Book book){
-       requestedBookList.remove(book);
-    }//deleteFromRequestedBookList
 
     public ArrayList<String> getNotificationList() {
         return notificationList;
@@ -152,13 +139,7 @@ public class User {
         notificationList.add(message);
     }
 
-    public void deleteFromOwnedBookList(Book book){
-        this.bookList.remove(book);
-    }//deleteFromRequestedBookList
 
-    public void deleteFromBorrowedBookList(Book book){
-        borrowedBookList.remove(book);
-    }//deleteFromRequestedBookList
 
 
 

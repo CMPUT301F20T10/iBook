@@ -45,6 +45,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
     private EditText authorEditText;
     private EditText dateEditText;
     private EditText isbnEditText;
+    private EditText descritionEditText;
     private Button cancelButton;
     private Button completeButton;
     private Button scanButton;
@@ -69,6 +70,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
         authorEditText = findViewById(R.id.authorEditor);
         dateEditText = findViewById(R.id.dateEditor);
         isbnEditText = findViewById(R.id.isbnEditor);
+        descritionEditText = findViewById(R.id.descriptionEditor);
 
         cancelButton = findViewById(R.id.cancelButton);
         completeButton = findViewById(R.id.completeButton);
@@ -97,6 +99,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 final String authorName = authorEditText.getText().toString();
                 final String date = dateEditText.getText().toString();
                 final String isbn = isbnEditText.getText().toString();
+                final String descr = descritionEditText.getText().toString();
 
                 // check full information
                 if (bookName.length() > 0
@@ -127,7 +130,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
 //                                    SignUpActivity.database.getBookDocumentReference().set(book);
 //                                    //Add the book to  "user" Collections in database
 //                                    SignUpActivity.database.getUserDocumentReference().set(SignUpActivity.user);
-                                   Book newbook = new Book(bookName, authorName, date, isbn,userID);
+                                   Book newbook = new Book(bookName, authorName, date,descr, isbn,userID);
 
                                     books = (ArrayList<Book>) document.getData().get("bookList");
                                     books.add(newbook);
@@ -141,15 +144,17 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                                     done = true;
                                     // TODO: use OOP to simplify it later
                                     // also put data to database with book collection
+                                    bookID = db.collection("books").document().getId();
                                     data = new HashMap();
                                     data.put("authors", authorName);
                                     data.put("date", date);
-                                    data.put("description", "nothing");
+                                    data.put("description", descr);
                                     data.put("isbn", isbn);
                                     data.put("owner", userID);
                                     data.put("status", "Available");
                                     data.put("title", bookName);
-                                    bookID = db.collection("books").document().getId();
+                                    data.put("bookID",bookID);
+
                                     db.collection("books").document(bookID).set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
@@ -157,10 +162,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                                         }
                                     });
                                     if(done) {
-                                        Toast.makeText(getBaseContext(), "got book id OUtside the scope too" + bookID, Toast.LENGTH_LONG).show();
-                                        newbook.setBookID(bookID);
-                                        MainActivity.user.addBookToOwnedBooksList(newbook);
-                                        MainActivity.database.getUserDocumentReference().set(MainActivity.user);
+                                        Toast.makeText(getBaseContext(), "got book id inside the scope too" + bookID, Toast.LENGTH_LONG).show();
                                         Intent intent = new Intent();
                                         setResult(1, intent);
                                         finish();

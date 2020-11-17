@@ -131,7 +131,8 @@ public class HomeFragment extends Fragment {
                                         (String.valueOf(document.get("description"))),
                                         from_string_to_enum(String.valueOf(document.get("status"))),
                                         String.valueOf(document.get("isbn")),
-                                        String.valueOf(document.get("owner"))
+                                        String.valueOf(document.get("owner")),
+                                        String.valueOf(document.get("bookID"))
                                 ));
                                 //Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
                             }
@@ -171,26 +172,28 @@ public class HomeFragment extends Fragment {
      */
     public void searchData(final String query) {
         //searches for owner
-        db.collection("books").whereEqualTo("owner", query)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        for (DocumentSnapshot document : task.getResult()) {
 
-                            Book book = new Book(document.getString("title"),
-                                    document.getString("authors"),
-                                    document.getString("date"),
-                                    document.getString("description"),
-                                    Book.Status.valueOf(document.getString("status")),
-                                    document.getString("isbn"),
-                            document.getString("owner"));
 
-                            //if book has owner specified add book to resultList
-                            resultList.add(book);
-                        }
-                    }
-                });
+//        db.collection("books").whereEqualTo("owner", query)
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        for (DocumentSnapshot document : task.getResult()) {
+//
+//                            Book book = new Book(document.getString("title"),
+//                                    document.getString("authors"),
+//                                    document.getString("date"),
+//                                    document.getString("description"),
+//                                    Book.Status.valueOf(document.getString("status")),
+//                                    document.getString("isbn"),
+//                            document.getString("owner"));
+//
+//                            //if book has owner specified add book to resultList
+//                            resultList.add(book);
+//                        }
+//                    }
+//                });
         //get all books from book collection
         //add to a bookList
         db.collection("books").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -203,16 +206,18 @@ public class HomeFragment extends Fragment {
                             document.getString("description"),
                             Book.Status.valueOf(document.getString("status")),
                             document.getString("isbn"),
-                            document.getString("owner"));
+                            document.getString("owner"),
+                            document.getString("bookID"));
 
                     bookList.add(book);
 
                 }
                 for (Book book : bookList) {
-                    String author = book.getAuthor();
+                    String author = book.getAuthors();
                     String desc = book.getDescription();
                     String title = book.getTitle();
                     //make one whole string that contains title author and description
+                    System.out.println("author: " + author + " decc " + desc + "title: " + title);
                     String string = author.concat(desc).concat(title).toLowerCase();
                     //if string contains keyword add it to the resultList
                     if (string.contains(query.toLowerCase()) && book.getStatus() != Book.Status.Borrowed && book.getStatus() != Book.Status.Accepted) {
