@@ -10,7 +10,7 @@ public class Book implements Serializable {
     }
 
     private String title;
-    private String author;
+    private String authors;
     private String date;
     private String description;
     private Status status;
@@ -19,29 +19,32 @@ public class Book implements Serializable {
     private String bookID;
 
 
+
     //Need to add picture data somehow
     public Book() {
 
     }
 
     //Constructor
-    public Book(String title, String author, String date, String isbn, String ownerID) {
+    public Book(String title, String authors, String date,String description, String isbn, String ownerID) {
         this.title = title;
-        this.author = author;
+        this.authors = authors;
         this.date = date;
         this.status = Status.Available;    // Attribute status denotes the status of the book, and thus we don't actually need
         this.isbn = isbn;
         this.owner = ownerID;
+        this.description = description;
     }
 
-    public Book(String title, String author, String date, String description, Status status, String isbn,String ownerID) {
+    public Book(String title, String author, String date, String description, Status status, String isbn,String ownerID,String bookID) {
         this.title = title;
-        this.author = author;
+        this.authors = author;
         this.date = date;
         this.description = description;
         this.status = status;    // Attribute status denotes the status of the book, and thus we don't actually need
         this.isbn = isbn;
         this.owner = ownerID;
+        this.bookID = bookID;
     }
 
     //Getters
@@ -49,8 +52,8 @@ public class Book implements Serializable {
         return title;
     }
 
-    public String getAuthor() {
-        return author;
+    public String getAuthors() {
+        return authors;
     }
 
     public String getDate() {
@@ -78,8 +81,8 @@ public class Book implements Serializable {
         this.title = title;
     }
 
-    public void setAuthor(String authors) {
-        this.author = author;
+    public void setAuthors(String authors) {
+        this.authors = authors;
     }
 
     public void setDate(String date) {
@@ -102,11 +105,11 @@ public class Book implements Serializable {
         this.status = Status.Available;
     }
 
-    public String getOwnerID() {
+    public String getOwner() {
         return owner;
     }
 
-    public void setOwnerID(String ownerID) {
+    public void setOwner(String ownerID) {
         this.owner = ownerID;
     }
 
