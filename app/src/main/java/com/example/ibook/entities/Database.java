@@ -27,13 +27,12 @@ public class Database {
         this.db = db;
     }
 
-    public Database(){
+    public Database() {
         this.uAuth = FirebaseAuth.getInstance();
         this.db = FirebaseFirestore.getInstance();
     }
 
     /**
-     *
      * @return DocumentReference - returns the document reference of the current user
      */
     public DocumentReference getUserDocumentReference() {
@@ -50,14 +49,14 @@ public class Database {
 
     /**
      * adds a user to the database when the user signs up
+     *
      * @param user - a User class object
      */
-    public void addUser(User user){
+    public void addUser(User user) {
         this.db.collection("users").document(getCurrentUserUID()).set(user);
     }//addUser
 
     /**
-     *
      * @return - returns the current user's unique ID
      */
     public String getCurrentUserUID() {
@@ -65,7 +64,7 @@ public class Database {
         return this.uAuth.getCurrentUser().getUid();
     }//getCurrentUserUID
 
-    public DocumentReference getBookDocumentReference(String bookId){
+    public DocumentReference getBookDocumentReference(String bookId) {
         return this.db.collection("books").document(bookId);
     }//getBookDocumentReference
 

@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -56,6 +57,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
     private final int REQ_GALLERY_IMAGE = 2;
     public static String bookID;
     public static Boolean done;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,11 +77,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
         scanButton = findViewById(R.id.scanButton);
         imageView = findViewById(R.id.imageView);
 
-        db = FirebaseFirestore.getInstance();
         books = new ArrayList<>();
-
-        Intent intent = getIntent();
-        userID = intent.getStringExtra("USER_ID");
 
         // go back when clicking cancel
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -103,67 +101,20 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                         && authorName.length() > 0
                         && date.length() > 0
                         && isbn.length() > 0) {
-
-                    final DocumentReference docRef = db.collection("users").document(userID);
-                    docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    MainActivity.database.getDb().collection("users").document(MainActivity.database.getCurrentUserUID()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            if (task.isSuccessful()) {
-                                DocumentSnapshot document = task.getResult();
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            bookID = MainActivity.database.getDb().collection("books").document().getId();
 
-                                if (document.exists()) {
-                                    Map<String, Object> data;
-
-                                    // get data and overwrite it
-                                    data = document.getData();
-
-                                   Book newbook = new Book(bookName, authorName, date, isbn,userID);
-
-                                    books = (ArrayList<Book>) document.getData().get("bookList");
-                                    books.add(newbook);
-
-
-                                    data.put("bookList", books);
-                                    db.collection("users")
-                                            .document(userID).update(data);
-                                    Toast.makeText(getBaseContext(), "Add book successfully!", Toast.LENGTH_LONG).show();
-
-                                    done = true;
-                                    // TODO: use OOP to simplify it later
-                                    // also put data to database with book collection
-                                    data = new HashMap();
-                                    data.put("authors", authorName);
-                                    data.put("date", date);
-                                    data.put("description", "nothing");
-                                    data.put("isbn", isbn);
-                                    data.put("owner", userID);
-                                    data.put("status", "Available");
-                                    data.put("title", bookName);
-                                    bookID = db.collection("books").document().getId();
-                                    db.collection("books").document(bookID).set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Toast.makeText(getBaseContext(), "got book id OUtside the scope too" + bookID, Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                                    if(done) {
-                                        Toast.makeText(getBaseContext(), "got book id OUtside the scope too" + bookID, Toast.LENGTH_LONG).show();
-                                        newbook.setBookID(bookID);
-                                        MainActivity.user.addBookToOwnedBooksList(newbook);
-                                        MainActivity.database.getUserDocumentReference().set(MainActivity.user);
-                                        Intent intent = new Intent();
-                                        setResult(1, intent);
-                                        finish();
-                                    }// if
-                                } else {
-                                    Toast.makeText(getBaseContext(), "No such document", Toast.LENGTH_SHORT).show();
-                                }
-                            } else {
-                                Toast.makeText(getBaseContext(), "got an error", Toast.LENGTH_SHORT).show();
-                            }
+                            MainActivity.user = documentSnapshot.toObject(User.class);
+                            Book newBook = new Book(bookName, authorName, date, isbn, MainActivity.database.getCurrentUserUID());
+                            newBook.setBookID(bookID);
+                            MainActivity.user.addBookToOwnedBooksList(newBook);
+                            MainActivity.database.getDb().collection("books").document(bookID).set(newBook);
+                            MainActivity.database.getDb().collection("users").document(MainActivity.database.getCurrentUserUID()).set(MainActivity.user);
+                            finish();
                         }
                     });
-
                 } else {
                     Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();
                 }
@@ -187,6 +138,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
             }
         });
     }
+
     // let user choose to use camera or gallery
     private void showImagePickerDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
@@ -250,6 +202,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
             }
         }
     }
+
     private void onSuccessChangePhoto(Bitmap bitmap) {
         //Intent intent = new Intent();
         //intent.putExtra("PHOTO_CHANGE", bitmap);

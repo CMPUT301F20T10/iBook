@@ -68,7 +68,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //If its not been fully closed then we don't do anything
-                if(searchBarClosed) {
+                if (searchBarClosed) {
                     searchBar.setIconified(false);
                 }
             }
@@ -78,7 +78,7 @@ public class HomeFragment extends Fragment {
             @Override
             public boolean onClose() {
                 //Let it be fully clickable so we can display it properly
-                searchBarClosed= true;
+                searchBarClosed = true;
                 return false;
             }
         });
@@ -100,19 +100,6 @@ public class HomeFragment extends Fragment {
                 return false;
             }
         });
-        /*
-        Book newBook = new Book("Watchmen", "Alan Moore, Dave Gibbons", "2014", "Psychologically moving comic book...", Book.Status.Available, "temp isbn 1");
-        Book newBook2 = new Book("The Millionaire Maker", "Loral Langemeier", "2006", "You - A Millionaire? (It's true, and you might be closer than you think.)\n " +
-                "Even financial woes and a limited income can't stop you from creating real wealth and the freedom in buys.", Book.Status.Available, "temp isbn 2");
-        datalist.add(newBook2);
-        datalist.add(newBook);
-        datalist.add(newBook2);
-        datalist.add(newBook);
-        datalist.add(newBook2);
-        datalist.add(newBook);
-        datalist.add(newBook2);
-        datalist.add(newBook);
-        */
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
 
@@ -124,16 +111,7 @@ public class HomeFragment extends Fragment {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 // todo: change email key word to username
-                                datalist.add(new Book(
-                                        String.valueOf(document.get("title")),
-                                        String.valueOf(document.get("authors")),
-                                        String.valueOf(document.get("date")),
-                                        (String.valueOf(document.get("description"))),
-                                        from_string_to_enum(String.valueOf(document.get("status"))),
-                                        String.valueOf(document.get("isbn")),
-                                        String.valueOf(document.get("owner"))
-                                ));
-                                //Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
+                                datalist.add(document.toObject(Book.class));
                             }
                             adapter.notifyDataSetChanged();
                         } else {
@@ -142,8 +120,6 @@ public class HomeFragment extends Fragment {
                         }
                     }
                 });
-
-
 
 
         // view book on the list
@@ -163,6 +139,7 @@ public class HomeFragment extends Fragment {
 
         return root;
     }
+
     /***
      *This method searches the database for the keyword entered
      * in the books collection and users collection.
@@ -184,7 +161,7 @@ public class HomeFragment extends Fragment {
                                     document.getString("description"),
                                     Book.Status.valueOf(document.getString("status")),
                                     document.getString("isbn"),
-                            document.getString("owner"));
+                                    document.getString("owner"));
 
                             //if book has owner specified add book to resultList
                             resultList.add(book);

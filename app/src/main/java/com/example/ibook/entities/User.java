@@ -1,21 +1,6 @@
 package com.example.ibook.entities;
 
-import android.app.Notification;
-import android.os.SystemClock;
-import android.util.Log;
-
-import com.example.ibook.activities.MainActivity;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This is a model/entity class for the user
@@ -26,13 +11,15 @@ public class User {
     private String password;
     private String email;
     private String phoneNumber;
-    private ArrayList<Book> bookList; //made it capitalized B because someone named key in database colloction to be capital, have to see later
+    private ArrayList<Book> ownBookList; //made it capitalized B because someone named key in database colloction to be capital, have to see later
     private ArrayList<Book> requestedBookList;
+    private ArrayList<Book> acceptBookList;
     private ArrayList<Book> borrowedBookList;
     private ArrayList<String> notificationList; //holds all the notifications for the user
     private String userID;
+
     /**
-     *   no argument constructor for the firebase cloud
+     * no argument constructor for the firebase cloud
      */
     public User() {
 
@@ -41,6 +28,7 @@ public class User {
 
     /**
      * This constructor is called when a new user signs up
+     *
      * @param userName
      * @param password
      * @param email
@@ -51,13 +39,17 @@ public class User {
         this.password = password;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.bookList = new ArrayList<Book>();
+        this.ownBookList = new ArrayList<Book>();
         this.borrowedBookList = new ArrayList<Book>();
         this.requestedBookList = new ArrayList<Book>();
         this.notificationList = new ArrayList<String>();
+        this.acceptBookList = new ArrayList<>();
         this.userID = userID;
     }// constructor
 
+    public ArrayList<Book> getAcceptBookList() {
+        return acceptBookList;
+    }
 
     public String getUserName() {
         return userName;
@@ -91,8 +83,8 @@ public class User {
         this.email = email;
     }
 
-    public ArrayList<Book> getbookList() {
-        return this.bookList;
+    public ArrayList<Book> getOwnBookList() {
+        return this.ownBookList;
     }
 
 
@@ -102,6 +94,7 @@ public class User {
 
     /**
      * This method returns the users booklist
+     *
      * @return arraylist of books of the user
      */
 
@@ -111,16 +104,16 @@ public class User {
 
     /**
      * This method is used to add books to the user's booklist
+     *
      * @param book
      */
-    public void addBookToOwnedBooksList(Book book){
+    public void addBookToOwnedBooksList(Book book) {
 
-        this.bookList.add(book);
+        this.ownBookList.add(book);
     }// addBook
 
 
-
-    public void addBookToBorrowedBooksList(Book book){
+    public void addBookToBorrowedBooksList(Book book) {
         borrowedBookList.add(book);
     }// addBookToBorrowedBookList
 
@@ -132,34 +125,33 @@ public class User {
         return borrowedBookList;
     }
 
-    public void addBookToRequestedBooksList(Book book){
+    public void addBookToRequestedBooksList(Book book) {
         requestedBookList.add(book);
     }//addBookToBorrowedBookList
 
-    public void setbookList(ArrayList<Book> bookList) {
-        this.bookList= bookList;
+    public void setOwnBookList(ArrayList<Book> bookList) {
+        this.ownBookList = bookList;
     }
 
-    public void deleteFromRequestedBookList(Book book){
-       requestedBookList.remove(book);
+    public void deleteFromRequestedBookList(Book book) {
+        requestedBookList.remove(book);
     }//deleteFromRequestedBookList
 
     public ArrayList<String> getNotificationList() {
         return notificationList;
     }
 
-    public void addToNotificationList (String message){
+    public void addToNotificationList(String message) {
         notificationList.add(message);
     }
 
-    public void deleteFromOwnedBookList(Book book){
-        this.bookList.remove(book);
+    public void deleteFromOwnedBookList(Book book) {
+        this.ownBookList.remove(book);
     }//deleteFromRequestedBookList
 
-    public void deleteFromBorrowedBookList(Book book){
+    public void deleteFromBorrowedBookList(Book book) {
         borrowedBookList.remove(book);
     }//deleteFromRequestedBookList
-
 
 
 }// users class

@@ -32,9 +32,11 @@ public class Book implements Serializable {
         this.status = Status.Available;    // Attribute status denotes the status of the book, and thus we don't actually need
         this.isbn = isbn;
         this.owner = ownerID;
+        this.description = "";
+
     }
 
-    public Book(String title, String author, String date, String description, Status status, String isbn,String ownerID) {
+    public Book(String title, String author, String date, String description, Status status, String isbn, String ownerID) {
         this.title = title;
         this.author = author;
         this.date = date;
