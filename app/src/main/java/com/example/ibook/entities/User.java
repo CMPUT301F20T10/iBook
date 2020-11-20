@@ -18,6 +18,26 @@ public class User {
     private ArrayList<String> notificationList; //holds all the notifications for the user
     private String userID;
 
+
+//
+//
+//    BookRequest
+//
+//    Sender;
+//    Receiver;
+//    Book;
+//
+//    for the current user, I will check in the book request collection.
+//    for everyplace where currentUserID matches the requestsender  docoument in bookRequest document
+//
+//    if book.status is requested,
+//    then i gather, then i display in requested toggle
+//
+//            the owner accepts it, delete all the documents where the bookID matches, except for the document where the senderID is the one i accepted of
+//
+//            if book.status is accepted
+//    then I put them in accepeted booklist
+
     /**
      * no argument constructor for the firebase cloud
      */

@@ -32,6 +32,7 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
     private EditText authorEditText;
     private EditText dateEditText;
     private EditText isbnEditText;
+    private EditText descritionEditText;
     private Button cancelButton;
     private Button completeButton;
     private Button scanButton;
@@ -55,6 +56,7 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
         authorEditText = findViewById(R.id.authorEditor);
         dateEditText = findViewById(R.id.dateEditor);
         isbnEditText = findViewById(R.id.isbnEditor);
+        descritionEditText = findViewById(R.id.descriptionEditor);
 
         cancelButton = findViewById(R.id.cancelButton);
         completeButton = findViewById(R.id.completeButton);
@@ -74,12 +76,13 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                 final String authorName = authorEditText.getText().toString();
                 final String date = dateEditText.getText().toString();
                 final String isbn = isbnEditText.getText().toString();
+                final String description =descritionEditText.getText().toString();
                 if (bookName.length() > 0
                         && authorName.length() > 0
                         && date.length() > 0
                         && isbn.length() > 0) {
 //                    TODO:add more value
-                    Book currentBook = new Book(bookName, authorName, date, isbn,MainActivity.user.getUserID());
+                    Book currentBook = new Book(bookName, authorName, date,description, isbn,userID);
 
                     // update book if there's a change
                     if (!currentBook.equals(originalBook)) {
@@ -129,12 +132,15 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                                 //from_string_to_enum(String.valueOf(convertMap.get("status"))),
                                 Book.Status.Available,
                                 String.valueOf(convertMap.get("isbn")),
-                                String.valueOf(convertMap.get("owner"))
+                                String.valueOf(convertMap.get("owner")),
+                                String.valueOf(convertMap.get("bookID"))
+
+
                         );
                         originalBook = book;
 
                         bookNameEditText.setText(book.getTitle());
-                        authorEditText.setText(book.getAuthor());
+                        authorEditText.setText(book.getAuthors());
                         dateEditText.setText(book.getDate());
                         isbnEditText.setText(book.getIsbn());
                         // TODO: forgot to let the user edit description, improve it later
@@ -164,9 +170,9 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                     if (document.exists()) {
                         Map<String, Object> data = new HashMap();
                         data = document.getData();
-                        ArrayList<Book> books = (ArrayList<Book>) document.getData().get("BookList");
+                        ArrayList<Book> books = (ArrayList<Book>) document.getData().get("bookList");
                         books.set(bookNumber, book);
-                        data.put("BookList", books);
+                        data.put("bookList", books);
                         db.collection("users").document(userID).set(data);
                     } else {
                         Toast.makeText(getApplicationContext(), "No such document", Toast.LENGTH_SHORT).show();

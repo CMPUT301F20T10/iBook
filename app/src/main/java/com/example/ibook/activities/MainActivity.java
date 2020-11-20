@@ -91,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
                                 Toast.makeText(MainActivity.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
 
                                 //create a user object of existing user by loading info from database
-                                createUserObject();
 
                                 Intent intent = new Intent(getApplicationContext(), PageActivity.class);
                                 intent.putExtra("curr_username", username);

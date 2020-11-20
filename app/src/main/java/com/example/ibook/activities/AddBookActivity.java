@@ -46,6 +46,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
     private EditText authorEditText;
     private EditText dateEditText;
     private EditText isbnEditText;
+    private EditText descritionEditText;
     private Button cancelButton;
     private Button completeButton;
     private Button scanButton;
@@ -71,6 +72,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
         authorEditText = findViewById(R.id.authorEditor);
         dateEditText = findViewById(R.id.dateEditor);
         isbnEditText = findViewById(R.id.isbnEditor);
+        descritionEditText = findViewById(R.id.descriptionEditor);
 
         cancelButton = findViewById(R.id.cancelButton);
         completeButton = findViewById(R.id.completeButton);
@@ -95,6 +97,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 final String authorName = authorEditText.getText().toString();
                 final String date = dateEditText.getText().toString();
                 final String isbn = isbnEditText.getText().toString();
+                final String description = descritionEditText.getText().toString();
 
                 // check full information
                 if (bookName.length() > 0
@@ -107,8 +110,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                             bookID = MainActivity.database.getDb().collection("books").document().getId();
 
                             MainActivity.user = documentSnapshot.toObject(User.class);
-                            Book newBook = new Book(bookName, authorName, date, isbn, MainActivity.database.getCurrentUserUID());
-                            newBook.setBookID(bookID);
+                            Book newBook = new Book(bookName, authorName, date, description, isbn, MainActivity.database.getCurrentUserUID());
                             MainActivity.user.addBookToOwnedBooksList(newBook);
                             MainActivity.database.getDb().collection("books").document(bookID).set(newBook);
                             MainActivity.database.getDb().collection("users").document(MainActivity.database.getCurrentUserUID()).set(MainActivity.user);

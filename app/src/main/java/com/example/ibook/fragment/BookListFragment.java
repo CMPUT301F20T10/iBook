@@ -12,6 +12,7 @@ import com.example.ibook.R;
 import com.example.ibook.SectionPageAdapter;
 import com.example.ibook.activities.AddBookActivity;
 import com.example.ibook.activities.MainActivity;
+import com.example.ibook.activities.ViewBookActivity;
 import com.example.ibook.entities.Book;
 import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnSuccessListener;
