@@ -98,31 +98,84 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 final String date = dateEditText.getText().toString();
                 final String isbn = isbnEditText.getText().toString();
                 final String description = descritionEditText.getText().toString();
-
+                // TODO: fix here
                 // check full information
                 if (bookName.length() > 0
                         && authorName.length() > 0
                         && date.length() > 0
                         && isbn.length() > 0) {
-                    MainActivity.database.getDb().collection("users").document(MainActivity.database.getCurrentUserUID()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            bookID = MainActivity.database.getDb().collection("books").document().getId();
 
-                            MainActivity.user = documentSnapshot.toObject(User.class);
-                            Book newBook = new Book(bookName, authorName, date, description, isbn, MainActivity.database.getCurrentUserUID());
-                            MainActivity.user.addBookToOwnedBooksList(newBook);
-                            MainActivity.database.getDb().collection("books").document(bookID).set(newBook);
-                            MainActivity.database.getDb().collection("users").document(MainActivity.database.getCurrentUserUID()).set(MainActivity.user);
-                            finish();
+                    final DocumentReference docRef = db.collection("users").document(userID);
+                    docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+
+                                if (document.exists()) {
+                                    Map<String, Object> data;
+
+                                    // get data and overwrite it
+                                    data = document.getData();
+                                    Book newbook = new Book(bookName, authorName, date, description,
+                                            isbn, userID);
+
+                                    books = (ArrayList<Book>) document.getData().get("bookList");
+                                    books.add(newbook);
+
+
+                                    data.put("bookList", books);
+                                    db.collection("users")
+                                            .document(userID).update(data);
+                                    Toast.makeText(getBaseContext(), "Add book successfully!",
+                                            Toast.LENGTH_LONG).show();
+
+                                    done = true;
+                                    // TODO: use OOP to simplify it later
+                                    // also put data to database with book collection
+                                    bookID = db.collection("books").document().getId();
+                                    data = new HashMap();
+                                    data.put("authors", authorName);
+                                    data.put("date", date);
+                                    data.put("description", description);
+                                    data.put("isbn", isbn);
+                                    data.put("owner", userID);
+                                    data.put("status", "Available");
+                                    data.put("title", bookName);
+                                    data.put("bookID", bookID);
+
+                                    db.collection("books").document(bookID).set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Toast.makeText(getBaseContext(), "got book id OUtside" +
+                                                    " the scope too" + bookID, Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                    if (done) {
+                                        Toast.makeText(getBaseContext(), "got book id inside the " +
+                                                "scope too" + bookID, Toast.LENGTH_LONG).show();
+                                        Intent intent = new Intent();
+                                        setResult(1, intent);
+                                        finish();
+                                    }// if
+                                } else {
+                                    Toast.makeText(getBaseContext(), "No such document",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                Toast.makeText(getBaseContext(), "got an error",
+                                        Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
-                } else {
-                    Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();
-                }
 
+                } else {
+                    Toast.makeText(getBaseContext(), "Please input full information",
+                            Toast.LENGTH_SHORT).show();
+                }
             }
         });
+
 
         // choose a image
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -151,8 +204,10 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         // second parameter : request code
 
-                        Toast.makeText(getBaseContext(), "There is a bug with camera, please use gallery", Toast.LENGTH_SHORT).show();
-                        // TODO: there is a bug when using camera, maybe because of MediaStore library
+                        Toast.makeText(getBaseContext(), "There is a bug with camera, please use " +
+                                "gallery", Toast.LENGTH_SHORT).show();
+                        // TODO: there is a bug when using camera, maybe because of MediaStore
+                        //  library
                         // startActivityForResult(intent, REQ_CAMERA_IMAGE);
 
                     }
@@ -194,7 +249,8 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 // get image data
                 Uri selectedImage = data.getData();
                 try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),
+                            selectedImage);
                     imageView.setImageBitmap(bitmap);
                     onSuccessChangePhoto(bitmap);
                 } catch (IOException e) {

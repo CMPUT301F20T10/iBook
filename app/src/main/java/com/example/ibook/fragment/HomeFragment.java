@@ -51,7 +51,8 @@ public class HomeFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
         // Set up the view
@@ -242,7 +243,8 @@ public class HomeFragment extends Fragment {
  * Websites:
  *
  * Make search bar fully clickable
- * Liu, Eric. Custom SearchView whole clickable in android. Stack Overflow. Stack Exchange Inc. Nov 10, 2015. License(CC BY-SA).
+ * Liu, Eric. Custom SearchView whole clickable in android. Stack Overflow. Stack Exchange Inc.
+ * Nov 10, 2015. License(CC BY-SA).
  * https://stackoverflow.com/questions/17670685/custom-searchview-whole-clickable-in-android
  *
  *

@@ -40,15 +40,10 @@ public class BookListFragment extends Fragment {
 
     private BookListSectionFragment[] bookListSectionFragments = new BookListSectionFragment[4];
 
-    private ArrayList<Book> requestBookList = new ArrayList<>();
-    private ArrayList<Book> ownBookList = new ArrayList<>();
-    private ArrayList<Book> acceptBookList = new ArrayList<>();
-    private ArrayList<Book> borrowBookList = new ArrayList<>();
-
-
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_booklist, container, false);
         btn_addBook = root.findViewById(R.id.button_add);
         viewPager = root.findViewById(R.id.viewPager);
@@ -59,7 +54,6 @@ public class BookListFragment extends Fragment {
         bookListSectionFragments[2] = new BookListSectionFragment("Accept");
         bookListSectionFragments[3] = new BookListSectionFragment("Request");
 
-        getData();
         setUpViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -85,16 +79,6 @@ public class BookListFragment extends Fragment {
             }
         });
         return root;
-    }
-
-
-    private void getData() {
-        MainActivity.database.getDb().collection("users").document(MainActivity.database.getCurrentUserUID()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                MainActivity.user = documentSnapshot.toObject(User.class);
-            }
-        });
     }
 
     private void setUpViewPager(ViewPager viewPager) {

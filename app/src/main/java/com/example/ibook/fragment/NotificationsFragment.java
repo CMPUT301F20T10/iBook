@@ -189,6 +189,7 @@ public class NotificationsFragment extends Fragment {
             }
 
 
+
         // set toggle buttons
         radioGroup = root.findViewById(R.id.selectState);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {

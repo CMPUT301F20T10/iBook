@@ -52,6 +52,7 @@ public class BookListAdapter extends BaseAdapter {
      * Get the book object with given position
      *
      * @param position The index of the chosen book
+     *
      * @return The book object with given position
      */
     @Override
@@ -63,6 +64,7 @@ public class BookListAdapter extends BaseAdapter {
      * The method to get the id of book in the list with given position
      *
      * @param position the given position of the book
+     *
      * @return the id of the book, also the position of the book
      */
     @Override
@@ -78,7 +80,8 @@ public class BookListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.book_list_content, parent, false);
+            convertView = LayoutInflater.from(context).inflate(R.layout.book_list_content, parent
+                    , false);
         }
         //Get the current book
         Book book = books.get(position);

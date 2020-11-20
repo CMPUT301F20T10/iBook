@@ -19,29 +19,31 @@ public class Book implements Serializable {
     private String bookID;
 
 
-
     //Need to add picture data somehow
     public Book() {
-
     }
 
     //Constructor
-    public Book(String title, String authors, String date,String description, String isbn, String ownerID) {
+    public Book(String title, String authors, String date, String description, String isbn,
+                String ownerID) {
         this.title = title;
         this.authors = authors;
         this.date = date;
-        this.status = Status.Available;    // Attribute status denotes the status of the book, and thus we don't actually need
+        this.status = Status.Available;    // Attribute status denotes the status of the book,
+        // and thus we don't actually need
         this.isbn = isbn;
         this.owner = ownerID;
         this.description = description;
     }
 
-    public Book(String title, String author, String date, String description, Status status, String isbn,String ownerID,String bookID) {
+    public Book(String title, String author, String date, String description, Status status,
+                String isbn, String ownerID, String bookID) {
         this.title = title;
         this.authors = author;
         this.date = date;
         this.description = description;
-        this.status = status;    // Attribute status denotes the status of the book, and thus we don't actually need
+        this.status = status;    // Attribute status denotes the status of the book, and thus we
+        // don't actually need
         this.isbn = isbn;
         this.owner = ownerID;
         this.bookID = bookID;

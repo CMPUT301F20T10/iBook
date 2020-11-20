@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 //create a user object of existing user by loading info from database
 
+
                                 Intent intent = new Intent(getApplicationContext(), PageActivity.class);
                                 intent.putExtra("curr_username", username);
                                 startActivity(intent);

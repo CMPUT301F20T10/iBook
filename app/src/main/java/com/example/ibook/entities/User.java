@@ -11,18 +11,22 @@ public class User {
     private String password;
     private String email;
     private String phoneNumber;
-    private ArrayList<Book> ownBookList; //made it capitalized B because someone named key in database colloction to be capital, have to see later
-    private ArrayList<Book> requestedBookList;
-    private ArrayList<Book> acceptBookList;
-    private ArrayList<Book> borrowedBookList;
+    private ArrayList<Book> bookList;
     private ArrayList<String> notificationList; //holds all the notifications for the user
     private String userID;
-
 
 //
 //
 //    BookRequest
 //
+
+    public ArrayList<Book> getBookList() {
+        return bookList;
+    }
+
+    public void setBookList(ArrayList<Book> bookList) {
+        this.bookList = bookList;
+    }
 //    Sender;
 //    Receiver;
 //    Book;
@@ -59,9 +63,7 @@ public class User {
         this.password = password;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.ownBookList = new ArrayList<Book>();
-        this.borrowedBookList = new ArrayList<Book>();
-        this.requestedBookList = new ArrayList<Book>();
+        this.bookList = new ArrayList<Book>();
         this.notificationList = new ArrayList<String>();
         this.acceptBookList = new ArrayList<>();
         this.userID = userID;
@@ -103,9 +105,6 @@ public class User {
         this.email = email;
     }
 
-    public ArrayList<Book> getOwnBookList() {
-        return this.ownBookList;
-    }
 
 
     public String getPhoneNumber() {
@@ -122,40 +121,6 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    /**
-     * This method is used to add books to the user's booklist
-     *
-     * @param book
-     */
-    public void addBookToOwnedBooksList(Book book) {
-
-        this.ownBookList.add(book);
-    }// addBook
-
-
-    public void addBookToBorrowedBooksList(Book book) {
-        borrowedBookList.add(book);
-    }// addBookToBorrowedBookList
-
-    public ArrayList<Book> getRequestedBookList() {
-        return requestedBookList;
-    }
-
-    public ArrayList<Book> getBorrowedBookList() {
-        return borrowedBookList;
-    }
-
-    public void addBookToRequestedBooksList(Book book) {
-        requestedBookList.add(book);
-    }//addBookToBorrowedBookList
-
-    public void setOwnBookList(ArrayList<Book> bookList) {
-        this.ownBookList = bookList;
-    }
-
-    public void deleteFromRequestedBookList(Book book) {
-        requestedBookList.remove(book);
-    }//deleteFromRequestedBookList
 
     public ArrayList<String> getNotificationList() {
         return notificationList;
@@ -165,13 +130,6 @@ public class User {
         notificationList.add(message);
     }
 
-    public void deleteFromOwnedBookList(Book book) {
-        this.ownBookList.remove(book);
-    }//deleteFromRequestedBookList
-
-    public void deleteFromBorrowedBookList(Book book) {
-        borrowedBookList.remove(book);
-    }//deleteFromRequestedBookList
 
 
 }// users class
