@@ -93,7 +93,6 @@ public class BookListFragment extends Fragment {
                                     Map<String, Object> convertMap;
                                     ArrayList<Book> hashList = (ArrayList<Book>) document.get("bookList");
 
-
                                     for (int i = 0; i < hashList.size(); i += 1) {
                                         convertMap = (Map<String, Object>) hashList.get(i);
 

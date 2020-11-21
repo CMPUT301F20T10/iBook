@@ -39,9 +39,10 @@
         android:id="@+id/listBookDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="#00FFFFFF"
         android:text="Description: xxxxxxxxx xxxx xxx xx xxxxxxxx..."
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/listBookDate"/>
+        app:layout_constraintTop_toBottomOf="@+id/listBookDate" />
 
     <TextView
         android:id="@+id/listBookAuthors"
@@ -53,9 +54,10 @@
         app:layout_constraintTop_toBottomOf="@+id/listBookTitle" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/listImageView"
         android:layout_width="128dp"
         android:layout_height="97dp"
+        android:background="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="@+id/listBookStatus"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
