@@ -12,6 +12,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.Map;
  * This is a model/entity class for the user
  * has getters for the attributes and is passed to the firestore cloud as a object
  */
-public class User {
+public class User implements Serializable {
     private String userName;
     private String password;
     private String email;

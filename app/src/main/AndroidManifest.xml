@@ -30,7 +30,7 @@
         <activity android:name=".activities.ViewBookActivity"/>
         <activity android:name=".activities.SignUpActivity" />
         <activity android:name=".activities.EditBookActivity"/>
-        <activity android:name=".activities.SearchedBooksActivity"/>
+        <activity android:name=".activities.SearchResultsActivity"/>
         <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
