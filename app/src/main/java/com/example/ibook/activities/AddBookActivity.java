@@ -101,7 +101,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 final String authorName = authorEditText.getText().toString();
                 final String date = dateEditText.getText().toString();
                 final String isbn = isbnEditText.getText().toString();
-                final String description = descriptionEditText.getText().toString();
+                final String descr = descriptionEditText.getText().toString();
 
                 // check full information
                 if (bookName.length() > 0
@@ -132,15 +132,14 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
 //                                    SignUpActivity.database.getBookDocumentReference().set(book);
 //                                    //Add the book to  "user" Collections in database
 //                                    SignUpActivity.database.getUserDocumentReference().set(SignUpActivity.user);
-                                    Book newbook = new Book(bookName, authorName, date, description, isbn, userID);
-
+                                    bookID = db.collection("books").document().getId();
+                                    Book newbook = new Book(bookName, authorName, date, descr, Book.Status.Available, isbn, userID, bookID);
                                     books = (ArrayList<Book>) document.getData().get("bookList");
                                     //If booksList is null we need to create a new books list
                                     if (books == null) {
                                         books = new ArrayList<Book>();
                                     }
                                     books.add(newbook);
-
 
                                     data.put("bookList", books);
                                     db.collection("users")
@@ -150,11 +149,11 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                                     done = true;
                                     // TODO: use OOP to simplify it later
                                     // also put data to database with book collection
-                                    bookID = db.collection("books").document().getId();
+
                                     data = new HashMap();
                                     data.put("authors", authorName);
                                     data.put("date", date);
-                                    data.put("description", description);
+                                    data.put("description", descr);
                                     data.put("isbn", isbn);
                                     data.put("owner", userID);
                                     data.put("status", "Available");

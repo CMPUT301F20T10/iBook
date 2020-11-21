@@ -25,6 +25,8 @@ import com.example.ibook.activities.MapsActivity;
 import com.example.ibook.activities.ViewBookActivity;
 import com.example.ibook.entities.Database;
 import com.example.ibook.entities.User;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -51,6 +53,15 @@ public class NotificationsFragment extends Fragment {
     private RadioGroup radioGroup;
     private DocumentReference userDoc;
     public static String requestSenderID;
+
+    //Maps
+    private Marker marker;
+    public static LatLng markerLoc = null;
+    public static String markerText;
+    public static final int ADD_EDIT_LOCATION_REQUEST_CODE = 455;
+    public static final int VIEW_LOCATION_REQUEST_CODE = 456;
+    public static final int ADD_EDIT_LOCATION_RESULT_CODE = 457;
+    public static final int VIEW_LOCATION_RESULT_CODE = 458;
 
     @Nullable
     @Override
@@ -94,8 +105,16 @@ public class NotificationsFragment extends Fragment {
                         .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 //going to the maps
-                                Intent intent = new Intent(getContext(), MapsActivity.class);
-                                startActivity(intent);
+                                Intent mapsIntent = new Intent(getContext(), MapsActivity.class);
+                                mapsIntent.putExtra(MapsActivity.MAP_TYPE, MapsActivity.ADD_EDIT_LOCATION);
+                                if(markerLoc!=null) {
+                                    mapsIntent.putExtra("locationIncluded", true);
+                                    mapsIntent.putExtra("markerLoc", markerLoc);
+                                    mapsIntent.putExtra("markerText", markerText);
+                                }else{
+                                    mapsIntent.putExtra("locationIncluded", false);
+                                }
+                                startActivityForResult(mapsIntent, ADD_EDIT_LOCATION_REQUEST_CODE);
                             }
                         })
                         .setNegativeButton("Decline", new DialogInterface.OnClickListener() {
@@ -219,5 +238,20 @@ public class NotificationsFragment extends Fragment {
         return root;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //Add new gear
+        if (resultCode == ADD_EDIT_LOCATION_RESULT_CODE && requestCode == ADD_EDIT_LOCATION_REQUEST_CODE) {
+            if(data.getBooleanExtra("locationIncluded", false)){
+                markerLoc = (LatLng) data.getExtras().getParcelable("markerLoc");
+                markerText = data.getStringExtra("markerText");
+            }
+            //Clear the map so existing marker gets removed
+            //mMap.clear();
+            //addMarker();
+            //addLocation.setText("Edit Location");
+        }
+    }
 
 }

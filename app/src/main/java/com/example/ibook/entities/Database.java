@@ -3,6 +3,7 @@ package com.example.ibook.entities;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.widget.ImageView;
@@ -40,7 +41,7 @@ public class Database {
     private FirebaseAuth uAuth;
     private FirebaseFirestore db;
     private StorageReference storageReference;
-    private static boolean uploadingImage;
+    public static boolean uploadingImage;
 
     public Database(FirebaseAuth uAuth, FirebaseFirestore db) {
         this.uAuth = uAuth;
@@ -93,8 +94,13 @@ public class Database {
         return this.db.collection("books").document(bookId);
     }//getBookDocumentReference
 
-
-    //Upload image to database
+    /**
+     * Upload an image to the database (Firebase Storage) by supplying the image as an image view
+     * and the file title as the bookId. This works because there can only be one image per book.
+     * @param imageView
+     * @param bookId
+     * @return
+     */
     public boolean uploadImage(ImageView imageView, String bookId) {
         final boolean[] success = {false};
         if(bookId == null) {
@@ -112,53 +118,77 @@ public class Database {
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                 if(task.isSuccessful()) {
                     success[0] = true;
+                    uploadingImage = false;
                 }
-                uploadingImage = false;
-                Log.i("download", "Upload succeeded");
+                Log.i("image", "Upload succeeded");
             }
         });
 
-        while(uploadingImage){
-            try{
-                wait(1000);
-                await(storageTask);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+        try{
+            SystemClock.sleep(1000);
+            await(storageTask);
+        }catch (Exception e){
+            e.printStackTrace();
         }
-
 
         return success[0];
     }
 
-    //Download image from database and return bitmap
+    /**
+     * Download an image from the database. This method takes in the ImageView of where to store the
+     * image and the bookId, which is the filename for the image to get from Firebase Storage.
+     * @param imageView
+     * @param bookId
+     * @return
+     */
     public boolean downloadImage(final ImageView imageView, final String bookId) {
         final boolean[] success = {false};
-        final int var = 0;
         if(bookId == null) {
             return success[0];
         }
+//        if(uploadingImage = true){
+//            SystemClock.sleep(3000);
+//            uploadingImage = false;
+//        }
 
-        try {
-            storageReference.child("coverImages/"+bookId).getBytes(1024*1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                @Override
-                public void onSuccess(byte[] bytes) {
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    imageView.setImageBitmap(bitmap);
-                    success[0] = true;
-                    Log.i("download", "Download succeeded");
+        storageReference.child("coverImages/"+bookId).getBytes(1024*1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                imageView.setImageBitmap(bitmap);
+                success[0] = true;
+                Log.i("image", "Download succeeded");
 
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.i("download", "Download failed, "+ e.getMessage());
-                    success[0] = false;
-                }
-            });
-        }catch (Exception err){
-            Log.i("download", "No Image");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i("image", "Download failed, "+ e.getMessage());
+                success[0] = false;
+            }
+        });
+
+        return success[0];
+    }
+
+    /**
+     * Delete an image from firebase storage with bookId as the filename.
+     * @param bookId
+     * @return
+     */
+    public boolean deleteImage(final String bookId) {
+        final boolean[] success = {false};
+        if(bookId == null) {
+            return success[0];
         }
+        //Delete the image
+        storageReference.child("coverImages/"+bookId).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Log.i("image", "Deleted Image");
+                success[0] = true;
+            }
+        });
 
         return success[0];
     }

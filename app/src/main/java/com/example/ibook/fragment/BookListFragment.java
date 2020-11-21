@@ -63,7 +63,7 @@ public class BookListFragment extends Fragment {
         uAuth = FirebaseAuth.getInstance();
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
-        //adapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
 
         //default username = "yzhang24@gmail.com";
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
