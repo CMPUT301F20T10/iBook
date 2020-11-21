@@ -29,7 +29,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
@@ -100,12 +99,13 @@ public class BookListFragment extends Fragment {
                                                 String.valueOf(convertMap.get("title")),
                                                 String.valueOf(convertMap.get("authors")),
                                                 String.valueOf(convertMap.get("date")),
-                                                (String.valueOf(convertMap.get("description"))),
+                                                String.valueOf(convertMap.get("description")),
                                                 from_string_to_enum(String.valueOf(convertMap.get("status"))),
                                                 String.valueOf(convertMap.get("isbn")),
                                                 String.valueOf(convertMap.get("owner")),
                                                 String.valueOf(convertMap.get("bookID"))
                                         ));
+                                        //Toast.makeText(getContext(), String.valueOf(convertMap.get("description")), Toast.LENGTH_SHORT).show();
                                     }
                                     if (datalist == null) {
                                         datalist = new ArrayList<>();

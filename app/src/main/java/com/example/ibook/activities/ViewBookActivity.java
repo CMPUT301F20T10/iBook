@@ -1,13 +1,8 @@
 package com.example.ibook.activities;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.provider.MediaStore;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -29,7 +24,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -39,7 +33,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ViewBookActivity extends AppCompatActivity {
     private String userID;
-    private Book book;
     private int bookNumber;
     private int isOwner;
     private String bookISBN;
@@ -63,7 +56,7 @@ public class ViewBookActivity extends AppCompatActivity {
     private User user;
     private DocumentReference docRef;
     FirebaseAuth uAuth;
-    Book selectedBook;
+    private Book selectedBook;
 
     public static String requestReceiverID;
     public static User requestReceiver;
@@ -96,8 +89,6 @@ public class ViewBookActivity extends AppCompatActivity {
         delete_button = findViewById(R.id.btn_delete_book);
 
 
-
-
         uAuth = FirebaseAuth.getInstance();
         userID = uAuth.getCurrentUser().getUid();
         db = FirebaseFirestore.getInstance();
@@ -105,7 +96,7 @@ public class ViewBookActivity extends AppCompatActivity {
         docRef = db.collection("users").document(userID);//creating a document for the use
 
         Intent intent = getIntent();
-        userID = intent.getStringExtra("USER_ID");
+        //userID = intent.getStringExtra("USER_ID");
 
         // The number of clicked book on the booklist
         bookNumber = intent.getIntExtra("BOOK_NUMBER", 0);
@@ -292,9 +283,29 @@ public class ViewBookActivity extends AppCompatActivity {
 
 
     public void delete_book(View view) {
+
+        // delete book from book collection
+        /*db.collection("books")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                // todo: change email key word to username
+                                String bookID = (String) document.getId();
+                                if(bookID.equals(selectedBook.getBookID())){
+                                    Toast.makeText(getBaseContext(), "match "+bookID, Toast.LENGTH_SHORT).show();
+                                    return;
+                                    //db.collection("books").document((String)document.getId()).delete();
+                                }
+                            }
+                        }
+                    }
+                });*/
+        db.collection("books").document(selectedBook.getBookID()).delete();
+
         DocumentReference docRef = db.collection("users").document(userID);
-
-
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -354,7 +365,6 @@ public class ViewBookActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                           selectedBook = null;
                             if (task.isSuccessful()) {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     String checkISBN = (String)document.get("isbn");
@@ -403,7 +413,7 @@ public class ViewBookActivity extends AppCompatActivity {
                         if (document.exists()) {
                             ArrayList<Book> hashList = (ArrayList<Book>) document.get("bookList");
                             Map<String, Object> convertMap = (Map<String, Object>) hashList.get(bookNumber);
-                            book = new Book(
+                            selectedBook = new Book(
                                     String.valueOf(convertMap.get("title")),
                                     String.valueOf(convertMap.get("authors")),
                                     String.valueOf(convertMap.get("date")),
@@ -411,17 +421,17 @@ public class ViewBookActivity extends AppCompatActivity {
                                     //from_string_to_enum(String.valueOf(convertMap.get("status"))),
                                     Book.Status.Available,
                                     String.valueOf(convertMap.get("isbn")),
-                                    String.valueOf(document.get("owner")),
-                                    String.valueOf(document.get("bookID"))
+                                    String.valueOf(convertMap.get("owner")),
+                                    String.valueOf(convertMap.get("bookID"))
                             );
-                            bookNameTextView.setText(book.getTitle());
-                            authorTextView.setText(book.getAuthors());
-                            dateTextView.setText(book.getDate());
-                            isbnTextView.setText(book.getIsbn());
-                            if(book.getDescription()!= null) {
-                                descriptionTextView.setText(book.getDescription());
+                            bookNameTextView.setText(selectedBook.getTitle());
+                            authorTextView.setText(selectedBook.getAuthors());
+                            dateTextView.setText(selectedBook.getDate());
+                            isbnTextView.setText(selectedBook.getIsbn());
+                            if(selectedBook.getDescription()!= null) {
+                                descriptionTextView.setText(selectedBook.getDescription());
                             }
-                            MainActivity.database.downloadImage(imageView, book.getBookID());
+                            MainActivity.database.downloadImage(imageView, selectedBook.getBookID());
 
                         } else {
                             //Log.d(TAG, "No such document");
