@@ -162,7 +162,8 @@ public class HomeFragment extends Fragment {
                             Book.Status.valueOf(document.getString("status")),
                             document.getString("isbn"),
                             document.getString("owner"),
-                            document.getString("bookID"));
+                            document.getString("bookID")
+                    );
 
                     bookList.add(book);
 

@@ -25,6 +25,8 @@ import com.example.ibook.activities.MapsActivity;
 import com.example.ibook.activities.ViewBookActivity;
 import com.example.ibook.entities.Database;
 import com.example.ibook.entities.User;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -55,6 +57,15 @@ public class NotificationsFragment extends Fragment {
     public static String requestSenderID;
     private NotificationsSectionFragment requestSection;
     private NotificationsSectionFragment responseSection;
+
+    //Maps
+    private Marker marker;
+    public static LatLng markerLoc = null;
+    public static String markerText;
+    public static final int ADD_EDIT_LOCATION_REQUEST_CODE = 455;
+    public static final int VIEW_LOCATION_REQUEST_CODE = 456;
+    public static final int ADD_EDIT_LOCATION_RESULT_CODE = 457;
+    public static final int VIEW_LOCATION_RESULT_CODE = 458;
 
     @Nullable
     @Override

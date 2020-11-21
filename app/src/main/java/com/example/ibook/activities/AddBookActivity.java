@@ -48,6 +48,8 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
 
     private final int REQ_CAMERA_IMAGE = 1;
     private final int REQ_GALLERY_IMAGE = 2;
+    private boolean imageAdded;
+    public static String bookID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,11 +66,11 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
         dateEditText = findViewById(R.id.dateEditor);
         isbnEditText = findViewById(R.id.isbnEditor);
         descriptionEditText = findViewById(R.id.descriptionEditor);
-
         cancelButton = findViewById(R.id.cancelButton);
         completeButton = findViewById(R.id.completeButton);
         scanButton = findViewById(R.id.scanButton);
         imageView = findViewById(R.id.imageView);
+        imageAdded = false;
 
         // go back when clicking cancel
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -97,6 +99,9 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                     // added to the book list
                     Book book = new Book(title, author, date, description, isbn, userID);
                     book.setBookID(bookID);
+                    if(imageAdded) {//Upload the image
+                                        MainActivity.database.uploadImage(imageView,bookID);
+                                    }
 
                     final DocumentReference userDoc =
                             MainActivity.database.getDb().collection("users").document(userID);
@@ -205,7 +210,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 // get image data
                 Bitmap bitmap = (Bitmap) data.getExtras().get("data");
                 imageView.setImageBitmap(bitmap);
-                onSuccessChangePhoto(bitmap);
+                imageAdded = true;
             }
 
         } else if (requestCode == REQ_GALLERY_IMAGE) {
@@ -216,7 +221,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),
                             selectedImage);
                     imageView.setImageBitmap(bitmap);
-                    onSuccessChangePhoto(bitmap);
+                    imageAdded = true;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -224,15 +229,14 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
             }
         }
     }
-
-    private void onSuccessChangePhoto(Bitmap bitmap) {
-        //Intent intent = new Intent();
-        //intent.putExtra("PHOTO_CHANGE", bitmap);
-        //setResult(1, intent);
-        // Comment: so far, we can only let user upload photo, but can't store it
-        //      Thus, unfortunately, it won't be passed back to the previous activity
-        // TODO: figure out how to scale image, compress it and store it to database
-    }
+//    private void onSuccessChangePhoto(Bitmap bitmap) {
+//        //Intent intent = new Intent();
+//        //intent.putExtra("PHOTO_CHANGE", bitmap);
+//        //setResult(1, intent);
+//        // Comment: so far, we can only let user upload photo, but can't store it
+//        //      Thus, unfortunately, it won't be passed back to the previous activity
+//        // TODO: figure out how to scale image, compress it and store it to database
+//    }
 
     @Override
     public void onOkPressed(String ISBN) {
