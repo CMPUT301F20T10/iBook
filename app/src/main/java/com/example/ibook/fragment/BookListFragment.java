@@ -2,11 +2,13 @@ package com.example.ibook.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.ibook.R;
 import com.example.ibook.SectionPageAdapter;
@@ -31,14 +33,14 @@ public class BookListFragment extends Fragment {
 
     //Private variables
     private Button btn_addBook;
-    private FirebaseFirestore db;
-    private String userID;
-    private String userName;
 
     private ViewPager viewPager;
     private TabLayout tabLayout;
 
-    private BookListSectionFragment[] bookListSectionFragments = new BookListSectionFragment[4];
+    private BookListSectionFragment ownSection;
+    private BookListSectionFragment borrowSection;
+    private BookListSectionFragment acceptSection;
+    private BookListSectionFragment requestSection;
 
     @Nullable
     @Override
@@ -49,10 +51,10 @@ public class BookListFragment extends Fragment {
         viewPager = root.findViewById(R.id.viewPager);
         tabLayout = root.findViewById(R.id.tabLayout);
 
-        bookListSectionFragments[0] = new BookListSectionFragment("Own");
-        bookListSectionFragments[1] = new BookListSectionFragment("Borrow");
-        bookListSectionFragments[2] = new BookListSectionFragment("Accept");
-        bookListSectionFragments[3] = new BookListSectionFragment("Request");
+        ownSection = new BookListSectionFragment("Own");
+        borrowSection = new BookListSectionFragment("Borrow");
+        acceptSection = new BookListSectionFragment("Accept");
+        requestSection = new BookListSectionFragment("Request");
 
         setUpViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
@@ -84,27 +86,21 @@ public class BookListFragment extends Fragment {
     private void setUpViewPager(ViewPager viewPager) {
         SectionPageAdapter adapter = new SectionPageAdapter(getChildFragmentManager());
 
-        adapter.addFragment(bookListSectionFragments[0], "Own");
-        adapter.addFragment(bookListSectionFragments[1], "Borrow");
-        adapter.addFragment(bookListSectionFragments[2], "Request");
-        adapter.addFragment(bookListSectionFragments[3], "Accept");
+        adapter.addFragment(ownSection, "Own");
+        adapter.addFragment(borrowSection, "Borrow");
+        adapter.addFragment(requestSection, "Request");
+        adapter.addFragment(acceptSection, "Accept");
         viewPager.setAdapter(adapter);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (ownSection.running()) {
+            SystemClock.sleep(500);
+            ownSection.getBookList();
+        }
 
-    public Book.Status from_string_to_enum(String input) {
-        if (input.equals("Available"))
-            return Book.Status.Available;
-
-        if (input.equals("Available"))
-            return Book.Status.Available;
-
-        if (input.equals("Available"))
-            return Book.Status.Available;
-
-        if (input.equals("Available"))
-            return Book.Status.Available;
-        // todo: change later
-        return Book.Status.Available;
     }
+
 }

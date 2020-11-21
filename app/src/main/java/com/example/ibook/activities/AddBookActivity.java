@@ -1,11 +1,13 @@
 package com.example.ibook.activities;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -40,8 +42,7 @@ import androidx.appcompat.app.AppCompatActivity;
  *
  */
 public class AddBookActivity extends AppCompatActivity implements ScanFragment.OnFragmentInteractionListener {
-    private User user;
-    private Book book;
+
     private EditText bookNameEditText;
     private EditText authorEditText;
     private EditText dateEditText;
@@ -51,13 +52,12 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
     private Button completeButton;
     private Button scanButton;
     private ImageView imageView;
-    private FirebaseFirestore db;
+
     private String userID;
-    private ArrayList<Book> books;
+    private String bookID;
+
     private final int REQ_CAMERA_IMAGE = 1;
     private final int REQ_GALLERY_IMAGE = 2;
-    public static String bookID;
-    public static Boolean done;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +68,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
         getSupportActionBar().hide(); // hide the title bar
 
         setContentView(R.layout.activity_add_or_edit_book_screen);
+
         bookNameEditText = findViewById(R.id.titleEditor);
         authorEditText = findViewById(R.id.authorEditor);
         dateEditText = findViewById(R.id.dateEditor);
@@ -78,8 +79,6 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
         completeButton = findViewById(R.id.completeButton);
         scanButton = findViewById(R.id.scanButton);
         imageView = findViewById(R.id.imageView);
-
-        books = new ArrayList<>();
 
         // go back when clicking cancel
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -93,85 +92,35 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
         completeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String bookName = bookNameEditText.getText().toString();
-                final String authorName = authorEditText.getText().toString();
+                final String title = bookNameEditText.getText().toString();
+                final String author = authorEditText.getText().toString();
                 final String date = dateEditText.getText().toString();
                 final String isbn = isbnEditText.getText().toString();
                 final String description = descritionEditText.getText().toString();
-                // TODO: fix here
-                // check full information
-                if (bookName.length() > 0
-                        && authorName.length() > 0
-                        && date.length() > 0
-                        && isbn.length() > 0) {
 
-                    final DocumentReference docRef = db.collection("users").document(userID);
-                    docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                if (validation(title, author, isbn, date)) {
+                    userID = MainActivity.database.getCurrentUserUID();
+                    bookID = MainActivity.database.getDb().collection("books").document().getId();
+
+                    Book book = new Book(title, author, date, description, isbn, userID);
+                    book.setBookID(bookID);
+
+                    final DocumentReference userDoc =
+                            MainActivity.database.getDb().collection("users").document(userID);
+                    userDoc.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            if (task.isSuccessful()) {
-                                DocumentSnapshot document = task.getResult();
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            MainActivity.user = documentSnapshot.toObject(User.class);
+                            MainActivity.user.addToBookList(book);
 
-                                if (document.exists()) {
-                                    Map<String, Object> data;
-
-                                    // get data and overwrite it
-                                    data = document.getData();
-                                    Book newbook = new Book(bookName, authorName, date, description,
-                                            isbn, userID);
-
-                                    books = (ArrayList<Book>) document.getData().get("bookList");
-                                    books.add(newbook);
-
-
-                                    data.put("bookList", books);
-                                    db.collection("users")
-                                            .document(userID).update(data);
-                                    Toast.makeText(getBaseContext(), "Add book successfully!",
-                                            Toast.LENGTH_LONG).show();
-
-                                    done = true;
-                                    // TODO: use OOP to simplify it later
-                                    // also put data to database with book collection
-                                    bookID = db.collection("books").document().getId();
-                                    data = new HashMap();
-                                    data.put("authors", authorName);
-                                    data.put("date", date);
-                                    data.put("description", description);
-                                    data.put("isbn", isbn);
-                                    data.put("owner", userID);
-                                    data.put("status", "Available");
-                                    data.put("title", bookName);
-                                    data.put("bookID", bookID);
-
-                                    db.collection("books").document(bookID).set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Toast.makeText(getBaseContext(), "got book id OUtside" +
-                                                    " the scope too" + bookID, Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                                    if (done) {
-                                        Toast.makeText(getBaseContext(), "got book id inside the " +
-                                                "scope too" + bookID, Toast.LENGTH_LONG).show();
-                                        Intent intent = new Intent();
-                                        setResult(1, intent);
-                                        finish();
-                                    }// if
-                                } else {
-                                    Toast.makeText(getBaseContext(), "No such document",
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            } else {
-                                Toast.makeText(getBaseContext(), "got an error",
-                                        Toast.LENGTH_SHORT).show();
-                            }
+                            userDoc.set(MainActivity.user);
                         }
                     });
 
-                } else {
-                    Toast.makeText(getBaseContext(), "Please input full information",
-                            Toast.LENGTH_SHORT).show();
+                    MainActivity.database.getDb().collection("books").document(bookID).set(book);
+                    Intent intent = new Intent();
+                    setResult(1, intent);
+                    finish();
                 }
             }
         });
@@ -192,6 +141,23 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 new ScanFragment().show(getSupportFragmentManager(), "Scan ISBN");
             }
         });
+    }
+
+    private boolean validation(String title, String author, String isbn, String data) {
+        if (title.length() <= 0) {
+            Toast.makeText(getApplicationContext(), "Title cannot be empty", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (author.length() <= 0) {
+            Toast.makeText(getApplicationContext(), "Author cannot be empty", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (isbn.length() <= 0) {
+            Toast.makeText(getApplicationContext(), "ISBN cannot be empty", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        //TODO: Data format checking
+        return true;
     }
 
     // let user choose to use camera or gallery

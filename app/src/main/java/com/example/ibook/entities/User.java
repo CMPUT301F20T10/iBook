@@ -27,17 +27,23 @@ public class User {
     public void setBookList(ArrayList<Book> bookList) {
         this.bookList = bookList;
     }
+
+    public void addToBookList(Book book) {
+        bookList.add(book);
+    }
 //    Sender;
 //    Receiver;
 //    Book;
 //
 //    for the current user, I will check in the book request collection.
-//    for everyplace where currentUserID matches the requestsender  docoument in bookRequest document
+//    for everyplace where currentUserID matches the requestsender  docoument in bookRequest
+//    document
 //
 //    if book.status is requested,
 //    then i gather, then i display in requested toggle
 //
-//            the owner accepts it, delete all the documents where the bookID matches, except for the document where the senderID is the one i accepted of
+//            the owner accepts it, delete all the documents where the bookID matches, except for
+//            the document where the senderID is the one i accepted of
 //
 //            if book.status is accepted
 //    then I put them in accepeted booklist
@@ -65,13 +71,9 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.bookList = new ArrayList<Book>();
         this.notificationList = new ArrayList<String>();
-        this.acceptBookList = new ArrayList<>();
         this.userID = userID;
     }// constructor
 
-    public ArrayList<Book> getAcceptBookList() {
-        return acceptBookList;
-    }
 
     public String getUserName() {
         return userName;
@@ -106,7 +108,6 @@ public class User {
     }
 
 
-
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -129,7 +130,6 @@ public class User {
     public void addToNotificationList(String message) {
         notificationList.add(message);
     }
-
 
 
 }// users class

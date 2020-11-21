@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -70,7 +71,6 @@ public class ViewBookActivity extends AppCompatActivity {
     String userName;
 
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
@@ -95,8 +95,6 @@ public class ViewBookActivity extends AppCompatActivity {
         delete_button = findViewById(R.id.btn_delete_book);
 
 
-
-
         uAuth = FirebaseAuth.getInstance();
         userID = uAuth.getCurrentUser().getUid();
         db = FirebaseFirestore.getInstance();
@@ -118,14 +116,7 @@ public class ViewBookActivity extends AppCompatActivity {
             edit_button.setVisibility(View.GONE);
             delete_button.setVisibility(View.GONE);
             delete_button.setEnabled(false); // make it disabled too
-            // Toast.makeText(getBaseContext(), String.valueOf(bookNumber), Toast.LENGTH_SHORT).show();
-            // Toast.makeText(getBaseContext(), userID, Toast.LENGTH_SHORT).show();
-
-//            user = new User();
-//            docRef = user.getDocumentReference();
-//            db = FirebaseFirestore.getInstance();
-        }
-        else {
+        } else {
             // hide request button if the current user is the owner.
             request_button.setVisibility(View.GONE);
             request_button.setEnabled(false); // disable the button too
@@ -167,17 +158,8 @@ public class ViewBookActivity extends AppCompatActivity {
                         if (documentSnapshot.exists()) {
                             //user object intialized
                             currentUser = documentSnapshot.toObject(User.class);
-//                            ArrayList<Book> books;
-//                            for(bookID in BOOK){
-//                                db.collection("users").document(bookId).get().addOnSuccessListener(
-//
-//                                        newBook = toobect(Book.class);
-//                                        books.add(newbook);
-//                                );
-//
-//                                adapter.set(newBook);
-//                            }
-                            final DocumentReference docRefRequestReceiver = db.collection("users").document(requestReceiverID);
+                            final DocumentReference docRefRequestReceiver =
+                                    db.collection("users").document(requestReceiverID);
 
                             docRefRequestReceiver.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
@@ -186,10 +168,14 @@ public class ViewBookActivity extends AppCompatActivity {
                                     requestReceiver.addToNotificationList(currentUser.getUserName() + " wants to borrow your book " + selectedBook.getTitle());
                                     //updating notificaion list of the user in database
                                     docRefRequestReceiver.set(requestReceiver);
-                                    Toast.makeText(getBaseContext(), "Coming here!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getBaseContext(), "Coming here!",
+                                            Toast.LENGTH_SHORT).show();
 
 
-                                    BookRequest newRequest = new BookRequest(currentUser.getUserID(),requestReceiver.getUserID(),selectedBook.getBookID());
+                                    BookRequest newRequest =
+                                            new BookRequest(currentUser.getUserID(),
+                                                    requestReceiver.getUserID(),
+                                                    selectedBook.getBookID());
                                     db.collection("bookRequest").document().set(newRequest);
 
                                     //change book status
@@ -197,15 +183,20 @@ public class ViewBookActivity extends AppCompatActivity {
 
                                     selectedBook.setStatus(Book.Status.Requested);
 
-                                    final DocumentReference bookRef = db.collection("books").document(selectedBook.getBookID());
+                                    final DocumentReference bookRef =
+                                            db.collection("books").document(selectedBook.getBookID());
                                     bookRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                         @Override
                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                                             bookRef.set(selectedBook);
-                                            //TODO: Update the status of the book in the user collection bookList, the book collection has owner ID so you can use that to go to user collection
+                                            //TODO: Update the status of the book in the user
+                                            // collection bookList, the book collection has owner
+                                            // ID so you can use that to go to user collection
                                             //TODO: and uodate his booklist;s book status
 
-                                            //maybe don't have to do this if we are always using the book collection and bookRequestCollection but still something to think about
+                                            //maybe don't have to do this if we are always using
+                                            // the book collection and bookRequestCollection but
+                                            // still something to think about
 
                                         }
                                     });
@@ -217,84 +208,25 @@ public class ViewBookActivity extends AppCompatActivity {
 
                 });
 
-
-//                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                                                       @Override
-//                                                       public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                                                           if (task.isSuccessful()) {
-//                                                               DocumentSnapshot document = task.getResult();
-//                                                               if (document.exists()) {
-//                                                                   ArrayList<Book> hashList = (ArrayList<Book>) document.get("requestedBookList");
-//                                                                   String userName = (String) document.get("userName");
-//                                                                   hashList.add(selectedBook);
-//                                                                   docRef.update("requestedBookList", hashList).addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                                                       @Override
-//                                                                       public void onSuccess(Void aVoid) {
-//                                                                           Toast.makeText(ViewBookActivity.this, "Added to request book list successfully", Toast.LENGTH_SHORT).show();
-//                                                                       }
-//                                                                   });
-//                                                               }// if
-//                                                           }
-//                                                       }
-//                                                   });
-//
-//                requestReceiverID = selectedBook.getOwnerID();
-//
-//                final DocumentReference docRefRequestReceiver = db.collection("users").document(requestReceiverID);
-//
-//                docRefRequestReceiver.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            DocumentSnapshot document = task.getResult();
-//                            if (document.exists()) {
-//                                ArrayList<String> hashList = (ArrayList<String>) document.get("notificationList");
-//                                String message = userName + "wants to borrow the book named" + selectedBook.getTitle();
-//                                hashList.add(message);
-//                                docRefRequestReceiver.update("notificationList", hashList).addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                    @Override
-//                                    public void onSuccess(Void aVoid) {
-//                                        Toast.makeText(ViewBookActivity.this, "Added to request book list successfully", Toast.LENGTH_SHORT).show();
-//                                    }
-//                                });
-//                            }// if
-//                        }
-//                    }
-//                });
-
-
                 System.out.println("Coming beofre db");
-               db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                   @Override
-                   public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 
-                   }
-               });
+                    }
+                });
 
-//                System.out.println(requestReceiver.getEmail() + " " + clickedBook.getTitle() + " " +MainActivity.user.getUserName());
-//
-//                Toast.makeText(ViewBookActivity.this, "title: " + clickedBook.getTitle() + "Username: " + MainActivity.user.getUserName() , Toast.LENGTH_SHORT).show();
-//                requestReceiver.addToNotificationList(MainActivity.user.getUserName() + "wants to borrow the book" + clickedBook.getTitle());
-//                MainActivity.database.getDb().collection("users").document(requestReceiverID).set(requestReceiver).addOnSuccessListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onSuccess(Void aVoid) {
-//                        Toast.makeText(ViewBookActivity.this, "Added to notification list successfully", Toast.LENGTH_SHORT).show();
-//                        finish();
-//                    }
-//                });
-                Toast.makeText(getBaseContext(), "This function is coming soon!", Toast.LENGTH_SHORT).show();
-                
+                Toast.makeText(getBaseContext(), "This function is coming soon!",
+                        Toast.LENGTH_SHORT).show();
+
 
             }//onClick
         }); //requestButton SetOnClickListener
     }
 
 
-
     public void delete_book(View view) {
         DocumentReference docRef = db.collection("users").document(userID);
-
-
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -304,13 +236,14 @@ public class ViewBookActivity extends AppCompatActivity {
                     if (document.exists()) {
                         Map<String, Object> data;
                         data = document.getData();
-                        ArrayList<Book> books = (ArrayList<Book>) document.getData().get("bookList");
+                        ArrayList<Book> books = (ArrayList<Book>) document.getData().get(
+                                "bookList");
                         books.remove(bookNumber);
                         data.put("bookList", books);
-                        db.collection("users")
-                                .document(userID).set(data);
+                        db.collection("users").document(userID).set(data);
                         Intent intent = new Intent();
                         setResult(1, intent);
+                        Log.d("", "set result");
                         finish();
                     } else {
                         //Log.d(TAG, "No such document");
@@ -326,8 +259,9 @@ public class ViewBookActivity extends AppCompatActivity {
 
     /**
      * This method will be invoked when the user's focus comes back to ViewBookActivity
-     * It will refresh the data from the database, so that if any data was updated, they will be displayed correctly
-     * */
+     * It will refresh the data from the database, so that if any data was updated, they will be
+     * displayed correctly
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -340,7 +274,7 @@ public class ViewBookActivity extends AppCompatActivity {
     /**
      * This method will retrieve the data from the database,
      * and assign the data to the TextViews, so that they are displayed correctly.
-     * */
+     */
     private void getBookData() {
         // if it's not owner's book, we cannot access the book from user
         // so find the book from book collection
@@ -351,12 +285,12 @@ public class ViewBookActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                           selectedBook = null;
+                            selectedBook = null;
                             if (task.isSuccessful()) {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
-                                    String checkISBN = (String)document.get("isbn");
-                                    requestReceiverID = (String)document.get("owner");
-                                    if (checkISBN.equals(bookISBN)){
+                                    String checkISBN = (String) document.get("isbn");
+                                    requestReceiverID = (String) document.get("owner");
+                                    if (checkISBN.equals(bookISBN)) {
                                         selectedBook = new Book(
                                                 String.valueOf(document.get("title")),
                                                 String.valueOf(document.get("authors")),
@@ -369,7 +303,8 @@ public class ViewBookActivity extends AppCompatActivity {
                                         );
 
 
-                                        //Toast.makeText(getBaseContext(), "match book!", Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(getBaseContext(), "match book!", Toast
+                                        // .LENGTH_SHORT).show();
                                         break;
                                     }
 
@@ -380,7 +315,8 @@ public class ViewBookActivity extends AppCompatActivity {
                                 isbnTextView.setText(selectedBook.getIsbn());
 
                             } else {
-                                Toast.makeText(getBaseContext(), "got an error", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getBaseContext(), "got an error",
+                                        Toast.LENGTH_SHORT).show();
 
                             }
                         }
@@ -395,7 +331,8 @@ public class ViewBookActivity extends AppCompatActivity {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
                             ArrayList<Book> hashList = (ArrayList<Book>) document.get("bookList");
-                            Map<String, Object> convertMap = (Map<String, Object>) hashList.get(bookNumber);
+                            Map<String, Object> convertMap =
+                                    (Map<String, Object>) hashList.get(bookNumber);
                             book = new Book(
                                     String.valueOf(convertMap.get("title")),
                                     String.valueOf(convertMap.get("authors")),
@@ -426,7 +363,7 @@ public class ViewBookActivity extends AppCompatActivity {
     /**
      * This method will show the ImagePickerDialog if the current user is the owner of the book.
      * The access to the image is provided by this dialog, so that the image can be changed.
-     * */
+     */
     // when click the image on the photo, change it
     public void changeBookPhoto(View view) {
         // Toast.makeText(getBaseContext(), "changePhoto", Toast.LENGTH_SHORT).show();
@@ -440,7 +377,7 @@ public class ViewBookActivity extends AppCompatActivity {
     /**
      * This method will show a dialog and prompts the user to select an image from gallery/camera
      * It invokes the API of MediaStore to finish the taking picture action.
-     * */
+     */
     private void showImagePickerDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle("Upload Image")
@@ -450,8 +387,10 @@ public class ViewBookActivity extends AppCompatActivity {
                         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         // second parameter : request code
 
-                        Toast.makeText(getBaseContext(), "There is a bug with camera, please use gallery", Toast.LENGTH_SHORT).show();
-                        // TODO: there is a bug when using camera, maybe because of MediaStore library
+                        Toast.makeText(getBaseContext(), "There is a bug with camera, please use " +
+                                "gallery", Toast.LENGTH_SHORT).show();
+                        // TODO: there is a bug when using camera, maybe because of MediaStore
+                        //  library
                         // startActivityForResult(intent, REQ_CAMERA_IMAGE);
 
                     }
@@ -480,7 +419,7 @@ public class ViewBookActivity extends AppCompatActivity {
      * This method processes the image after the user finishes taking picture/selecting image
      * , based on the method used to upload the picture (camera/gallery).
      * It calls onSuccessChangePhoto to store the changed image into the database.
-     * */
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -498,7 +437,8 @@ public class ViewBookActivity extends AppCompatActivity {
                 // get image data
                 Uri selectedImage = data.getData();
                 try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),
+                            selectedImage);
                     imageView.setImageBitmap(bitmap);
                     onSuccessChangePhoto(bitmap);
                 } catch (IOException e) {
@@ -511,7 +451,7 @@ public class ViewBookActivity extends AppCompatActivity {
 
     /**
      * This method will process the given image and store it in the database.
-     * */
+     */
     private void onSuccessChangePhoto(Bitmap bitmap) {
         //Intent intent = new Intent();
         //intent.putExtra("PHOTO_CHANGE", bitmap);

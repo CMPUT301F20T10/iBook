@@ -149,28 +149,6 @@ public class HomeFragment extends Fragment {
      */
     public void searchData(final String query) {
         //searches for owner
-
-
-//        db.collection("books").whereEqualTo("owner", query)
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        for (DocumentSnapshot document : task.getResult()) {
-//
-//                            Book book = new Book(document.getString("title"),
-//                                    document.getString("authors"),
-//                                    document.getString("date"),
-//                                    document.getString("description"),
-//                                    Book.Status.valueOf(document.getString("status")),
-//                                    document.getString("isbn"),
-//                            document.getString("owner"));
-//
-//                            //if book has owner specified add book to resultList
-//                            resultList.add(book);
-//                        }
-//                    }
-//                });
         //get all books from book collection
         //add to a bookList
         db.collection("books").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -214,22 +192,6 @@ public class HomeFragment extends Fragment {
 
             }
         });
-    }
-
-    public Book.Status from_string_to_enum(String input) {
-        if (input.equals("Available"))
-            return Book.Status.Available;
-
-        if (input.equals("Available"))
-            return Book.Status.Available;
-
-        if (input.equals("Available"))
-            return Book.Status.Available;
-
-        if (input.equals("Available"))
-            return Book.Status.Available;
-        // todo: change later
-        return Book.Status.Available;
     }
 }
 
