@@ -1,6 +1,7 @@
 package com.example.ibook.activities;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,8 +11,10 @@ import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.view.View;
 import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +26,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -39,9 +43,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ViewBookActivity extends AppCompatActivity {
     private String userID;
-    private Book book;
+    //private Book book;
     private int bookNumber;
     private int isOwner;
+    private ArrayList<BookRequest> requests;
     private String bookISBN;
     private final int REQ_CAMERA_IMAGE = 1;
     private final int REQ_GALLERY_IMAGE = 2;
@@ -52,6 +57,7 @@ public class ViewBookActivity extends AppCompatActivity {
     private TextView isbnTextView;
     private TextView descriptionTextView;
     private ImageView imageView;
+    private ListView requestList;
 
     private TextView edit_button;
     private Button backButton;
@@ -91,12 +97,14 @@ public class ViewBookActivity extends AppCompatActivity {
         //delete_button = findViewById(R.id.btn_delete_book);
         request_button = findViewById(R.id.btn_request_book);
 
+
         imageView = findViewById(R.id.imageView);
         backButton = findViewById(R.id.cancelButton);
         delete_button = findViewById(R.id.btn_delete_book);
-
-
-
+        requestList = findViewById(R.id.request_list);
+        requests = new ArrayList<BookRequest>();
+        final ArrayAdapter requestAdapter = new ArrayAdapter<>(getBaseContext(), R.layout.request_list_content, R.id.request_content, requests);
+        requestList.setAdapter(requestAdapter);
 
         uAuth = FirebaseAuth.getInstance();
         userID = uAuth.getCurrentUser().getUid();
@@ -109,6 +117,7 @@ public class ViewBookActivity extends AppCompatActivity {
 
         // The number of clicked book on the booklist
         bookNumber = intent.getIntExtra("BOOK_NUMBER", 0);
+        getBookData();
 
         // if isOwner = 0, the activity is being visited from user's own bookList page
         // if isOwner = -1, the activity is being visited by other users (a random visit)
@@ -119,6 +128,8 @@ public class ViewBookActivity extends AppCompatActivity {
             edit_button.setVisibility(View.GONE);
             delete_button.setVisibility(View.GONE);
             delete_button.setEnabled(false); // make it disabled too
+            requestList.setVisibility(View.GONE);
+
             // Toast.makeText(getBaseContext(), String.valueOf(bookNumber), Toast.LENGTH_SHORT).show();
             // Toast.makeText(getBaseContext(), userID, Toast.LENGTH_SHORT).show();
 
@@ -130,10 +141,10 @@ public class ViewBookActivity extends AppCompatActivity {
             // hide request button if the current user is the owner.
             request_button.setVisibility(View.GONE);
             request_button.setEnabled(false); // disable the button too
+
         }
 
         bookISBN = intent.getStringExtra("BOOK_ISBN");
-        getBookData();
 
         edit_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -287,6 +298,22 @@ public class ViewBookActivity extends AppCompatActivity {
 
             }//onClick
         }); //requestButton SetOnClickListener
+
+
+        final CollectionReference requestRef = db.collection("bookRequest");
+        requestRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                    String sender = document.getString("requestSenderID");
+                    String book = document.getString("requestedBookID");
+                    String currentBookId = selectedBook.getBookID();
+                    if (currentBookId == book) {
+                        requestAdapter.add("test");
+                    }
+                }
+            }
+        });
     }
 
 
@@ -403,7 +430,7 @@ public class ViewBookActivity extends AppCompatActivity {
                         if (document.exists()) {
                             ArrayList<Book> hashList = (ArrayList<Book>) document.get("bookList");
                             Map<String, Object> convertMap = (Map<String, Object>) hashList.get(bookNumber);
-                            book = new Book(
+                            selectedBook = new Book(
                                     String.valueOf(convertMap.get("title")),
                                     String.valueOf(convertMap.get("authors")),
                                     String.valueOf(convertMap.get("date")),
@@ -414,14 +441,14 @@ public class ViewBookActivity extends AppCompatActivity {
                                     String.valueOf(document.get("owner")),
                                     String.valueOf(document.get("bookID"))
                             );
-                            bookNameTextView.setText(book.getTitle());
-                            authorTextView.setText(book.getAuthors());
-                            dateTextView.setText(book.getDate());
-                            isbnTextView.setText(book.getIsbn());
-                            if(book.getDescription()!= null) {
-                                descriptionTextView.setText(book.getDescription());
+                            bookNameTextView.setText(selectedBook.getTitle());
+                            authorTextView.setText(selectedBook.getAuthors());
+                            dateTextView.setText(selectedBook.getDate());
+                            isbnTextView.setText(selectedBook.getIsbn());
+                            if(selectedBook.getDescription()!= null) {
+                                descriptionTextView.setText(selectedBook.getDescription());
                             }
-                            MainActivity.database.downloadImage(imageView, book.getBookID());
+                            MainActivity.database.downloadImage(imageView, selectedBook.getBookID());
 
                         } else {
                             //Log.d(TAG, "No such document");
