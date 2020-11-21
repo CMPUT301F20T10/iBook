@@ -60,7 +60,7 @@ public class BookListFragment extends Fragment {
         uAuth = FirebaseAuth.getInstance();
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+        //adapter.notifyDataSetChanged();
 
 
         //default username = "yzhang24@gmail.com";
@@ -91,19 +91,21 @@ public class BookListFragment extends Fragment {
                                     Map<String, Object> convertMap;
                                     ArrayList<Book> hashList = (ArrayList<Book>) document.get("bookList");
 
+                                    if(hashList!= null){
+                                        for (int i = 0; i < hashList.size(); i += 1) {
+                                            convertMap = (Map<String, Object>) hashList.get(i);
 
-                                    for (int i = 0; i < hashList.size(); i += 1) {
-                                        convertMap = (Map<String, Object>) hashList.get(i);
-
-                                        datalist.add(new Book(
-                                                String.valueOf(convertMap.get("title")),
-                                                String.valueOf(convertMap.get("author")),
-                                                String.valueOf(convertMap.get("date")),
-                                                (String.valueOf(convertMap.get("description"))),
-                                                from_string_to_enum(String.valueOf(convertMap.get("status"))),
-                                                String.valueOf(convertMap.get("isbn")),
-                                                String.valueOf(convertMap.get("owner"))
-                                        ));
+                                            datalist.add(new Book(
+                                                    String.valueOf(convertMap.get("title")),
+                                                    String.valueOf(convertMap.get("author")),
+                                                    String.valueOf(convertMap.get("date")),
+                                                    (String.valueOf(convertMap.get("description"))),
+                                                    from_string_to_enum(String.valueOf(convertMap.get("status"))),
+                                                    String.valueOf(convertMap.get("isbn")),
+                                                    String.valueOf(convertMap.get("owner")),
+                                                    String.valueOf(convertMap.get("bookID"))
+                                            ));
+                                        }
                                     }
                                     if (datalist == null) {
                                         datalist = new ArrayList<>();
@@ -201,7 +203,8 @@ public class BookListFragment extends Fragment {
                                         (String.valueOf(convertMap.get("description"))),
                                         from_string_to_enum(String.valueOf(convertMap.get("status"))),
                                         String.valueOf(convertMap.get("isbn")),
-                                        String.valueOf(convertMap.get("owner"))
+                                        String.valueOf(convertMap.get("owner")),
+                                        String.valueOf(convertMap.get("bookID"))
                                 ));
 
                             }

@@ -34,7 +34,7 @@ public class Book implements Serializable {
         this.owner = ownerID;
     }
 
-    public Book(String title, String author, String date, String description, Status status, String isbn,String ownerID) {
+    public Book(String title, String author, String date, String description, Status status, String isbn, String ownerID, String bookID) {
         this.title = title;
         this.author = author;
         this.date = date;
@@ -42,6 +42,7 @@ public class Book implements Serializable {
         this.status = status;    // Attribute status denotes the status of the book, and thus we don't actually need
         this.isbn = isbn;
         this.owner = ownerID;
+        this.bookID = bookID;
     }
 
     //Getters

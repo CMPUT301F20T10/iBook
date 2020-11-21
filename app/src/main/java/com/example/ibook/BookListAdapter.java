@@ -5,8 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.ibook.activities.MainActivity;
 import com.example.ibook.entities.Book;
 
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ public class BookListAdapter extends BaseAdapter {
     private TextView date;
     private TextView description;
     private TextView status;
+    private ImageView imageView;
     // TODO: Get image view
 
     /**
@@ -88,7 +91,7 @@ public class BookListAdapter extends BaseAdapter {
         date = convertView.findViewById(R.id.listBookDate);
         description = convertView.findViewById(R.id.listBookDescription);
         status = convertView.findViewById(R.id.listBookStatus);
-        //TODO:Get the image attribute
+        imageView = convertView.findViewById(R.id.listImageView);
 
         //Set the values for the xml attributes
         title.setText(book.getTitle());
@@ -109,6 +112,7 @@ public class BookListAdapter extends BaseAdapter {
             status.setText("Status: " + book.getStatus());
             status.setTextColor(0xFFFF0000);
         }
+        MainActivity.database.downloadImage(imageView, book.getBookID());
 
         //Set the image if there is one
         return convertView;
