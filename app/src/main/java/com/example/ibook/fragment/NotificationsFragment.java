@@ -63,11 +63,11 @@ public class NotificationsFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_notification, container, false);
         viewPager = root.findViewById(R.id.viewPager);
         tabLayout = root.findViewById(R.id.tabLayout);
-        requestSection = new NotificationsSectionFragment();
-        responseSection = new NotificationsSectionFragment();
+
+        requestSection = new NotificationsSectionFragment("Request");
+        responseSection = new NotificationsSectionFragment("Response");
 
         setUpViewPager(viewPager);
-//        setUpViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -82,16 +82,14 @@ public class NotificationsFragment extends Fragment {
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
-
-
         return root;
     }
 
     private void setUpViewPager(ViewPager viewPager) {
         SectionPageAdapter adapter = new SectionPageAdapter(getChildFragmentManager());
 
-        adapter.addFragment(new NotificationsSectionFragment(), "Request");
-        adapter.addFragment(new NotificationsSectionFragment(), "Response");
+        adapter.addFragment(requestSection, "Request");
+        adapter.addFragment(responseSection, "Response");
 
         viewPager.setAdapter(adapter);
     }

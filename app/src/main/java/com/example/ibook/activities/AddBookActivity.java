@@ -1,15 +1,12 @@
 package com.example.ibook.activities;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -21,19 +18,12 @@ import com.example.ibook.R;
 import com.example.ibook.entities.Book;
 import com.example.ibook.entities.User;
 import com.example.ibook.fragment.ScanFragment;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -47,7 +37,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
     private EditText authorEditText;
     private EditText dateEditText;
     private EditText isbnEditText;
-    private EditText descritionEditText;
+    private EditText descriptionEditText;
     private Button cancelButton;
     private Button completeButton;
     private Button scanButton;
@@ -73,7 +63,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
         authorEditText = findViewById(R.id.authorEditor);
         dateEditText = findViewById(R.id.dateEditor);
         isbnEditText = findViewById(R.id.isbnEditor);
-        descritionEditText = findViewById(R.id.descriptionEditor);
+        descriptionEditText = findViewById(R.id.descriptionEditor);
 
         cancelButton = findViewById(R.id.cancelButton);
         completeButton = findViewById(R.id.completeButton);
@@ -96,12 +86,15 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 final String author = authorEditText.getText().toString();
                 final String date = dateEditText.getText().toString();
                 final String isbn = isbnEditText.getText().toString();
-                final String description = descritionEditText.getText().toString();
+                final String description = descriptionEditText.getText().toString();
 
                 if (validation(title, author, isbn, date)) {
+
                     userID = MainActivity.database.getCurrentUserUID();
                     bookID = MainActivity.database.getDb().collection("books").document().getId();
 
+                    // A better manner to add the book: also add the book id when the book is
+                    // added to the book list
                     Book book = new Book(title, author, date, description, isbn, userID);
                     book.setBookID(bookID);
 
@@ -110,16 +103,21 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                     userDoc.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            // By checking the code, we can find that the document snapshot is
+                            // the user class, but we just use it as the hash map. The method we
+                            // did before is so complex but it did the same thing as below.
+                            // Actually the previous method also update the whole user document.
+                            // So why not just did it as below.
+
+                            // Also we can update the user class of application
+                            // it can update the book list in the user class
                             MainActivity.user = documentSnapshot.toObject(User.class);
                             MainActivity.user.addToBookList(book);
-
                             userDoc.set(MainActivity.user);
                         }
                     });
 
                     MainActivity.database.getDb().collection("books").document(bookID).set(book);
-                    Intent intent = new Intent();
-                    setResult(1, intent);
                     finish();
                 }
             }

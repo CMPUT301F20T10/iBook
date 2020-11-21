@@ -100,7 +100,15 @@ public class BookListFragment extends Fragment {
             SystemClock.sleep(500);
             ownSection.getBookList();
         }
-
+        if (borrowSection.running()){
+            borrowSection.getBookList();
+        }
+        if (requestSection.running()){
+            requestSection.getBookList();
+        }
+        if (acceptSection.running()){
+            acceptSection.getBookList();
+        }
     }
 
 }

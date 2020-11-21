@@ -87,7 +87,6 @@ public class BookListSectionFragment extends Fragment {
         adapter.notifyDataSetChanged();
         adapter = new BookListAdapter(bookList, getContext());
         listView.setAdapter(adapter);
-
     }
 
     private void getOwnBookList() {

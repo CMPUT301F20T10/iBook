@@ -87,12 +87,11 @@ public class ViewBookActivity extends AppCompatActivity {
         isbnTextView = findViewById(R.id.ViewISBN);
 
         edit_button = findViewById(R.id.editButton);
-        //delete_button = findViewById(R.id.btn_delete_book);
+        delete_button = findViewById(R.id.btn_delete_book);
         request_button = findViewById(R.id.btn_request_book);
 
         imageView = findViewById(R.id.imageView);
         backButton = findViewById(R.id.cancelButton);
-        delete_button = findViewById(R.id.btn_delete_book);
 
 
         uAuth = FirebaseAuth.getInstance();
