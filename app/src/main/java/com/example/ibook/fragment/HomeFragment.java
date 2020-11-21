@@ -32,10 +32,10 @@ import androidx.fragment.app.Fragment;
 
 /***
  *This fragment contains the view for the home page and
- * displays the list of all books from the database as a list view.
- * This also contains the searching functionalities of the
+ * the searching functionalities of the
  * searchView.
  */
+
 public class HomeFragment extends Fragment {
 
     //Private variables
@@ -167,35 +167,31 @@ public class HomeFragment extends Fragment {
     /***
      *This method searches the database for the keyword entered
      * in the books collection and users collection.
-     * It gets the title, description, author and owner of the books and
-     * searches if the  keyword appears in them.
      * If the keyword appears it adds the book object to a list that gets passed to
      * the activity that shows the results.
      */
     public void searchData(final String query) {
         //searches for owner
-        db.collection("books").whereEqualTo("owner", query)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        for (DocumentSnapshot document : task.getResult()) {
-
-                            Book book = new Book(document.getString("title"),
-                                    document.getString("authors"),
-                                    document.getString("date"),
-                                    document.getString("description"),
-                                    Book.Status.valueOf(document.getString("status")),
-                                    document.getString("isbn"),
-                                    document.getString("owner"),
-                                    document.getString("bookID")
-                            );
-
-                            //if book has owner specified add book to resultList
-                            resultList.add(book);
-                        }
-                    }
-                });
+//        db.collection("books").whereEqualTo("owner", query)
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        for (DocumentSnapshot document : task.getResult()) {
+//
+//                            Book book = new Book(document.getString("title"),
+//                                    document.getString("authors"),
+//                                    document.getString("date"),
+//                                    document.getString("description"),
+//                                    Book.Status.valueOf(document.getString("status")),
+//                                    document.getString("isbn"),
+//                            document.getString("owner"));
+//
+//                            //if book has owner specified add book to resultList
+//                            resultList.add(book);
+//                        }
+//                    }
+//                });
         //get all books from book collection
         //add to a bookList
         db.collection("books").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -216,10 +212,11 @@ public class HomeFragment extends Fragment {
 
                 }
                 for (Book book : bookList) {
-                    String author = book.getAuthor();
+                    String author = book.getAuthors();
                     String desc = book.getDescription();
                     String title = book.getTitle();
                     //make one whole string that contains title author and description
+                    System.out.println("author: " + author + " decc " + desc + "title: " + title);
                     String string = author.concat(desc).concat(title).toLowerCase();
                     //if string contains keyword add it to the resultList
                     if (string.contains(query.toLowerCase()) && book.getStatus() != Book.Status.Borrowed && book.getStatus() != Book.Status.Accepted) {

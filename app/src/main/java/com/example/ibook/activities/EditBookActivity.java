@@ -67,7 +67,6 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
         dateEditText = findViewById(R.id.dateEditor);
         isbnEditText = findViewById(R.id.isbnEditor);
         descriptionEditText = findViewById(R.id.descriptionEditor);
-
         cancelButton = findViewById(R.id.cancelButton);
         completeButton = findViewById(R.id.completeButton);
         scanButton = findViewById(R.id.scanButton);
@@ -160,7 +159,7 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                         originalBook = book;
 
                         bookNameEditText.setText(book.getTitle());
-                        authorEditText.setText(book.getAuthor());
+                        authorEditText.setText(book.getAuthors());
                         dateEditText.setText(book.getDate());
                         isbnEditText.setText(book.getIsbn());
                         // TODO: forgot to let the user edit description, improve it later
@@ -213,7 +212,6 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
     public void onOkPressed(String ISBN) {
         isbnEditText.setText(ISBN);
     }
-
 
 
     /**

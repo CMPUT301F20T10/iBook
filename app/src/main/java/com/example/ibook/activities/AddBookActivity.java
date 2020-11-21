@@ -132,7 +132,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
 //                                    SignUpActivity.database.getBookDocumentReference().set(book);
 //                                    //Add the book to  "user" Collections in database
 //                                    SignUpActivity.database.getUserDocumentReference().set(SignUpActivity.user);
-                                    Book newbook = new Book(bookName, authorName, date, isbn, userID);
+                                    Book newbook = new Book(bookName, authorName, date, description, isbn, userID);
 
                                     books = (ArrayList<Book>) document.getData().get("bookList");
                                     //If booksList is null we need to create a new books list
@@ -150,6 +150,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                                     done = true;
                                     // TODO: use OOP to simplify it later
                                     // also put data to database with book collection
+                                    bookID = db.collection("books").document().getId();
                                     data = new HashMap();
                                     data.put("authors", authorName);
                                     data.put("date", date);
@@ -158,10 +159,12 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                                     data.put("owner", userID);
                                     data.put("status", "Available");
                                     data.put("title", bookName);
-                                    bookID = db.collection("books").document().getId();
+                                    data.put("bookID",bookID);
                                     if(imageAdded) {//Upload the image
                                         MainActivity.database.uploadImage(imageView,bookID);
                                     }
+
+
                                     db.collection("books").document(bookID).set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
@@ -169,10 +172,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                                         }
                                     });
                                     if(done) {
-                                        //Toast.makeText(getBaseContext(), "got book id OUtside the scope too" + bookID, Toast.LENGTH_LONG).show();
-                                        newbook.setBookID(bookID);
-                                        MainActivity.user.addBookToOwnedBooksList(newbook);
-                                        MainActivity.database.getUserDocumentReference().set(MainActivity.user);
+                                        Toast.makeText(getBaseContext(), "got book id inside the scope too" + bookID, Toast.LENGTH_LONG).show();
                                         Intent intent = new Intent();
                                         setResult(1, intent);
                                         finish();

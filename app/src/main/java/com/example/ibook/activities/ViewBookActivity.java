@@ -167,27 +167,52 @@ public class ViewBookActivity extends AppCompatActivity {
                         if (documentSnapshot.exists()) {
                             //user object intialized
                             currentUser = documentSnapshot.toObject(User.class);
-
+//                            ArrayList<Book> books;
+//                            for(bookID in BOOK){
+//                                db.collection("users").document(bookId).get().addOnSuccessListener(
+//
+//                                        newBook = toobect(Book.class);
+//                                        books.add(newbook);
+//                                );
+//
+//                                adapter.set(newBook);
+//                            }
                             final DocumentReference docRefRequestReceiver = db.collection("users").document(requestReceiverID);
 
                             docRefRequestReceiver.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                                     requestReceiver = documentSnapshot.toObject(User.class);
-                                    currentUser.addBookToRequestedBooksList(selectedBook);
-                                    docRef.set(currentUser);
-
                                     requestReceiver.addToNotificationList(currentUser.getUserName() + " wants to borrow your book " + selectedBook.getTitle());
+                                    //updating notificaion list of the user in database
                                     docRefRequestReceiver.set(requestReceiver);
                                     Toast.makeText(getBaseContext(), "Coming here!", Toast.LENGTH_SHORT).show();
 
 
                                     BookRequest newRequest = new BookRequest(currentUser.getUserID(),requestReceiver.getUserID(),selectedBook.getBookID());
                                     db.collection("bookRequest").document().set(newRequest);
+
+                                    //change book status
+                                    System.out.println("Selected bookID: " + selectedBook.getBookID());
+
+                                    selectedBook.setStatus(Book.Status.Requested);
+
+                                    final DocumentReference bookRef = db.collection("books").document(selectedBook.getBookID());
+                                    bookRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            bookRef.set(selectedBook);
+                                            //TODO: Update the status of the book in the user collection bookList, the book collection has owner ID so you can use that to go to user collection
+                                            //TODO: and uodate his booklist;s book status
+
+                                            //maybe don't have to do this if we are always using the book collection and bookRequestCollection but still something to think about
+
+                                        }
+                                    });
                                 }
                             });
-
                         }// if
+
                     }//onSuccess
 
                 });
@@ -279,7 +304,7 @@ public class ViewBookActivity extends AppCompatActivity {
                     if (document.exists()) {
                         Map<String, Object> data;
                         data = document.getData();
-                        ArrayList<Book> books = (ArrayList<Book>) document.getData().get("BookList");
+                        ArrayList<Book> books = (ArrayList<Book>) document.getData().get("bookList");
                         books.remove(bookNumber);
                         data.put("bookList", books);
                         db.collection("users")
@@ -350,7 +375,7 @@ public class ViewBookActivity extends AppCompatActivity {
 
                                 }
                                 bookNameTextView.setText(selectedBook.getTitle());
-                                authorTextView.setText(selectedBook.getAuthor());
+                                authorTextView.setText(selectedBook.getAuthors());
                                 dateTextView.setText(selectedBook.getDate());
                                 isbnTextView.setText(selectedBook.getIsbn());
                                 if(selectedBook.getDescription()!= null) {
@@ -377,23 +402,25 @@ public class ViewBookActivity extends AppCompatActivity {
                             Map<String, Object> convertMap = (Map<String, Object>) hashList.get(bookNumber);
                             book = new Book(
                                     String.valueOf(convertMap.get("title")),
-                                    String.valueOf(convertMap.get("author")),
+                                    String.valueOf(convertMap.get("authors")),
                                     String.valueOf(convertMap.get("date")),
                                     (String.valueOf(convertMap.get("description"))),
                                     //from_string_to_enum(String.valueOf(convertMap.get("status"))),
                                     Book.Status.Available,
                                     String.valueOf(convertMap.get("isbn")),
-                                    String.valueOf(convertMap.get("owner")),
-                                    String.valueOf(convertMap.get("bookID"))
+                                    String.valueOf(document.get("owner")),
+                                    String.valueOf(document.get("bookID"))
                             );
                             bookNameTextView.setText(book.getTitle());
-                            authorTextView.setText(book.getAuthor());
+                            authorTextView.setText(book.getAuthors());
                             dateTextView.setText(book.getDate());
                             isbnTextView.setText(book.getIsbn());
                             if(book.getDescription()!= null) {
                                 descriptionTextView.setText(book.getDescription());
                             }
-                            MainActivity.database.downloadImage(imageView, book.getBookID());
+                            if(book.getBookID()!=null) {
+                                MainActivity.database.downloadImage(imageView, book.getBookID());
+                            }
                         } else {
                             //Log.d(TAG, "No such document");
                         }

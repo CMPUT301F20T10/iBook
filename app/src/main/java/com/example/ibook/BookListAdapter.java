@@ -95,7 +95,7 @@ public class BookListAdapter extends BaseAdapter {
 
         //Set the values for the xml attributes
         title.setText(book.getTitle());
-        authors.setText(book.getAuthor());
+        authors.setText(book.getAuthors());
         date.setText(book.getDate());
 
         //Set part of the description up to ~30 characters
