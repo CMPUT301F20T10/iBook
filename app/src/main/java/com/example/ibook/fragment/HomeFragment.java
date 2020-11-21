@@ -100,19 +100,7 @@ public class HomeFragment extends Fragment {
                 return false;
             }
         });
-        /*
-        Book newBook = new Book("Watchmen", "Alan Moore, Dave Gibbons", "2014", "Psychologically moving comic book...", Book.Status.Available, "temp isbn 1");
-        Book newBook2 = new Book("The Millionaire Maker", "Loral Langemeier", "2006", "You - A Millionaire? (It's true, and you might be closer than you think.)\n " +
-                "Even financial woes and a limited income can't stop you from creating real wealth and the freedom in buys.", Book.Status.Available, "temp isbn 2");
-        datalist.add(newBook2);
-        datalist.add(newBook);
-        datalist.add(newBook2);
-        datalist.add(newBook);
-        datalist.add(newBook2);
-        datalist.add(newBook);
-        datalist.add(newBook2);
-        datalist.add(newBook);
-        */
+
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
 
