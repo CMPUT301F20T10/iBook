@@ -45,6 +45,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
     private EditText authorEditText;
     private EditText dateEditText;
     private EditText isbnEditText;
+    private EditText descriptionEditText;
     private Button cancelButton;
     private Button completeButton;
     private Button scanButton;
@@ -54,8 +55,10 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
     private ArrayList<Book> books;
     private final int REQ_CAMERA_IMAGE = 1;
     private final int REQ_GALLERY_IMAGE = 2;
+    private boolean imageAdded;
     public static String bookID;
     public static Boolean done;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,11 +72,12 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
         authorEditText = findViewById(R.id.authorEditor);
         dateEditText = findViewById(R.id.dateEditor);
         isbnEditText = findViewById(R.id.isbnEditor);
-
+        descriptionEditText = findViewById(R.id.descriptionEditor);
         cancelButton = findViewById(R.id.cancelButton);
         completeButton = findViewById(R.id.completeButton);
         scanButton = findViewById(R.id.scanButton);
         imageView = findViewById(R.id.imageView);
+        imageAdded = false;
 
         db = FirebaseFirestore.getInstance();
         books = new ArrayList<>();
@@ -97,6 +101,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 final String authorName = authorEditText.getText().toString();
                 final String date = dateEditText.getText().toString();
                 final String isbn = isbnEditText.getText().toString();
+                final String descr = descriptionEditText.getText().toString();
 
                 // check full information
                 if (bookName.length() > 0
@@ -127,11 +132,14 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
 //                                    SignUpActivity.database.getBookDocumentReference().set(book);
 //                                    //Add the book to  "user" Collections in database
 //                                    SignUpActivity.database.getUserDocumentReference().set(SignUpActivity.user);
-                                   Book newbook = new Book(bookName, authorName, date, isbn,userID);
-
+                                    bookID = db.collection("books").document().getId();
+                                    Book newbook = new Book(bookName, authorName, date, descr, Book.Status.Available, isbn, userID, bookID);
                                     books = (ArrayList<Book>) document.getData().get("bookList");
+                                    //If booksList is null we need to create a new books list
+                                    if (books == null) {
+                                        books = new ArrayList<Book>();
+                                    }
                                     books.add(newbook);
-
 
                                     data.put("bookList", books);
                                     db.collection("users")
@@ -141,26 +149,29 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                                     done = true;
                                     // TODO: use OOP to simplify it later
                                     // also put data to database with book collection
+
                                     data = new HashMap();
                                     data.put("authors", authorName);
                                     data.put("date", date);
-                                    data.put("description", "nothing");
+                                    data.put("description", descr);
                                     data.put("isbn", isbn);
                                     data.put("owner", userID);
                                     data.put("status", "Available");
                                     data.put("title", bookName);
-                                    bookID = db.collection("books").document().getId();
+                                    data.put("bookID",bookID);
+                                    if(imageAdded) {//Upload the image
+                                        MainActivity.database.uploadImage(imageView,bookID);
+                                    }
+
+
                                     db.collection("books").document(bookID).set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            Toast.makeText(getBaseContext(), "got book id OUtside the scope too" + bookID, Toast.LENGTH_LONG).show();
+                                            Toast.makeText(getBaseContext(), "got book id Outside the scope too" + bookID, Toast.LENGTH_LONG).show();
                                         }
                                     });
                                     if(done) {
-                                        Toast.makeText(getBaseContext(), "got book id OUtside the scope too" + bookID, Toast.LENGTH_LONG).show();
-                                        newbook.setBookID(bookID);
-                                        MainActivity.user.addBookToOwnedBooksList(newbook);
-                                        MainActivity.database.getUserDocumentReference().set(MainActivity.user);
+                                        Toast.makeText(getBaseContext(), "got book id inside the scope too" + bookID, Toast.LENGTH_LONG).show();
                                         Intent intent = new Intent();
                                         setResult(1, intent);
                                         finish();
@@ -242,7 +253,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 // get image data
                 Bitmap bitmap = (Bitmap) data.getExtras().get("data");
                 imageView.setImageBitmap(bitmap);
-                onSuccessChangePhoto(bitmap);
+                imageAdded = true;
             }
 
         } else if (requestCode == REQ_GALLERY_IMAGE) {
@@ -252,7 +263,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
                     imageView.setImageBitmap(bitmap);
-                    onSuccessChangePhoto(bitmap);
+                    imageAdded = true;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -260,14 +271,14 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
             }
         }
     }
-    private void onSuccessChangePhoto(Bitmap bitmap) {
-        //Intent intent = new Intent();
-        //intent.putExtra("PHOTO_CHANGE", bitmap);
-        //setResult(1, intent);
-        // Comment: so far, we can only let user upload photo, but can't store it
-        //      Thus, unfortunately, it won't be passed back to the previous activity
-        // TODO: figure out how to scale image, compress it and store it to database
-    }
+//    private void onSuccessChangePhoto(Bitmap bitmap) {
+//        //Intent intent = new Intent();
+//        //intent.putExtra("PHOTO_CHANGE", bitmap);
+//        //setResult(1, intent);
+//        // Comment: so far, we can only let user upload photo, but can't store it
+//        //      Thus, unfortunately, it won't be passed back to the previous activity
+//        // TODO: figure out how to scale image, compress it and store it to database
+//    }
 
     @Override
     public void onOkPressed(String ISBN) {

@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
 import com.example.ibook.activities.AddBookActivity;
+import com.example.ibook.activities.MainActivity;
 import com.example.ibook.activities.ViewBookActivity;
 import com.example.ibook.entities.Book;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -48,6 +49,8 @@ public class BookListFragment extends Fragment {
     private FirebaseAuth uAuth;
     private RadioGroup radioGroup;
 
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -61,7 +64,6 @@ public class BookListFragment extends Fragment {
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-
 
         //default username = "yzhang24@gmail.com";
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -91,18 +93,18 @@ public class BookListFragment extends Fragment {
                                     Map<String, Object> convertMap;
                                     ArrayList<Book> hashList = (ArrayList<Book>) document.get("bookList");
 
-
                                     for (int i = 0; i < hashList.size(); i += 1) {
                                         convertMap = (Map<String, Object>) hashList.get(i);
 
                                         datalist.add(new Book(
                                                 String.valueOf(convertMap.get("title")),
-                                                String.valueOf(convertMap.get("author")),
+                                                String.valueOf(convertMap.get("authors")),
                                                 String.valueOf(convertMap.get("date")),
                                                 (String.valueOf(convertMap.get("description"))),
                                                 from_string_to_enum(String.valueOf(convertMap.get("status"))),
                                                 String.valueOf(convertMap.get("isbn")),
-                                                String.valueOf(convertMap.get("owner"))
+                                                String.valueOf(convertMap.get("owner")),
+                                                String.valueOf(convertMap.get("bookID"))
                                         ));
                                     }
                                     if (datalist == null) {
@@ -130,12 +132,49 @@ public class BookListFragment extends Fragment {
                     adapter = new BookListAdapter(datalist, getActivity());
                     bookListView.setAdapter(adapter);
                 }
-                else{
+                //if clicks on request booklist toggle button
+                else if(radioButton.getText().toString().equals("Request")){
+
+                    MainActivity.database.getDb().collection("bookRequest")
+                            .whereEqualTo("requestSenderID",userID)
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    String bookID;
+                                    //don't need the for loop since username will be unique in our app, so only 1 result with the match.
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        bookID = (String) document.get("requestedBookID");
+                                        MainActivity.database.getDb().collection("books").document(bookID)
+                                                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                ArrayList<Book> requestedBookList = new ArrayList<>();
+                                                DocumentSnapshot document = task.getResult();
+                                                Book book = document.toObject(Book.class);
+                                                System.out.println("Object " + book);
+                                                System.out.println("Title " + book.getTitle());
+                                                requestedBookList.add(book);
+                                                adapter = new BookListAdapter(requestedBookList, getActivity());
+                                                bookListView.setAdapter(adapter);
+                                            }// onComplete
+                                        });
+                                    }//for loop
+
+
+                                }// outer onComplete
+                            });// outer addOnCompleteListener
+
                     // TODO: deal with other three filters
                     // empty now for other three
+          ;
+                }// else if
+
+                else{
                     adapter = new BookListAdapter(new ArrayList<Book>(), getActivity());
                     bookListView.setAdapter(adapter);
-                }
+
+                }//else
             }
         });
 
@@ -196,12 +235,13 @@ public class BookListFragment extends Fragment {
 
                                 datalist.add(new Book(
                                         String.valueOf(convertMap.get("title")),
-                                        String.valueOf(convertMap.get("author")),
+                                        String.valueOf(convertMap.get("authors")),
                                         String.valueOf(convertMap.get("date")),
                                         (String.valueOf(convertMap.get("description"))),
                                         from_string_to_enum(String.valueOf(convertMap.get("status"))),
                                         String.valueOf(convertMap.get("isbn")),
-                                        String.valueOf(convertMap.get("owner"))
+                                        String.valueOf(convertMap.get("owner")),
+                                        String.valueOf(convertMap.get("bookID"))
                                 ));
 
                             }

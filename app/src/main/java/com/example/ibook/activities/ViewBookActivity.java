@@ -50,6 +50,7 @@ public class ViewBookActivity extends AppCompatActivity {
     private TextView authorTextView;
     private TextView dateTextView;
     private TextView isbnTextView;
+    private TextView descriptionTextView;
     private ImageView imageView;
 
     private TextView edit_button;
@@ -85,7 +86,7 @@ public class ViewBookActivity extends AppCompatActivity {
         authorTextView = findViewById(R.id.ViewAuthor);
         dateTextView = findViewById(R.id.ViewDate);
         isbnTextView = findViewById(R.id.ViewISBN);
-
+        descriptionTextView = findViewById(R.id.descriptionView2);
         edit_button = findViewById(R.id.editButton);
         //delete_button = findViewById(R.id.btn_delete_book);
         request_button = findViewById(R.id.btn_request_book);
@@ -134,7 +135,6 @@ public class ViewBookActivity extends AppCompatActivity {
         bookISBN = intent.getStringExtra("BOOK_ISBN");
         getBookData();
 
-
         edit_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -167,27 +167,52 @@ public class ViewBookActivity extends AppCompatActivity {
                         if (documentSnapshot.exists()) {
                             //user object intialized
                             currentUser = documentSnapshot.toObject(User.class);
-
+//                            ArrayList<Book> books;
+//                            for(bookID in BOOK){
+//                                db.collection("users").document(bookId).get().addOnSuccessListener(
+//
+//                                        newBook = toobect(Book.class);
+//                                        books.add(newbook);
+//                                );
+//
+//                                adapter.set(newBook);
+//                            }
                             final DocumentReference docRefRequestReceiver = db.collection("users").document(requestReceiverID);
 
                             docRefRequestReceiver.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                                     requestReceiver = documentSnapshot.toObject(User.class);
-                                    currentUser.addBookToRequestedBooksList(selectedBook);
-                                    docRef.set(currentUser);
-
                                     requestReceiver.addToNotificationList(currentUser.getUserName() + " wants to borrow your book " + selectedBook.getTitle());
+                                    //updating notificaion list of the user in database
                                     docRefRequestReceiver.set(requestReceiver);
                                     Toast.makeText(getBaseContext(), "Coming here!", Toast.LENGTH_SHORT).show();
 
 
                                     BookRequest newRequest = new BookRequest(currentUser.getUserID(),requestReceiver.getUserID(),selectedBook.getBookID());
                                     db.collection("bookRequest").document().set(newRequest);
+
+                                    //change book status
+                                    System.out.println("Selected bookID: " + selectedBook.getBookID());
+
+                                    selectedBook.setStatus(Book.Status.Requested);
+
+                                    final DocumentReference bookRef = db.collection("books").document(selectedBook.getBookID());
+                                    bookRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            bookRef.set(selectedBook);
+                                            //TODO: Update the status of the book in the user collection bookList, the book collection has owner ID so you can use that to go to user collection
+                                            //TODO: and uodate his booklist;s book status
+
+                                            //maybe don't have to do this if we are always using the book collection and bookRequestCollection but still something to think about
+
+                                        }
+                                    });
                                 }
                             });
-
                         }// if
+
                     }//onSuccess
 
                 });
@@ -238,7 +263,7 @@ public class ViewBookActivity extends AppCompatActivity {
 //                });
 
 
-                System.out.println("Coming beofre db");
+                System.out.println("Coming before db");
                db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                    @Override
                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -279,9 +304,12 @@ public class ViewBookActivity extends AppCompatActivity {
                     if (document.exists()) {
                         Map<String, Object> data;
                         data = document.getData();
-                        ArrayList<Book> books = (ArrayList<Book>) document.getData().get("BookList");
+                        ArrayList<Book> books = (ArrayList<Book>) document.getData().get("bookList");
+                        //Need to delete image before book since image uses bookID for storage.
+                        Map<String, Object> convertMap = (Map<String, Object>) books.get(bookNumber);
+                        MainActivity.database.deleteImage(convertMap.get("bookID").toString());
                         books.remove(bookNumber);
-                        data.put("BookList", books);
+                        data.put("bookList", books);
                         db.collection("users")
                                 .document(userID).set(data);
                         Intent intent = new Intent();
@@ -339,8 +367,8 @@ public class ViewBookActivity extends AppCompatActivity {
                                                 String.valueOf(document.get("description")),
                                                 Book.Status.Available,
                                                 String.valueOf(document.get("isbn")),
-                                                String.valueOf(document.get("owner"))
-
+                                                String.valueOf(document.get("owner")),
+                                                String.valueOf(document.get("bookID"))
                                         );
 
 
@@ -350,9 +378,13 @@ public class ViewBookActivity extends AppCompatActivity {
 
                                 }
                                 bookNameTextView.setText(selectedBook.getTitle());
-                                authorTextView.setText(selectedBook.getAuthor());
+                                authorTextView.setText(selectedBook.getAuthors());
                                 dateTextView.setText(selectedBook.getDate());
                                 isbnTextView.setText(selectedBook.getIsbn());
+                                if(selectedBook.getDescription()!= null) {
+                                    descriptionTextView.setText(selectedBook.getDescription());
+                                }
+                                MainActivity.database.downloadImage(imageView, selectedBook.getBookID());
 
                             } else {
                                 Toast.makeText(getBaseContext(), "got an error", Toast.LENGTH_SHORT).show();
@@ -373,19 +405,24 @@ public class ViewBookActivity extends AppCompatActivity {
                             Map<String, Object> convertMap = (Map<String, Object>) hashList.get(bookNumber);
                             book = new Book(
                                     String.valueOf(convertMap.get("title")),
-                                    String.valueOf(convertMap.get("author")),
+                                    String.valueOf(convertMap.get("authors")),
                                     String.valueOf(convertMap.get("date")),
                                     (String.valueOf(convertMap.get("description"))),
                                     //from_string_to_enum(String.valueOf(convertMap.get("status"))),
                                     Book.Status.Available,
                                     String.valueOf(convertMap.get("isbn")),
-                                    String.valueOf(document.get("owner"))
-
+                                    String.valueOf(document.get("owner")),
+                                    String.valueOf(document.get("bookID"))
                             );
                             bookNameTextView.setText(book.getTitle());
-                            authorTextView.setText(book.getAuthor());
+                            authorTextView.setText(book.getAuthors());
                             dateTextView.setText(book.getDate());
                             isbnTextView.setText(book.getIsbn());
+                            if(book.getDescription()!= null) {
+                                descriptionTextView.setText(book.getDescription());
+                            }
+                            MainActivity.database.downloadImage(imageView, book.getBookID());
+
                         } else {
                             //Log.d(TAG, "No such document");
                         }
@@ -397,101 +434,4 @@ public class ViewBookActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * This method will show the ImagePickerDialog if the current user is the owner of the book.
-     * The access to the image is provided by this dialog, so that the image can be changed.
-     * */
-    // when click the image on the photo, change it
-    public void changeBookPhoto(View view) {
-        // Toast.makeText(getBaseContext(), "changePhoto", Toast.LENGTH_SHORT).show();
-        // if not the Owner, no response
-        if (isOwner == -1) {
-            return;
-        }
-        showImagePickerDialog();
-    }
-
-    /**
-     * This method will show a dialog and prompts the user to select an image from gallery/camera
-     * It invokes the API of MediaStore to finish the taking picture action.
-     * */
-    private void showImagePickerDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setTitle("Upload Image")
-                .setPositiveButton("Camera", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        // second parameter : request code
-
-                        Toast.makeText(getBaseContext(), "There is a bug with camera, please use gallery", Toast.LENGTH_SHORT).show();
-                        // TODO: there is a bug when using camera, maybe because of MediaStore library
-                        // startActivityForResult(intent, REQ_CAMERA_IMAGE);
-
-                    }
-                })
-                .setNegativeButton("Gallery", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent();
-                        intent.setType("image/*");
-                        intent.setAction(Intent.ACTION_GET_CONTENT);
-
-                        startActivityForResult(intent, REQ_GALLERY_IMAGE);
-                    }
-                })
-                .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                    }
-                });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-    /**
-     * This method processes the image after the user finishes taking picture/selecting image
-     * , based on the method used to upload the picture (camera/gallery).
-     * It calls onSuccessChangePhoto to store the changed image into the database.
-     * */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQ_CAMERA_IMAGE) {
-            // result of camera
-            if (resultCode == RESULT_OK) {
-                // get image data
-                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                imageView.setImageBitmap(bitmap);
-                onSuccessChangePhoto(bitmap);
-            }
-
-        } else if (requestCode == REQ_GALLERY_IMAGE) {
-            if (resultCode == RESULT_OK) {
-                // get image data
-                Uri selectedImage = data.getData();
-                try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
-                    imageView.setImageBitmap(bitmap);
-                    onSuccessChangePhoto(bitmap);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                //imageView.setImageURI(selectedImage);
-            }
-        }
-    }
-
-    /**
-     * This method will process the given image and store it in the database.
-     * */
-    private void onSuccessChangePhoto(Bitmap bitmap) {
-        //Intent intent = new Intent();
-        //intent.putExtra("PHOTO_CHANGE", bitmap);
-        //setResult(1, intent);
-        // Comment: so far, we can only let user upload photo, but can't store it
-        //      Thus, unfortunately, it won't be passed back to the previous activity
-        // TODO: figure out how to scale image, compress it and store it to database
-    }
 }
