@@ -6,10 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.ibook.BookListAdapter;
@@ -29,6 +31,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
@@ -47,6 +50,9 @@ public class BookListFragment extends Fragment {
     private String userName;
     private FirebaseAuth uAuth;
     private RadioGroup radioGroup;
+    private Spinner mSpinner;
+    private ArrayAdapter<CharSequence> spinner_adapter;
+    private Button sortButton;
 
 
 
@@ -56,13 +62,14 @@ public class BookListFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_booklist, container, false);
         bookListView = root.findViewById(R.id.bookList);
         btn_addBook = root.findViewById(R.id.button_add);
+        mSpinner = root.findViewById(R.id.spinner);
+        sortButton = root.findViewById(R.id.sortBook);
 
         datalist = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
         uAuth = FirebaseAuth.getInstance();
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
 
         //default username = "yzhang24@gmail.com";
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -75,7 +82,6 @@ public class BookListFragment extends Fragment {
             return root;
         }
 
-
         db.collection("users")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -87,7 +93,7 @@ public class BookListFragment extends Fragment {
                                 String matchID = document.getId();
                                 //Toast.makeText(getContext(), id, Toast.LENGTH_SHORT).show();
                                 if (matchID.equals(userID)) {
-                                    //Toast.makeText(getContext(), "match", Toast.LENGTH_SHORT).show();\
+                                    //Toast.makeText(getContext(), "match", Toast.LENGTH_SHORT).show();
 
                                     Map<String, Object> convertMap;
                                     ArrayList<Book> hashList = (ArrayList<Book>) document.get("bookList");
@@ -110,7 +116,9 @@ public class BookListFragment extends Fragment {
                                     if (datalist == null) {
                                         datalist = new ArrayList<>();
                                     } else {
-                                        adapter.notifyDataSetChanged();
+                                        adapter = new BookListAdapter(datalist, getActivity());
+                                        bookListView.setAdapter(adapter);
+                                        Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
                                     }
 
                                 }
@@ -164,19 +172,58 @@ public class BookListFragment extends Fragment {
 
                                 }// outer onComplete
                             });// outer addOnCompleteListener
-
-                    // TODO: deal with other three filters
-                    // empty now for other three
           ;
-                }// else if
-
+                }
                 else{
                     adapter = new BookListAdapter(new ArrayList<Book>(), getActivity());
                     bookListView.setAdapter(adapter);
-
                 }//else
             }
         });
+
+
+        // set up spinner
+        final String[] arr={"All status","Available","Requested","Accepted","Borrowed"};
+
+        spinner_adapter = new ArrayAdapter<CharSequence>(getContext(), android.R.layout.simple_spinner_item, arr);
+        mSpinner.setAdapter(spinner_adapter);
+
+        // set spinner listener
+        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Toast.makeText(getContext(), "click " + arr[position], Toast.LENGTH_SHORT).show();
+                ArrayList<Book> filtered_book = new ArrayList<>();
+                if(arr[position].equals("All status")){
+                    filtered_book = datalist;
+                }
+                else{
+                    for(Book book:datalist){
+                        if(book.getStatus().toString().equals(arr[position])){
+                            filtered_book.add(book);
+                        }
+                    }
+                }
+                adapter = new BookListAdapter(filtered_book, getActivity());
+                bookListView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        // sort books by title
+        sortButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "sort" , Toast.LENGTH_SHORT).show();
+                Collections.sort(datalist);
+                adapter.notifyDataSetChanged();
+            }
+        });
+
 
         // view book on the list
         bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -202,6 +249,8 @@ public class BookListFragment extends Fragment {
 
         return root;
     }
+
+
 
     @Override // if add/edit/delete books, update changes
     public void onActivityResult(int requestCode, int resultCode, final Intent data) {
@@ -265,6 +314,9 @@ public class BookListFragment extends Fragment {
         }
     }
 
+    public void filterBook(){
+
+    }
 
     public Book.Status from_string_to_enum(String input) {
         if (input.equals("Available"))

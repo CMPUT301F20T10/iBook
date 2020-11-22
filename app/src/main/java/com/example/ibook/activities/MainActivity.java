@@ -11,7 +11,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ibook.R;
-import com.example.ibook.entities.Book;
 import com.example.ibook.entities.Database;
 import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -23,9 +22,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import java.util.ArrayList;
-import java.util.Map;
 
 import static android.view.View.GONE;
 
@@ -184,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }//createUserObject
+
 
 
 }// Database Class
