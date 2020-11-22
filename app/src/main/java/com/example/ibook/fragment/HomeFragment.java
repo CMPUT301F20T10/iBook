@@ -2,6 +2,8 @@ package com.example.ibook.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +15,15 @@ import android.widget.Toast;
 
 import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
-import com.example.ibook.activities.SearchedBooksActivity;
+import com.example.ibook.activities.MainActivity;
+import com.example.ibook.activities.SearchResultsActivity;
+import com.example.ibook.activities.SearchResultsActivity;
 import com.example.ibook.activities.ViewBookActivity;
 import com.example.ibook.entities.Book;
 import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -45,9 +50,13 @@ public class HomeFragment extends Fragment {
     private SearchView searchBar;
     private ArrayList<Book> resultList;
     private ArrayList<Book> bookList;
+    private ArrayList<User> userList;
     private FirebaseFirestore db;
     private ProgressBar searchProgressBar;
     boolean searchBarClosed = true;
+
+    boolean search_book_complete = false;
+    boolean search_user_complete = false;
 
     @Nullable
     @Override
@@ -68,7 +77,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //If its not been fully closed then we don't do anything
-                if(searchBarClosed) {
+                if (searchBarClosed) {
                     searchBar.setIconified(false);
                 }
             }
@@ -78,7 +87,7 @@ public class HomeFragment extends Fragment {
             @Override
             public boolean onClose() {
                 //Let it be fully clickable so we can display it properly
-                searchBarClosed= true;
+                searchBarClosed = true;
                 return false;
             }
         });
@@ -88,6 +97,7 @@ public class HomeFragment extends Fragment {
             public boolean onQueryTextSubmit(String query) {
                 resultList = new ArrayList<>();
                 bookList = new ArrayList<>();
+                userList = new ArrayList<>();
                 searchProgressBar.setVisibility(View.VISIBLE);
                 searchData(query);
                 searchBar.clearFocus(); //Fixes enter key pressed down and up on keyboard
@@ -100,19 +110,7 @@ public class HomeFragment extends Fragment {
                 return false;
             }
         });
-        /*
-        Book newBook = new Book("Watchmen", "Alan Moore, Dave Gibbons", "2014", "Psychologically moving comic book...", Book.Status.Available, "temp isbn 1");
-        Book newBook2 = new Book("The Millionaire Maker", "Loral Langemeier", "2006", "You - A Millionaire? (It's true, and you might be closer than you think.)\n " +
-                "Even financial woes and a limited income can't stop you from creating real wealth and the freedom in buys.", Book.Status.Available, "temp isbn 2");
-        datalist.add(newBook2);
-        datalist.add(newBook);
-        datalist.add(newBook2);
-        datalist.add(newBook);
-        datalist.add(newBook2);
-        datalist.add(newBook);
-        datalist.add(newBook2);
-        datalist.add(newBook);
-        */
+
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
 
@@ -145,8 +143,6 @@ public class HomeFragment extends Fragment {
                 });
 
 
-
-
         // view book on the list
         bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -164,6 +160,7 @@ public class HomeFragment extends Fragment {
 
         return root;
     }
+
     /***
      *This method searches the database for the keyword entered
      * in the books collection and users collection.
@@ -171,33 +168,18 @@ public class HomeFragment extends Fragment {
      * the activity that shows the results.
      */
     public void searchData(final String query) {
-        //searches for owner
-//        db.collection("books").whereEqualTo("owner", query)
-//                .get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        for (DocumentSnapshot document : task.getResult()) {
-//
-//                            Book book = new Book(document.getString("title"),
-//                                    document.getString("authors"),
-//                                    document.getString("date"),
-//                                    document.getString("description"),
-//                                    Book.Status.valueOf(document.getString("status")),
-//                                    document.getString("isbn"),
-//                            document.getString("owner"));
-//
-//                            //if book has owner specified add book to resultList
-//                            resultList.add(book);
-//                        }
-//                    }
-//                });
+
+
+        //wait for method to complete
+//        android.os.SystemClock.sleep(1000);
+
         //get all books from book collection
         //add to a bookList
         db.collection("books").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 for (DocumentSnapshot document : task.getResult()) {
+
                     Book book = new Book(document.getString("title"),
                             document.getString("authors"),
                             document.getString("date"),
@@ -207,9 +189,7 @@ public class HomeFragment extends Fragment {
                             document.getString("owner"),
                             document.getString("bookID")
                     );
-
                     bookList.add(book);
-
                 }
                 for (Book book : bookList) {
                     String author = book.getAuthors();
@@ -221,21 +201,73 @@ public class HomeFragment extends Fragment {
                     //if string contains keyword add it to the resultList
                     if (string.contains(query.toLowerCase()) && book.getStatus() != Book.Status.Borrowed && book.getStatus() != Book.Status.Accepted) {
                         resultList.add(book);
-
                     }
                 }
-                if (resultList.isEmpty()) {
-                    Toast.makeText(getContext(), "No results found", Toast.LENGTH_SHORT).show();
-                } else {
-                    //pass resultList to SearchBooksActivity for adapter to display
-                    Intent intent = new Intent(getContext(), SearchedBooksActivity.class);
-                    intent.putExtra("books", resultList);
-                    startActivity(intent);
-                }
-                searchProgressBar.setVisibility(View.GONE);
-
+                search_book_complete = true;
             }
         });
+        Log.d("", "Done book");
+
+
+        //searches for userName that matches query
+        MainActivity.database
+                .getDb()
+                .collection("users")
+                .whereEqualTo("userName", query)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for (QueryDocumentSnapshot documentReference : task.getResult()) {
+                            userList.add(documentReference.toObject(User.class));
+                            Log.d("number", userList.size() + "");
+                        }
+                    }
+                })
+                // search for the book
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        MainActivity.database
+                                .getDb()
+                                .collection("books")
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                            Book book = documentSnapshot.toObject(Book.class);
+                                            if (book.getAuthors().toLowerCase().contains(query.toLowerCase())
+                                                    || book.getTitle().toLowerCase().contains(query.toLowerCase())
+                                                    || book.getDescription().toLowerCase().contains(query.toLowerCase())
+                                                    && book.getStatus() != Book.Status.Borrowed
+                                                    && book.getStatus() != Book.Status.Accepted
+                                            ) {
+                                                bookList.add(book);
+                                            }
+                                        }
+                                    }
+                                }).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (resultList.isEmpty() && userList.isEmpty()) {
+                                    Toast.makeText(getContext(), "No results found", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    //pass resultList and userList to SearchBooksActivity for adapter to display
+                                    Intent intent = new Intent(getContext(), SearchResultsActivity.class);
+                                    System.out.println("final list " + userList);
+                                    intent.putExtra("books", resultList);
+                                    intent.putExtra("users", userList);
+                                    Log.d("", userList.size() + "HERE");
+                                    searchProgressBar.setVisibility(View.GONE);
+                                    startActivity(intent);
+                                }
+                                searchProgressBar.setVisibility(View.GONE);
+                            }
+                        });
+
+                    }
+                });
     }
 
     public Book.Status from_string_to_enum(String input) {
