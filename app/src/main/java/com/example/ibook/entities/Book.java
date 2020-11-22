@@ -1,9 +1,8 @@
 package com.example.ibook.entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
-public class Book implements Serializable {
+public class Book implements Serializable, Comparable<Book>{
 
     public enum Status {
         Available, Requested, Borrowed, Return, Accepted
@@ -119,6 +118,11 @@ public class Book implements Serializable {
 
     public void setBookID(String bookID) {
         this.bookID = bookID;
+    }
+
+    @Override
+    public int compareTo(Book o) {
+        return this.title.toLowerCase().compareTo(o.title.toLowerCase());
     }
 
 }

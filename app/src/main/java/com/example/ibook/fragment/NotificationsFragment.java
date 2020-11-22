@@ -73,7 +73,7 @@ public class NotificationsFragment extends Fragment {
         responseList = new ArrayList<>();
         final DocumentReference docRef = db.collection("users").document(MainActivity.database.getCurrentUserUID());
 
-        final ArrayAdapter adapter = new ArrayAdapter<>(getContext(),R.layout.notification_list_content,R.id.textView, requestsList);
+        final ArrayAdapter adapter = new ArrayAdapter<>(getContext(),R.layout.notification_list_content,R.id.userNameTextView, requestsList);
         listView.setAdapter(adapter);
 
         //get users request list
@@ -223,13 +223,13 @@ public class NotificationsFragment extends Fragment {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton radioButton = group.findViewById(checkedId);
                 if(radioButton.getText().toString().equals("Requests")){
-                    ArrayAdapter adapter = new ArrayAdapter<>(getContext(),R.layout.notification_list_content,R.id.textView, requestsList);
+                    ArrayAdapter adapter = new ArrayAdapter<>(getContext(),R.layout.notification_list_content,R.id.userNameTextView, requestsList);
                     listView.setAdapter(adapter);
                 }// if
                 else{
                     // TODO: display responses listview
                     // empty for now
-                    ArrayAdapter adapter = new ArrayAdapter<>(getContext(),R.layout.notification_list_content,R.id.textView,new ArrayList());
+                    ArrayAdapter adapter = new ArrayAdapter<>(getContext(),R.layout.notification_list_content,R.id.userNameTextView,new ArrayList());
                     listView.setAdapter(adapter);
                 }// else
             }

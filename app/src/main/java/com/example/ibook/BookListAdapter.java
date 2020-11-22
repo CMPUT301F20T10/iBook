@@ -8,6 +8,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.ibook.activities.MainActivity;
 import com.example.ibook.entities.Book;
 
@@ -82,16 +84,17 @@ public class BookListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.book_list_content, parent, false);
+            //Get the xml attributes
+            title = convertView.findViewById(R.id.listBookTitle);
+            authors = convertView.findViewById(R.id.listBookAuthors);
+            date = convertView.findViewById(R.id.listBookDate);
+            description = convertView.findViewById(R.id.listBookDescription);
+            status = convertView.findViewById(R.id.listBookStatus);
+            imageView = convertView.findViewById(R.id.listImageView);
         }
         //Get the current book
         Book book = books.get(position);
-        //Get the xml attributes
-        title = convertView.findViewById(R.id.listBookTitle);
-        authors = convertView.findViewById(R.id.listBookAuthors);
-        date = convertView.findViewById(R.id.listBookDate);
-        description = convertView.findViewById(R.id.listBookDescription);
-        status = convertView.findViewById(R.id.listBookStatus);
-        imageView = convertView.findViewById(R.id.listImageView);
+
 
         //Set the values for the xml attributes
         title.setText(book.getTitle());

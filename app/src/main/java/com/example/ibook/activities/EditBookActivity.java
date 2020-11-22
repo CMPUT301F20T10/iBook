@@ -21,6 +21,7 @@ import com.example.ibook.entities.Book;
 import com.example.ibook.fragment.ScanFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -53,6 +54,7 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
     private String userID;
     private int bookNumber;
     private Book originalBook;
+    FirebaseAuth uAuth;
 
     private final int REQ_CAMERA_IMAGE = 1;
     private final int REQ_GALLERY_IMAGE = 2;
@@ -79,7 +81,9 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
 
 
         Intent intent = getIntent();
-        userID = intent.getStringExtra("ID");
+        uAuth = FirebaseAuth.getInstance();
+        userID = uAuth.getCurrentUser().getUid();
+
         bookNumber = intent.getIntExtra("bookNumber", 0);
 
         getBookData();
@@ -91,15 +95,16 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                 final String authorName = authorEditText.getText().toString();
                 final String date = dateEditText.getText().toString();
                 final String isbn = isbnEditText.getText().toString();
-                String description = "";
-                if(descriptionEditText.getText()!= null) {
-                    description = descriptionEditText.getText().toString();
-                }
+                final String description = descriptionEditText.getText().toString();
+
+                //Toast.makeText(getBaseContext(), authorName, Toast.LENGTH_SHORT).show();
+
                 if (bookName.length() > 0
                         && authorName.length() > 0
                         && date.length() > 0
                         && isbn.length() > 0) {
 //                    TODO:add more value
+
                     Book currentBook = new Book(bookName, authorName, date, description, originalBook.getStatus(), isbn, userID, originalBook.getBookID());
                     Intent intent = new Intent();
                     // update book if there's a change
@@ -116,10 +121,12 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                         }
                     }
                     setResult(4, intent);
+
                     finish();
                 } else {
                     Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();
                 }
+
             }
         });
 
@@ -177,7 +184,7 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                         authorEditText.setText(book.getAuthors());
                         dateEditText.setText(book.getDate());
                         isbnEditText.setText(book.getIsbn());
-                        // TODO: forgot to let the user edit description, improve it later
+
                         if(book.getDescription()!= null) {
                             descriptionEditText.setText(book.getDescription());
                         }
@@ -196,23 +203,33 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
 
     // update book info
     private void updateBook(final Book book) {
+
         DocumentReference docRef = db.collection("users").document(userID);
+
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        Map<String, Object> data = new HashMap();
+
+                        Map<String, Object> data;
                         data = document.getData();
                         ArrayList<Book> books = (ArrayList<Book>) document.getData().get("bookList");
                         books.set(bookNumber, book);
                         data.put("bookList", books);
                         db.collection("users").document(userID).set(data);
-//                        //Update the image if it changed
-//                        if(imageAdded) {
-//
-//                        }
+
+                        // also update book info to the book collection
+                        data = new HashMap();
+                        data.put("authors", book.getAuthors());
+                        data.put("date", book.getDate());
+                        data.put("description", book.getDescription());
+                        data.put("isbn", book.getIsbn());
+                        data.put("owner", book.getOwner());
+                        data.put("status", "Available");
+                        data.put("title", book.getTitle());
+                        db.collection("books").document(book.getBookID()).update(data);
                     } else {
                         Toast.makeText(getApplicationContext(), "No such document", Toast.LENGTH_SHORT).show();
                     }
@@ -222,6 +239,7 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
             }
         });
     }
+
 
     @Override
     public void onOkPressed(String ISBN) {
