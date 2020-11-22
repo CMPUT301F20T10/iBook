@@ -57,7 +57,7 @@
         android:id="@+id/listImageView"
         android:layout_width="128dp"
         android:layout_height="97dp"
-        android:background="#FFFFFF"
+        android:background="#00FFFFFF"
         app:layout_constraintBottom_toBottomOf="@+id/listBookStatus"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

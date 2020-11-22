@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.ibook.activities.EditBookActivity;
 import com.example.ibook.activities.EditProfile;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -27,6 +28,7 @@ import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 
 import static com.google.android.gms.tasks.Tasks.await;
 
@@ -41,7 +43,7 @@ public class Database {
     private FirebaseAuth uAuth;
     private FirebaseFirestore db;
     private StorageReference storageReference;
-    public static boolean uploadingImage;
+    public final static String tempFileName = "tempImage.png";
 
     public Database(FirebaseAuth uAuth, FirebaseFirestore db) {
         this.uAuth = uAuth;
@@ -52,7 +54,6 @@ public class Database {
         this.uAuth = FirebaseAuth.getInstance();
         this.db = FirebaseFirestore.getInstance();
         this.storageReference = FirebaseStorage.getInstance().getReference();
-        uploadingImage = false;
     }
 
     /**
@@ -97,37 +98,63 @@ public class Database {
     /**
      * Upload an image to the database (Firebase Storage) by supplying the image as an image view
      * and the file title as the bookId. This works because there can only be one image per book.
-     * @param imageView
+     * @param is
      * @param bookId
      * @return
      */
-    public boolean uploadImage(ImageView imageView, String bookId) {
+    public boolean uploadImage(final FileInputStream is, final String bookId) {
         final boolean[] success = {false};
-        if(bookId == null) {
+        if(bookId == null || bookId == "null") {
+            Log.i("image", "No bookID");
             return success[0];
         }
-        uploadingImage = true;
-        imageView.setDrawingCacheEnabled(true);
-        imageView.buildDrawingCache();
-        Bitmap bitmap = imageView.getDrawingCache();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-        byte[] data = baos.toByteArray();
-        StorageTask storageTask = storageReference.child("coverImages/"+bookId).putBytes(data).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                if(task.isSuccessful()) {
-                    success[0] = true;
-                    uploadingImage = false;
-                }
-                Log.i("image", "Upload succeeded");
+        try {
+            //FileInputStream is = openFileInput(tempFileName);
+            Bitmap bitmap = BitmapFactory.decodeStream(is);
+            Bitmap bitmapSmall = bitmap;
+            //Rescale the bitmap so that its smaller. We can't download images more than 1MB.
+            int maxSize = 800;
+            if(bitmap.getHeight() > maxSize) {
+                double newWidth = (double) bitmap.getWidth()/bitmap.getHeight()*maxSize; //Rescale the image as a ratio of set size. So it won't be bigger than 1500 pixels now.
+                bitmap = Bitmap.createScaledBitmap(bitmap, (int) newWidth, maxSize, true);
             }
-        });
-
-        try{
-            SystemClock.sleep(1000);
-            await(storageTask);
-        }catch (Exception e){
+            if (bitmap.getWidth() > maxSize) {
+                double newHeight = (double) bitmap.getHeight()/bitmap.getWidth()*maxSize;
+                bitmap = Bitmap.createScaledBitmap(bitmap,  maxSize, (int) newHeight, true);
+            }
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 85, baos);
+            byte[] data = baos.toByteArray();
+            storageReference.child("coverImages/" + bookId).putBytes(data).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        success[0] = true;
+                    }
+                    Log.i("image", "Full Image Upload succeeded");
+                }
+            });
+            //Now upload an icon image that is very small so we can access the book list faster
+            int maxSmallSize = 100;
+            double width = (double) bitmapSmall.getWidth()/bitmapSmall.getHeight()*maxSmallSize; //Rescale the image as an icon
+            bitmapSmall = Bitmap.createScaledBitmap(bitmapSmall, (int) width, maxSmallSize, true);
+            ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+            bitmapSmall.compress(Bitmap.CompressFormat.PNG, 85, baos2);
+            byte[] dataSmall = baos2.toByteArray();
+            storageReference.child("coverImages/"+bookId+"icon").putBytes(dataSmall).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        success[0] = true;
+                    }
+                    Log.i("image", "Icon Image Upload succeeded");
+                }
+            });
+            baos.close();
+            baos2.close();
+            bitmap.recycle();
+            bitmapSmall.recycle();
+        }catch  (Exception e){
             e.printStackTrace();
         }
 
@@ -139,35 +166,36 @@ public class Database {
      * image and the bookId, which is the filename for the image to get from Firebase Storage.
      * @param imageView
      * @param bookId
+     * @param fullSizedImage
      * @return
      */
-    public boolean downloadImage(final ImageView imageView, final String bookId) {
+    public boolean downloadImage(final ImageView imageView, final String bookId, boolean fullSizedImage) {
         final boolean[] success = {false};
-        if(bookId == null) {
+        if(bookId == null || bookId == "null") {
             return success[0];
         }
-//        if(uploadingImage = true){
-//            SystemClock.sleep(3000);
-//            uploadingImage = false;
-//        }
-
-        storageReference.child("coverImages/"+bookId).getBytes(1024*1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                imageView.setImageBitmap(bitmap);
-                success[0] = true;
-                Log.i("image", "Download succeeded");
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.i("image", "Download failed, "+ e.getMessage());
-                success[0] = false;
-            }
-        });
-
+        String imageName = bookId;
+        if(!fullSizedImage) { //Download just the icon
+            imageName = bookId + "icon";
+        }
+        try {
+            storageReference.child("coverImages/" + imageName).getBytes(1024 * 1024).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                @Override
+                public void onSuccess(byte[] bytes) {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    EditBookActivity.scaleAndSetImage(bitmap, imageView);
+                    success[0] = true;
+                    //Log.i("image", "Download succeeded");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.i("image", "Download failed, " + e.getMessage());
+                    success[0] = false;
+                }
+            });
+        }catch (Exception e) {
+        }
         return success[0];
     }
 
@@ -186,6 +214,15 @@ public class Database {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 Log.i("image", "Deleted Image");
+                success[0] = true;
+            }
+        });
+        //Delte the icon image as well
+        //Delete the image
+        storageReference.child("coverImages/"+bookId + "icon").delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Log.i("image", "Deleted Icon Image");
                 success[0] = true;
             }
         });

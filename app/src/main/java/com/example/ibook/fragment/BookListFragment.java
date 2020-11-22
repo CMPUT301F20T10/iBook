@@ -1,7 +1,10 @@
 package com.example.ibook.fragment;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +18,7 @@ import android.widget.Toast;
 import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
 import com.example.ibook.activities.AddBookActivity;
+import com.example.ibook.activities.EditBookActivity;
 import com.example.ibook.activities.MainActivity;
 import com.example.ibook.activities.ViewBookActivity;
 import com.example.ibook.entities.Book;
@@ -28,6 +32,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -209,12 +214,21 @@ public class BookListFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == 1) { // if data changed, update
-            /*
-            if(data.getExtras().containsKey("PHOTO_CHANGE")){
-                Bitmap new_pic = (Bitmap)data.getExtras().get("PHOTO_CHANGE");
-                //Toast.makeText(getContext(),new_pic.toString(),Toast.LENGTH_SHORT).show();
+
+            if(data.getExtras()!=null){
+                try {
+                    //String tempFileName = data.getStringExtra("CHANGED_IMAGE");
+                    //FileInputStream is = new FileInputStream(tempFileName);
+                    //Bitmap new_pic = BitmapFactory.decodeStream(is);
+                    //is.close();
+                    //imageView = findViewById(R.id.imageView);
+                    //imageView = EditBookActivity.scaleAndSetImage(new_pic, imageView, true);
+                    //imageChanged = true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-            */
+
 
             // update the change
             // Toast.makeText(getContext(), "updated", Toast.LENGTH_SHORT).show();

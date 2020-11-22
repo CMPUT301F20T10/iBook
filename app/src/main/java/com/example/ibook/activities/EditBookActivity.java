@@ -1,12 +1,14 @@
 package com.example.ibook.activities;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -23,6 +25,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,12 +100,22 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                         && date.length() > 0
                         && isbn.length() > 0) {
 //                    TODO:add more value
-                    Book currentBook = new Book(bookName, authorName, date, description, originalBook.getStatus(), isbn, MainActivity.user.getUserID(), originalBook.getBookID());
-
+                    Book currentBook = new Book(bookName, authorName, date, description, originalBook.getStatus(), isbn, userID, originalBook.getBookID());
+                    Intent intent = new Intent();
                     // update book if there's a change
                     if ((!currentBook.equals(originalBook)) || imageAdded) {
                         updateBook(currentBook);
+                        if(imageAdded) {
+                            try{
+                                MainActivity.database.uploadImage(openFileInput(MainActivity.database.tempFileName), currentBook.getBookID());
+                                intent.putExtra("CHANGED_IMAGE", MainActivity.database.tempFileName);
+                            }catch (Exception e){
+                                Toast.makeText(getBaseContext(), "Image upload failed please try again", Toast.LENGTH_LONG).show();
+                                e.printStackTrace();
+                            }
+                        }
                     }
+                    setResult(4, intent);
                     finish();
                 } else {
                     Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();
@@ -147,7 +162,7 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                         Map<String, Object> convertMap = (Map<String, Object>) hashList.get(bookNumber);
                         Book book = new Book(
                                 String.valueOf(convertMap.get("title")),
-                                String.valueOf(convertMap.get("author")),
+                                String.valueOf(convertMap.get("authors")),
                                 String.valueOf(convertMap.get("date")),
                                 String.valueOf(convertMap.get("description")),
                                 //from_string_to_enum(String.valueOf(convertMap.get("status"))),
@@ -166,7 +181,7 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                         if(book.getDescription()!= null) {
                             descriptionEditText.setText(book.getDescription());
                         }
-                        MainActivity.database.downloadImage(imageView, book.getBookID());
+                        MainActivity.database.downloadImage(imageView, book.getBookID(), true);
 
                     } else {
                         //Log.d(TAG, "No such document");
@@ -194,10 +209,10 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                         books.set(bookNumber, book);
                         data.put("bookList", books);
                         db.collection("users").document(userID).set(data);
-                        //Update the image if it changed
-                        if(imageAdded) {
-                            MainActivity.database.uploadImage(imageView, book.getBookID());
-                        }
+//                        //Update the image if it changed
+//                        if(imageAdded) {
+//
+//                        }
                     } else {
                         Toast.makeText(getApplicationContext(), "No such document", Toast.LENGTH_SHORT).show();
                     }
@@ -266,7 +281,8 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
             if (resultCode == RESULT_OK) {
                 // get image data
                 Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                imageView.setImageBitmap(bitmap);
+                storeLocally(bitmap);
+                imageView = scaleAndSetImage(bitmap, imageView);
                 imageAdded = true;
             }
 
@@ -276,7 +292,8 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                 Uri selectedImage = data.getData();
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
-                    imageView.setImageBitmap(bitmap);
+                    storeLocally(bitmap);
+                    imageView = scaleAndSetImage(bitmap, imageView);
                     imageAdded = true;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -286,16 +303,31 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
         }
     }
 
-//    /**
-//     * This method will process the given image and store it in the database.
-//     * */
-//    private void onSuccessChangePhoto(Bitmap bitmap) {
-//        //Intent intent = new Intent();
-//        //intent.putExtra("PHOTO_CHANGE", bitmap);
-//        //setResult(1, intent);
-//        // Comment: so far, we can only let user upload photo, but can't store it
-//        //      Thus, unfortunately, it won't be passed back to the previous activity
-//        // TODO: figure out how to scale image, compress it and store it to database
-//    }
+    private void storeLocally(Bitmap bitmap) {
+        try {//Pass the image through a temporary link on local storage
+            //Large bitmaps will crash the app.
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+            FileOutputStream fo = openFileOutput(MainActivity.database.tempFileName, Context.MODE_PRIVATE);
+            fo.write(baos.toByteArray());
+            // remember close file output
+            baos.close();
+            fo.close();
+            Log.i("image" , "Stored locally "+ MainActivity.database.tempFileName);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static ImageView scaleAndSetImage(Bitmap bitmap, ImageView imageView) {
+        //bitmap = Bitmap.createScaledBitmap(bitmap, imageView.getWidth(), imageView.getHeight(), true);
+        imageView.setDrawingCacheEnabled(true);
+        imageView.buildDrawingCache();
+        imageView.setAdjustViewBounds(true);
+        //Centers the image and fits it to the imageView
+        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        imageView.setImageBitmap(bitmap);
+        return imageView;
+    }
 
 }
