@@ -6,59 +6,75 @@
     android:layout_height="match_parent"
     tools:context=".activities.SearchResultsActivity">
 
+    <Button
+        android:id="@+id/cancelButton"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/ic_baseline_arrow_back_ios_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/header_searchResults"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:text="@string/searchResults"
-        android:textColor="#000000"
-        android:textSize="24sp"
-
+        android:textSize="30sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cancelButton"
         tools:text="@string/searchResults" />
+
     <RadioGroup
+        android:id="@+id/selectState"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/selectState"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         android:orientation="horizontal"
-        android:layout_marginTop="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         app:layout_constraintBottom_toTopOf="@+id/listView"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header_searchResults">
 
         <RadioButton
-            android:id="@+id/rb_1"
+            android:id="@+id/search_book"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="50dp"
+            android:layout_weight="1"
             android:background="@drawable/selector_orange_radiobutton"
             android:button="@null"
             android:checked="true"
             android:gravity="center"
             android:text="Books"
-            android:textColor="#000"
+            android:textColor="#FFFFFF"
             android:textSize="18sp" />
+
         <RadioButton
+            android:id="@+id/search_user"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="50dp"
-            android:gravity="center"
-            android:id="@+id/rb_2"
-            android:text="Users"
+            android:layout_weight="1"
+            android:background="@drawable/selector_orange_radiobutton"
             android:button="@null"
-            android:textSize="18sp"
-            android:textColor="#000"
-            android:background="@drawable/selector_orange_radiobutton"/>
+            android:gravity="center"
+            android:text="Users"
+            android:textColor="#FF9900"
+            android:textSize="18sp" />
 
     </RadioGroup>
 
     <ListView
+        android:scrollbars="none"
         android:id="@+id/listView"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -71,9 +87,18 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/selectState">
-
-
     </ListView>
+
+    <TextView
+        android:id="@+id/noResultTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No Result"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/selectState" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

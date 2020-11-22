@@ -3,6 +3,7 @@ package com.example.ibook.fragment;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -54,6 +55,9 @@ public class NotificationsFragment extends Fragment {
     private DocumentReference userDoc;
     public static String requestSenderID;
 
+    private RadioButton requestButton;
+    private RadioButton responseButton;
+
     //Maps
     private Marker marker;
     public static LatLng markerLoc = null;
@@ -69,11 +73,13 @@ public class NotificationsFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         View root = inflater.inflate(R.layout.fragment_notification, container, false);
         listView = root.findViewById(R.id.listView);
+        requestButton = root.findViewById(R.id.requestButton);
+        responseButton = root.findViewById(R.id.responseButton);
         requestsList = new ArrayList<>();
         responseList = new ArrayList<>();
         final DocumentReference docRef = db.collection("users").document(MainActivity.database.getCurrentUserUID());
 
-        final ArrayAdapter adapter = new ArrayAdapter<>(getContext(),R.layout.notification_list_content,R.id.userNameTextView, requestsList);
+        final ArrayAdapter adapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, requestsList);
         listView.setAdapter(adapter);
 
         //get users request list
@@ -84,7 +90,7 @@ public class NotificationsFragment extends Fragment {
                     //user object intialized
                     currentUser = documentSnapshot.toObject(User.class);
                     notificationList = currentUser.getNotificationList();
-                    for (String notif:notificationList){
+                    for (String notif : notificationList) {
                         requestsList.add(notif);
                     }// for loop
                     Collections.reverse(requestsList);
@@ -107,11 +113,11 @@ public class NotificationsFragment extends Fragment {
                                 //going to the maps
                                 Intent mapsIntent = new Intent(getContext(), MapsActivity.class);
                                 mapsIntent.putExtra(MapsActivity.MAP_TYPE, MapsActivity.ADD_EDIT_LOCATION);
-                                if(markerLoc!=null) {
+                                if (markerLoc != null) {
                                     mapsIntent.putExtra("locationIncluded", true);
                                     mapsIntent.putExtra("markerLoc", markerLoc);
                                     mapsIntent.putExtra("markerText", markerText);
-                                }else{
+                                } else {
                                     mapsIntent.putExtra("locationIncluded", false);
                                 }
                                 startActivityForResult(mapsIntent, ADD_EDIT_LOCATION_REQUEST_CODE);
@@ -128,13 +134,13 @@ public class NotificationsFragment extends Fragment {
                                             @Override
                                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                                 //don't need the for loop since username will be unique in our app, so only 1 result with the match.
-                                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                                        requestSenderID = document.getId();
+                                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                                    requestSenderID = document.getId();
 
-                                                    }// for loop
-                                                    System.out.println("UserID: " + requestSenderID);
+                                                }// for loop
+                                                System.out.println("UserID: " + requestSenderID);
                                                 MainActivity.database.getDb().collection("bookRequest")
-                                                        .whereEqualTo("requestSenderID",requestSenderID)
+                                                        .whereEqualTo("requestSenderID", requestSenderID)
                                                         .get()
                                                         .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                             @Override
@@ -143,18 +149,18 @@ public class NotificationsFragment extends Fragment {
                                                                 //don't need the for loop since username will be unique in our app, so only 1 result with the match.
                                                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                                                     //delete the document
-                                                                   bookID  = (String) document.get("requestedBookID");
+                                                                    bookID = (String) document.get("requestedBookID");
                                                                     document.getReference().delete();
                                                                     //check if there are any other request on the same book, if no, then change book status
                                                                     final String finalBookID = bookID;
                                                                     MainActivity.database.getDb().collection("bookRequest")
-                                                                            .whereEqualTo("requestedBookID",bookID)
+                                                                            .whereEqualTo("requestedBookID", bookID)
                                                                             .get()
                                                                             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                                                 @Override
                                                                                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                                                                     // checks if there are no other documents with request on the book
-                                                                                    if(task.getResult().isEmpty()){
+                                                                                    if (task.getResult().isEmpty()) {
                                                                                         //so update book status
                                                                                         MainActivity.database.getDb().collection("books").document(finalBookID)
                                                                                                 .update("status", "Available");
@@ -167,14 +173,14 @@ public class NotificationsFragment extends Fragment {
                                                                 MainActivity.database.getUserDocumentReference().get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                                                     @Override
                                                                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                                       User currentUser = documentSnapshot.toObject(User.class);
-                                                                       currentUser.getNotificationList().remove(position);
-                                                                       MainActivity.database.getUserDocumentReference().set(currentUser).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                           @Override
-                                                                           public void onSuccess(Void aVoid) {
-                                                                               Toast.makeText(getContext(), "Declined request from " + requestSenderUsername, Toast.LENGTH_SHORT).show();
-                                                                           }
-                                                                       });
+                                                                        User currentUser = documentSnapshot.toObject(User.class);
+                                                                        currentUser.getNotificationList().remove(position);
+                                                                        MainActivity.database.getUserDocumentReference().set(currentUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                            @Override
+                                                                            public void onSuccess(Void aVoid) {
+                                                                                Toast.makeText(getContext(), "Declined request from " + requestSenderUsername, Toast.LENGTH_SHORT).show();
+                                                                            }
+                                                                        });
                                                                     }//onSuccess
                                                                 });
 
@@ -187,15 +193,15 @@ public class NotificationsFragment extends Fragment {
                                                 MainActivity.database.getDb().collection("users").document(requestSenderID)
                                                         .get()
                                                         .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                    @Override
-                                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                        User requestSender = documentSnapshot.toObject(User.class);
-                                                        requestSender.addToNotificationList(currentUser.getUserName() + " declined your request ");
-                                                        //update database
-                                                        MainActivity.database.getDb().collection("users").document(requestSenderID).set(requestSender);
-                                                        Toast.makeText(getContext(), "Updated Notification of Sender", Toast.LENGTH_SHORT).show();
-                                                    }//onSuccess
-                                                });
+                                                            @Override
+                                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                                User requestSender = documentSnapshot.toObject(User.class);
+                                                                requestSender.addToNotificationList(currentUser.getUserName() + " declined your request ");
+                                                                //update database
+                                                                MainActivity.database.getDb().collection("users").document(requestSenderID).set(requestSender);
+                                                                Toast.makeText(getContext(), "Updated Notification of Sender", Toast.LENGTH_SHORT).show();
+                                                            }//onSuccess
+                                                        });
 
                                                 //now check if there are anyother requests on the same book, if no requests, then change book status
 
@@ -222,16 +228,32 @@ public class NotificationsFragment extends Fragment {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton radioButton = group.findViewById(checkedId);
-                if(radioButton.getText().toString().equals("Requests")){
-                    ArrayAdapter adapter = new ArrayAdapter<>(getContext(),R.layout.notification_list_content,R.id.userNameTextView, requestsList);
+                if (radioButton.getText().toString().equals("Requests")) {
+                    ArrayAdapter adapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, requestsList);
                     listView.setAdapter(adapter);
                 }// if
-                else{
+                else {
                     // TODO: display responses listview
                     // empty for now
-                    ArrayAdapter adapter = new ArrayAdapter<>(getContext(),R.layout.notification_list_content,R.id.userNameTextView,new ArrayList());
+                    ArrayAdapter adapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, new ArrayList());
                     listView.setAdapter(adapter);
                 }// else
+            }
+        });
+
+        responseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestButton.setTextColor(Color.parseColor("#FF9900"));
+                responseButton.setTextColor(Color.WHITE);
+            }
+        });
+
+        requestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                responseButton.setTextColor(Color.parseColor("#FF9900"));
+                requestButton.setTextColor(Color.WHITE);
             }
         });
 
@@ -243,7 +265,7 @@ public class NotificationsFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         //Add new gear
         if (resultCode == ADD_EDIT_LOCATION_RESULT_CODE && requestCode == ADD_EDIT_LOCATION_REQUEST_CODE) {
-            if(data.getBooleanExtra("locationIncluded", false)){
+            if (data.getBooleanExtra("locationIncluded", false)) {
                 markerLoc = (LatLng) data.getExtras().getParcelable("markerLoc");
                 markerText = data.getStringExtra("markerText");
             }

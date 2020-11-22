@@ -115,6 +115,7 @@ public class BookListAdapter extends BaseAdapter {
             status.setText("Status: " + book.getStatus());
             status.setTextColor(0xFFFF0000);
         }
+
         if((book!=null) && (book.getBookID()!=null) && (imageView!=null)) {
             MainActivity.database.downloadImage(imageView, book.getBookID(), false);
         }
