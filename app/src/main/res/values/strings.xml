@@ -19,5 +19,7 @@
     <string name="header_notifications">Notifications</string>
     <string name="accept_button">Accept</string>
     <string name="decline_button">Decline</string>
+    <string name="header_searchResults">headerSearchResults</string>
+    <string name="searchResults">Search Results</string>
 
 </resources>

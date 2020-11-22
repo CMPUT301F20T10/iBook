@@ -13,7 +13,8 @@ import android.widget.Toast;
 
 import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
-import com.example.ibook.activities.SearchedBooksActivity;
+import com.example.ibook.activities.SearchResultsActivity;
+import com.example.ibook.activities.SearchResultsActivity;
 import com.example.ibook.activities.ViewBookActivity;
 import com.example.ibook.entities.Book;
 import com.example.ibook.entities.User;
@@ -45,6 +46,7 @@ public class HomeFragment extends Fragment {
     private SearchView searchBar;
     private ArrayList<Book> resultList;
     private ArrayList<Book> bookList;
+    private ArrayList<User> userList;
     private FirebaseFirestore db;
     private ProgressBar searchProgressBar;
     boolean searchBarClosed = true;
@@ -88,6 +90,7 @@ public class HomeFragment extends Fragment {
             public boolean onQueryTextSubmit(String query) {
                 resultList = new ArrayList<>();
                 bookList = new ArrayList<>();
+                userList = new ArrayList<>();
                 searchProgressBar.setVisibility(View.VISIBLE);
                 searchData(query);
                 searchBar.clearFocus(); //Fixes enter key pressed down and up on keyboard
@@ -159,6 +162,32 @@ public class HomeFragment extends Fragment {
      * the activity that shows the results.
      */
     public void searchData(final String query) {
+
+        //searches for userName that matches query
+        db.collection("users").whereEqualTo("userName", query)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for (DocumentSnapshot document : task.getResult()) {
+
+                            //User user = document.toObject(User.class);
+
+                            User user = new User(document.getString("userName"),
+                                    document.getString("password"),
+                                    document.getString("email"),
+                                    document.getString("phoneNumber"),
+                                    document.getString("userID"));
+                            userList.add(user);
+
+                        }
+
+                    }
+                });
+        //wait for method to complete
+        android.os.SystemClock.sleep(1000);
+
+
         //searches for owner
 //        db.collection("books").whereEqualTo("owner", query)
 //                .get()
@@ -180,12 +209,14 @@ public class HomeFragment extends Fragment {
 //                        }
 //                    }
 //                });
+
         //get all books from book collection
         //add to a bookList
         db.collection("books").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 for (DocumentSnapshot document : task.getResult()) {
+
                     Book book = new Book(document.getString("title"),
                             document.getString("authors"),
                             document.getString("date"),
@@ -212,12 +243,15 @@ public class HomeFragment extends Fragment {
 
                     }
                 }
-                if (resultList.isEmpty()) {
+
+                if (resultList.isEmpty() && userList.isEmpty()) {
                     Toast.makeText(getContext(), "No results found", Toast.LENGTH_SHORT).show();
                 } else {
-                    //pass resultList to SearchBooksActivity for adapter to display
-                    Intent intent = new Intent(getContext(), SearchedBooksActivity.class);
+                    //pass resultList and userList to SearchBooksActivity for adapter to display
+                    Intent intent = new Intent(getContext(), SearchResultsActivity.class);
+                    System.out.println("final list "+userList);
                     intent.putExtra("books", resultList);
+                    intent.putExtra("users", userList);
                     startActivity(intent);
                 }
                 searchProgressBar.setVisibility(View.GONE);
