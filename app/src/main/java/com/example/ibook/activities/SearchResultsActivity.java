@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
@@ -33,6 +34,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     private ListView listView;
     private RadioGroup radioGroup;
     private Button backButton;
+    private TextView noResultText;
 
     // for color change
     private RadioButton book;
@@ -54,10 +56,15 @@ public class SearchResultsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_searched_books);
         listView = findViewById(R.id.listView);
         backButton = findViewById(R.id.cancelButton);
-
+        noResultText = findViewById(R.id.noResultTextView);
 
         bookList = (ArrayList<Book>) getIntent().getSerializableExtra("books");
         userList = (ArrayList<User>) getIntent().getSerializableExtra("users");
+        if (bookList.isEmpty()) {
+            noResultText.setVisibility(View.GONE);
+        }else {
+            noResultText.setVisibility(View.VISIBLE);
+        }
         adapter = new BookListAdapter(bookList, getApplicationContext());
         listView.setAdapter(adapter);
 
@@ -76,12 +83,22 @@ public class SearchResultsActivity extends AppCompatActivity {
                 if (radioButton.getText().toString().equals("Books")) {
                     book.setTextColor(Color.WHITE);
                     user.setTextColor(Color.parseColor("#FF9900"));
+                    if (bookList.isEmpty()) {
+                        noResultText.setVisibility(View.GONE);
+                    } else {
+                        noResultText.setVisibility(View.VISIBLE);
+                    }
 
                     BookListAdapter adapter = new BookListAdapter(bookList, getApplicationContext());
                     listView.setAdapter(adapter);
                     setUpListListener();
                 }
                 if (radioButton.getText().toString().equals("Users")) {
+                    if (userList.isEmpty()) {
+                        noResultText.setVisibility(View.GONE);
+                    }else {
+                        noResultText.setVisibility(View.VISIBLE);
+                    }
                     user.setTextColor(Color.WHITE);
                     book.setTextColor(Color.parseColor("#FF9900"));
                     UserListAdapter adapter = new UserListAdapter(userList, getApplicationContext());
@@ -106,6 +123,7 @@ public class SearchResultsActivity extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     User user = new User();
+
                     Intent intent = new Intent(getApplicationContext(), ViewBookActivity.class);
                     intent.putExtra("USER_ID", MainActivity.database.getCurrentUserUID());
                     intent.putExtra("BOOK_NUMBER", position);
