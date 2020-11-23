@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ibook.activities.MainActivity;
@@ -152,7 +153,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
                 public void onClick(View v) {
                     Intent intent = new Intent(context.getApplicationContext(), ViewBookActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    User user = new User();
+
                     intent.putExtra("BOOK_ID", book.getBookID());
                     intent.putExtra("OWNER", book.getOwner());
                     intent.putExtra("STATUS", book.getStatus().toString());

@@ -243,7 +243,6 @@ public class ViewBookActivity extends AppCompatActivity {
                                 });
                     }
                 });
-        setResult(1, getIntent());
         finish();
     }
 
