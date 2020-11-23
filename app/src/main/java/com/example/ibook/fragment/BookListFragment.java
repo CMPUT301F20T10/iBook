@@ -3,6 +3,7 @@ package com.example.ibook.fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
 import com.example.ibook.activities.AddBookActivity;
+import com.example.ibook.activities.EditBookActivity;
 import com.example.ibook.activities.MainActivity;
 import com.example.ibook.activities.ViewBookActivity;
 import com.example.ibook.entities.Book;
@@ -33,6 +35,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
@@ -40,11 +43,14 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class BookListFragment extends Fragment {
 
     //Private variables
-    private ListView bookListView;
+    //private ListView bookListView;
+    private RecyclerView bookListView;
     private BookListAdapter adapter;
     private ArrayList<Book> datalist;
     private Button btn_addBook;
@@ -79,6 +85,11 @@ public class BookListFragment extends Fragment {
         datalist = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
         uAuth = FirebaseAuth.getInstance();
+
+        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+        bookListView.setLayoutManager(manager);
+        bookListView.setHasFixedSize(true);
+
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
 
@@ -205,17 +216,18 @@ public class BookListFragment extends Fragment {
         });
 
 
-        // view book on the list
-        bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getContext(), ViewBookActivity.class);
-                intent.putExtra("BOOK_ID", datalist.get(position).getBookID());
-                intent.putExtra("OWNER", datalist.get(position).getOwner());
-                intent.putExtra("STATUS", datalist.get(position).getStatus().toString());
-                startActivityForResult(intent, 0);
-            }
-        });
+        //onItemClick is inside of BookListAdapter now.
+//        // view book on the list
+//        bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent intent = new Intent(getContext(), ViewBookActivity.class);
+//                intent.putExtra("BOOK_ID", datalist.get(position).getBookID());
+//                intent.putExtra("OWNER", datalist.get(position).getOwner());
+//                intent.putExtra("STATUS", datalist.get(position).getStatus().toString());
+//                startActivityForResult(intent, 0);
+//            }
+//        });
 
         // add book button
         btn_addBook.setOnClickListener(new View.OnClickListener() {
@@ -271,18 +283,33 @@ public class BookListFragment extends Fragment {
     }
 
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        bookListView.setAdapter(adapter);
+    }
+
     @Override // if add/edit/delete books, update changes
     public void onActivityResult(int requestCode, int resultCode, final Intent data) {
         // TODO Auto-generated method stub
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == 1) { // if data changed, update
-            /*
-            if(data.getExtras().containsKey("PHOTO_CHANGE")){
-                Bitmap new_pic = (Bitmap)data.getExtras().get("PHOTO_CHANGE");
-                //Toast.makeText(getContext(),new_pic.toString(),Toast.LENGTH_SHORT).show();
+
+            if(data.getExtras()!=null){
+                try {
+                    //String tempFileName = data.getStringExtra("CHANGED_IMAGE");
+                    //FileInputStream is = new FileInputStream(tempFileName);
+                    //Bitmap new_pic = BitmapFactory.decodeStream(is);
+                    //is.close();
+                    //imageView = findViewById(R.id.imageView);
+                    //imageView = EditBookActivity.scaleAndSetImage(new_pic, imageView, true);
+                    //imageChanged = true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-            */
+
 
             // update the change
             // Toast.makeText(getContext(), "updated", Toast.LENGTH_SHORT).show();
