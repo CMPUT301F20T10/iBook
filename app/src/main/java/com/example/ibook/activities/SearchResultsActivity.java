@@ -1,5 +1,6 @@
 package com.example.ibook.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -21,6 +22,8 @@ import com.example.ibook.entities.User;
 import java.util.ArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /***
  *This activity displays the results for the search results in a list view.
@@ -28,10 +31,11 @@ import androidx.appcompat.app.AppCompatActivity;
  * book activity and displayed there.
  */
 public class SearchResultsActivity extends AppCompatActivity {
-    private BookListAdapter adapter;
+    private BookListAdapter booksAdapter;
     private ArrayList<Book> bookList = new ArrayList<>();
     private ArrayList<User> userList = new ArrayList<>();
-    private ListView listView;
+    private RecyclerView bookListView;
+    private ListView userListView;
     private RadioGroup radioGroup;
     private Button backButton;
     private TextView noResultText;
@@ -40,10 +44,10 @@ public class SearchResultsActivity extends AppCompatActivity {
     private RadioButton book;
     private RadioButton user;
 
-    //list view getter
-    public ListView getListView() {
-        return listView;
-    }
+//    //list view getter
+//    public ListView getListView() {
+//        return listView;
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,20 +58,27 @@ public class SearchResultsActivity extends AppCompatActivity {
         getSupportActionBar().hide(); // hide the title bar
 
         setContentView(R.layout.activity_searched_books);
-        listView = findViewById(R.id.listView);
+        //listView = findViewById(R.id.listView);
+        bookListView = findViewById(R.id.searchedBooksView);
+        userListView = findViewById(R.id.searchedUsersView);
         backButton = findViewById(R.id.cancelButton);
         noResultText = findViewById(R.id.noResultTextView);
 
         bookList = (ArrayList<Book>) getIntent().getSerializableExtra("books");
         userList = (ArrayList<User>) getIntent().getSerializableExtra("users");
         if (bookList.isEmpty()) {
-            noResultText.setVisibility(View.GONE);
-        }else {
             noResultText.setVisibility(View.VISIBLE);
+        }else {
+            noResultText.setVisibility(View.GONE);
         }
-        adapter = new BookListAdapter(bookList, getApplicationContext());
-        listView.setAdapter(adapter);
 
+        bookListView.setVisibility(View.VISIBLE);
+        userListView.setVisibility(View.GONE);
+        LinearLayoutManager manager = new LinearLayoutManager(getApplicationContext());
+        bookListView.setLayoutManager(manager);
+        bookListView.setHasFixedSize(true);
+        booksAdapter = new BookListAdapter(bookList, getApplicationContext());
+        bookListView.setAdapter(booksAdapter);
 
         // set toggle buttons
         radioGroup = findViewById(R.id.selectState);
@@ -84,25 +95,28 @@ public class SearchResultsActivity extends AppCompatActivity {
                     book.setTextColor(Color.WHITE);
                     user.setTextColor(Color.parseColor("#FF9900"));
                     if (bookList.isEmpty()) {
-                        noResultText.setVisibility(View.GONE);
-                    } else {
                         noResultText.setVisibility(View.VISIBLE);
+                    } else {
+                        noResultText.setVisibility(View.GONE);
                     }
-
-                    BookListAdapter adapter = new BookListAdapter(bookList, getApplicationContext());
-                    listView.setAdapter(adapter);
-                    setUpListListener();
+                    bookListView.setVisibility(View.VISIBLE);
+                    userListView.setVisibility(View.GONE);
+                    booksAdapter = new BookListAdapter(bookList, getApplicationContext());
+                    bookListView.setAdapter(booksAdapter);
+                    //setUpListListener();
                 }
                 if (radioButton.getText().toString().equals("Users")) {
                     if (userList.isEmpty()) {
-                        noResultText.setVisibility(View.GONE);
-                    }else {
                         noResultText.setVisibility(View.VISIBLE);
+                    }else {
+                        noResultText.setVisibility(View.GONE);
                     }
+                    bookListView.setVisibility(View.GONE);
+                    userListView.setVisibility(View.VISIBLE);
                     user.setTextColor(Color.WHITE);
                     book.setTextColor(Color.parseColor("#FF9900"));
                     UserListAdapter adapter = new UserListAdapter(userList, getApplicationContext());
-                    listView.setAdapter(adapter);
+                    userListView.setAdapter(adapter);
                     setUpListListener();
                 }
             }
@@ -117,23 +131,24 @@ public class SearchResultsActivity extends AppCompatActivity {
     }
 
     private void setUpListListener() {
+        //**Books list onitemclicklistener is inside the bookListAdapter now, so no need to set it**
         if (radioGroup.getCheckedRadioButtonId() == R.id.search_book) {
             //click on list view item
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    User user = new User();
-
-                    Intent intent = new Intent(getApplicationContext(), ViewBookActivity.class);
-                    intent.putExtra("USER_ID", MainActivity.database.getCurrentUserUID());
-                    intent.putExtra("BOOK_NUMBER", position);
-                    intent.putExtra("IS_OWNER", -1);
-                    intent.putExtra("BOOK_ISBN", bookList.get(position).getIsbn());
-                    startActivityForResult(intent, 0);
-                }
-            });
+//            bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                @Override
+//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                    User user = new User();
+//
+//                    Intent intent = new Intent(getApplicationContext(), ViewBookActivity.class);
+//                    intent.putExtra("USER_ID", MainActivity.database.getCurrentUserUID());
+//                    intent.putExtra("BOOK_NUMBER", position);
+//                    intent.putExtra("IS_OWNER", -1);
+//                    intent.putExtra("BOOK_ISBN", bookList.get(position).getIsbn());
+//                    startActivityForResult(intent, 0);
+//                }
+//            });
         } else {//click on list view item
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent intent = new Intent(getApplicationContext(), ViewProfileActivity.class);
