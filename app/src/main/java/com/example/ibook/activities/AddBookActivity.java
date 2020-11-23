@@ -114,34 +114,99 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                         && date.length() > 0
                         && isbn.length() > 0) {
 
-                    bookID = db.collection("books").document().getId();
-                    Book newBook = new Book(bookName, authorName, date, description, Book.Status.Available, isbn, userID, bookID);
+                    final DocumentReference docRef = db.collection("users").document(userID);
+                    docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
 
-                    db.collection("books").document(bookID)
-                            .set(newBook)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Toast.makeText(getBaseContext(), "got book id Outside the scope too" + bookID, Toast.LENGTH_LONG).show();
+                                if (document.exists()) {
+                                    Map<String, Object> data;
+
+                                    // get data and overwrite it
+                                    data = document.getData();
+
+                                    //make a new book object
+//                                    Book book = new Book(bookName,authorName,date,isbn);
+//
+//                                    // add book to current users booklist
+//                                    SignUpActivity.user.addBook(book);
+//
+//                                    //Add to "book" collections in database
+//                                    SignUpActivity.database.getBookDocumentReference().set(book);
+//                                    //Add the book to  "user" Collections in database
+//                                    SignUpActivity.database.getUserDocumentReference().set(SignUpActivity.user);
+                                    bookID = db.collection("books").document().getId();
+                                    Book newbook = new Book(bookName, authorName, date, description, Book.Status.Available, isbn, userID, bookID);
+                                    books = (ArrayList<Book>) document.getData().get("bookList");
+                                    //If booksList is null we need to create a new books list
+                                    if (books == null) {
+                                        books = new ArrayList<Book>();
+                                    }
+                                    books.add(newbook);
+
+                                    data.put("bookList", books);
+                                    db.collection("users")
+                                            .document(userID).update(data);
+                                    Toast.makeText(getBaseContext(), "Add book successfully!", Toast.LENGTH_LONG).show();
+
+                                    done = true;
+                                    // TODO: use OOP to simplify it later
+                                    // also put data to database with book collection
+
+                                    data = new HashMap();
+                                    data.put("authors", authorName);
+                                    data.put("date", date);
+                                    data.put("description", description);
+                                    data.put("isbn", isbn);
+                                    data.put("owner", userID);
+                                    data.put("status", "Available");
+                                    data.put("title", bookName);
+                                    data.put("bookID",bookID);
+
+
+
+                                    db.collection("books").document(bookID).set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Toast.makeText(getBaseContext(), "got book id Outside the scope too" + bookID, Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                    if(done) {
+                                        Toast.makeText(getBaseContext(), "got book id inside the scope too" + bookID, Toast.LENGTH_LONG).show();
+                                        Intent intent = new Intent();
+                                        //If an image was added we upload it or else it uploads the default image
+                                        try{
+                                            if(!imageAdded) { //Need to upload the proper stock image
+                                                //app:srcCompat="@android:drawable/ic_menu_gallery"
+                                                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), android.R.drawable.ic_menu_gallery);
+                                                storeLocally(bitmap);
+                                            }MainActivity.database.uploadImage(openFileInput(MainActivity.database.tempFileName), bookID);
+                                            intent.putExtra("CHANGED_IMAGE", MainActivity.database.tempFileName);
+                                        }catch (Exception e){
+                                            Toast.makeText(getBaseContext(), "Image upload failed please try again", Toast.LENGTH_LONG).show();
+                                            e.printStackTrace();
+                                        }
+                                        setResult(1, intent);
+                                        finish();
+                                    }// if
+                                } else {
+                                    Toast.makeText(getBaseContext(), "No such document", Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                Toast.makeText(getBaseContext(), "got an error", Toast.LENGTH_SHORT).show();
                             }
+                        }
                     });
 
-                    if(imageAdded) {//Upload the image
-                        MainActivity.database.uploadImage(imageView,bookID);
-                    }
-                    Toast.makeText(getBaseContext(), "got book id inside the scope too" + bookID, Toast.LENGTH_LONG).show();
-
-                    Intent intent = new Intent();
-                    setResult(1, intent);
-                    finish();
-                }
-                else {
+                } else {
                     Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();
                 }
 
             }
         });
-        
+
         // choose a image
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
