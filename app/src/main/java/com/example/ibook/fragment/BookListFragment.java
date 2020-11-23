@@ -104,24 +104,6 @@ public class BookListFragment extends Fragment {
             return root;
         }
 
-        // load the owned book list
-        datalist.clear();
-        db.collection("books")
-                .whereEqualTo("owner", userID)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots) {
-                            Book book = documentSnapshot.toObject(Book.class);
-                            datalist.add(book);
-                        }
-                        adapter = new BookListAdapter(datalist, getActivity());
-                        bookListView.setAdapter(adapter);
-                        Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
         // set radioButtons for book filter
         radioGroup = root.findViewById(R.id.selectState);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -235,7 +217,8 @@ public class BookListFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), AddBookActivity.class);
                 intent.putExtra("USER_ID", userID);
-                startActivityForResult(intent, 0);
+                startActivity(intent);
+                //startActivityForResult(intent, 0);
             }
         });
 
@@ -286,9 +269,27 @@ public class BookListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        bookListView.setAdapter(adapter);
+        // load the owned book list
+        datalist.clear();
+        db.collection("books")
+                .whereEqualTo("owner", userID)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots) {
+                            Book book = documentSnapshot.toObject(Book.class);
+                            datalist.add(book);
+                        }
+                        adapter = new BookListAdapter(datalist, getActivity());
+                        bookListView.setAdapter(adapter);
+                        Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
+    // We don't need this anymore, now we will get the data whenever we get back to BookListFragment, see onResume().
+    /*
     @Override // if add/edit/delete books, update changes
     public void onActivityResult(int requestCode, int resultCode, final Intent data) {
         // TODO Auto-generated method stub
@@ -309,29 +310,9 @@ public class BookListFragment extends Fragment {
                     e.printStackTrace();
                 }
             }
-
-
-            // update the change
-            // Toast.makeText(getContext(), "updated", Toast.LENGTH_SHORT).show();
-            datalist.clear();
-            db.collection("books")
-                    .whereEqualTo("owner", userID)
-                    .get()
-                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                        @Override
-                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                            for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots) {
-                                Book book = documentSnapshot.toObject(Book.class);
-                                datalist.add(book);
-                            }
-                            adapter = new BookListAdapter(datalist, getActivity());
-                            bookListView.setAdapter(adapter);
-                            Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
         }
     }
+    * */
 
     public void filterBook() {
 

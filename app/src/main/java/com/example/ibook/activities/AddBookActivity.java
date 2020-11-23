@@ -137,7 +137,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                         Toast.makeText(getBaseContext(), "Image upload failed please try again", Toast.LENGTH_LONG).show();
                         e.printStackTrace();
                     }
-                    setResult(1, intent);
+                    //setResult(1, intent);
                     finish();
                 } else {
                     Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();
