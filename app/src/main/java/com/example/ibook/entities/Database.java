@@ -98,6 +98,8 @@ public class Database {
     /**
      * Upload an image to the database (Firebase Storage) by supplying the image as an image view
      * and the file title as the bookId. This works because there can only be one image per book.
+     * The image is scaled down to a small size <1MB and an icon image gets created that is only a
+     * few KB's for fast access in the array lists.
      * @param is
      * @param bookId
      * @return
@@ -115,7 +117,7 @@ public class Database {
             //Rescale the bitmap so that its smaller. We can't download images more than 1MB.
             int maxSize = 800;
             if(bitmap.getHeight() > maxSize) {
-                double newWidth = (double) bitmap.getWidth()/bitmap.getHeight()*maxSize; //Rescale the image as a ratio of set size. So it won't be bigger than 1500 pixels now.
+                double newWidth = (double) bitmap.getWidth()/bitmap.getHeight()*maxSize;
                 bitmap = Bitmap.createScaledBitmap(bitmap, (int) newWidth, maxSize, true);
             }
             if (bitmap.getWidth() > maxSize) {
@@ -136,7 +138,7 @@ public class Database {
             });
             //Now upload an icon image that is very small so we can access the book list faster
             int maxSmallSize = 100;
-            double width = (double) bitmapSmall.getWidth()/bitmapSmall.getHeight()*maxSmallSize; //Rescale the image as an icon
+            double width = (double) bitmapSmall.getWidth()/bitmapSmall.getHeight()*maxSmallSize;
             bitmapSmall = Bitmap.createScaledBitmap(bitmapSmall, (int) width, maxSmallSize, true);
             ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
             bitmapSmall.compress(Bitmap.CompressFormat.PNG, 85, baos2);
@@ -164,6 +166,7 @@ public class Database {
     /**
      * Download an image from the database. This method takes in the ImageView of where to store the
      * image and the bookId, which is the filename for the image to get from Firebase Storage.
+     * Can also download just an icon image for faster viewing in large booklists
      * @param imageView
      * @param bookId
      * @param fullSizedImage

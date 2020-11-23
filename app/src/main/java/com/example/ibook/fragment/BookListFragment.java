@@ -42,11 +42,14 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class BookListFragment extends Fragment {
 
     //Private variables
-    private ListView bookListView;
+    //private ListView bookListView;
+    private RecyclerView bookListView;
     private BookListAdapter adapter;
     private ArrayList<Book> datalist;
     private Button btn_addBook;
@@ -81,6 +84,11 @@ public class BookListFragment extends Fragment {
         datalist = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
         uAuth = FirebaseAuth.getInstance();
+
+        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+        bookListView.setLayoutManager(manager);
+        bookListView.setHasFixedSize(true);
+
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
 
@@ -236,16 +244,16 @@ public class BookListFragment extends Fragment {
         });
 
 
-        // view book on the list
-        bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getContext(), ViewBookActivity.class);
-                intent.putExtra("USER_ID", userID);
-                intent.putExtra("BOOK_NUMBER", position);
-                startActivityForResult(intent, 0);
-            }
-        });
+//        // view book on the list
+//        bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent intent = new Intent(getContext(), ViewBookActivity.class);
+//                intent.putExtra("USER_ID", userID);
+//                intent.putExtra("BOOK_NUMBER", position);
+//                startActivityForResult(intent, 0);
+//            }
+//        });
 
         // add book button
         btn_addBook.setOnClickListener(new View.OnClickListener() {

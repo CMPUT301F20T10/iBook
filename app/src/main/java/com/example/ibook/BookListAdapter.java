@@ -1,36 +1,37 @@
 package com.example.ibook;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ibook.activities.MainActivity;
+import com.example.ibook.activities.ViewBookActivity;
 import com.example.ibook.entities.Book;
+import com.example.ibook.entities.User;
 
 import java.util.ArrayList;
+
+import static androidx.core.content.ContextCompat.startActivity;
 
 
 /**
  * The Adapter class for the book list
  */
-public class BookListAdapter extends BaseAdapter {
+public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHolder> {
 
     // private variable
     private ArrayList<Book> books;
     private Context context;
-    private TextView title;
-    private TextView authors;
-    private TextView date;
-    private TextView description;
-    private TextView status;
-    private ImageView imageView;
-    // TODO: Get image view
 
     /**
      * The constructor of the BookListAdapter
@@ -44,24 +45,30 @@ public class BookListAdapter extends BaseAdapter {
     }
 
     /**
-     * The method to get the amount of books in the book list
-     *
-     * @return the number of books
+     * Creates the view holder when the list gets created to manage all the books
+     * and keep scrolling as an on need basis.
+     * @param parent
+     * @param viewType
+     * @return
      */
+    @NonNull
     @Override
-    public int getCount() {
-        return books.size();
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.book_list_content, parent, false);
+        return new ViewHolder(v);
     }
 
     /**
-     * Get the book object with given position
-     *
-     * @param position The index of the chosen book
-     * @return The book object with given position
+     * Updates data for a list item when needed. Works better than using notifydatasetchange all the time.
+     * @param holder
+     * @param position
      */
     @Override
-    public Object getItem(int position) {
-        return books.get(position);
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Book book = books.get(position);
+        if(book != null) {
+            holder.setData(book);
+        }
     }
 
     /**
@@ -75,15 +82,28 @@ public class BookListAdapter extends BaseAdapter {
         return position;
     }
 
-    /**
-     * The method to display the information of items in the list view.
-     *
-     * @return The view of the each item in the list
-     */
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.book_list_content, parent, false);
+    public int getItemCount() {
+        return books.size();
+    }
+
+    /**
+     * Class ViewHolder manages the view for a certain list item.
+     */
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        TextView title;
+        TextView authors;
+        TextView date;
+        TextView description;
+        TextView status;
+        ImageView imageView;
+
+        /**
+         * When the viewHolder is created we get its attributes from xml.
+         * @param convertView
+         */
+        public ViewHolder(@NonNull View convertView) {
+            super(convertView);
             //Get the xml attributes
             title = convertView.findViewById(R.id.listBookTitle);
             authors = convertView.findViewById(R.id.listBookAuthors);
@@ -92,35 +112,143 @@ public class BookListAdapter extends BaseAdapter {
             status = convertView.findViewById(R.id.listBookStatus);
             imageView = convertView.findViewById(R.id.listImageView);
         }
-        //Get the current book
-        Book book = books.get(position);
 
+        /**
+         * Sets the attributes for a specific book in the list view.
+         * Also downloads and sets the image from the database which works even for
+         * asynchronous tasks.
+         * @param book
+         */
+        void setData(final Book book) {
+            //Set the values for the xml attributes
+            title.setText(book.getTitle());
+            authors.setText(book.getAuthors());
+            date.setText(book.getDate());
 
-        //Set the values for the xml attributes
-        title.setText(book.getTitle());
-        authors.setText(book.getAuthors());
-        date.setText(book.getDate());
+            //Set part of the description up to ~30 characters
+            String bookDescription = book.getDescription();
+            if (bookDescription.length() > 30) {
+                description.setText(bookDescription.substring(0, 30) + "...");
+            } else {
+                description.setText(bookDescription + "...");
+            }
+            if (book.isAvailable()) {
+                status.setText("Status: Available");
+                status.setTextColor(0xFF1E9F01);
+            } else {
+                status.setText("Status: " + book.getStatus());
+                status.setTextColor(0xFFFF0000);
+            }
 
-        //Set part of the description up to ~30 characters
-        String bookDescription = book.getDescription();
-        if (bookDescription.length() > 30) {
-            description.setText(bookDescription.substring(0, 30) + "...");
-        } else {
-            description.setText(bookDescription + "...");
+            //Set the image icon
+            if((book!=null) && (book.getBookID()!=null) && (imageView!=null)) {
+                MainActivity.database.downloadImage(imageView, book.getBookID(), false);
+            }
+
+            //Set the click listener for the list item and call the view book activity
+            //Removes the need for an on click listener in the other classes.
+            itemView.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context.getApplicationContext(), ViewBookActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    User user = new User();
+                    intent.putExtra("BOOK_NUMBER", 0);
+                    intent.putExtra("USER_ID", user.getUserID());
+                    intent.putExtra("IS_OWNER", -1);
+                    intent.putExtra("BOOK_ISBN", book.getIsbn());
+                    startActivity(context.getApplicationContext(), intent, null);
+                }
+            });
         }
-        if (book.isAvailable()) {
-            status.setText("Status: Available");
-            status.setTextColor(0xFF1E9F01);
-        } else {
-            status.setText("Status: " + book.getStatus());
-            status.setTextColor(0xFFFF0000);
-        }
-
-        if((book!=null) && (book.getBookID()!=null) && (imageView!=null)) {
-            MainActivity.database.downloadImage(imageView, book.getBookID(), false);
-        }
-
-        //Set the image if there is one
-        return convertView;
     }
+
+
+//    /**
+//     * The method to get the amount of books in the book list
+//     *
+//     * @return the number of books
+//     */
+//    @Override
+//    public int getCount() {
+//        return books.size();
+//    }
+
+//    /**
+//     * Get the book object with given position
+//     *
+//     * @param position The index of the chosen book
+//     * @return The book object with given position
+//     */
+//    @Override
+//    public Object getItem(int position) {
+//        return books.get(position);
+//    }
+
+//
+//    /**
+//     * The method to display the information of items in the list view.
+//     *
+//     * @return The view of the each item in the list
+//     */
+//    @Override
+//    public View getView(int position, View convertView, ViewGroup parent) {
+//        ViewHolder holder;
+//        //Get the current book
+//        Book book = books.get(position);
+//        if (convertView == null) {
+//            convertView = LayoutInflater.from(context).inflate(R.layout.book_list_content, parent, false);
+//            holder = new ViewHolder();
+//            //Get the xml attributes
+//            holder.title = convertView.findViewById(R.id.listBookTitle);
+//            holder.authors = convertView.findViewById(R.id.listBookAuthors);
+//            holder.date = convertView.findViewById(R.id.listBookDate);
+//            holder.description = convertView.findViewById(R.id.listBookDescription);
+//            holder.status = convertView.findViewById(R.id.listBookStatus);
+//            holder.imageView = convertView.findViewById(R.id.listImageView);
+//            convertView.setTag(holder);
+//        }else{
+//            holder = (ViewHolder) convertView.getTag();
+//        }
+//
+//
+//        //Set the values for the xml attributes
+//        holder.title.setText(book.getTitle());
+//        holder.authors.setText(book.getAuthors());
+//        holder.date.setText(book.getDate());
+//
+//        //Set part of the description up to ~30 characters
+//        String bookDescription = book.getDescription();
+//        if (bookDescription.length() > 30) {
+//            holder.description.setText(bookDescription.substring(0, 30) + "...");
+//        } else {
+//            holder.description.setText(bookDescription + "...");
+//        }
+//        if (book.isAvailable()) {
+//            holder.status.setText("Status: Available");
+//            holder.status.setTextColor(0xFF1E9F01);
+//        } else {
+//            holder.status.setText("Status: " + book.getStatus());
+//            holder.status.setTextColor(0xFFFF0000);
+//        }
+//
+//        //Set the image icon
+//        if((book!=null) && (book.getBookID()!=null) && (holder.imageView!=null)) {
+//            MainActivity.database.downloadImage(holder.imageView, book.getBookID(), false);
+//        }
+//
+//
+//        return convertView;
+//    }
+
+//    public void setImageView(int position, View convertView, ViewGroup parent) {
+//        //Set the image icon
+//        if(convertView == null) {
+//            imageView = convertView.findViewById(R.id.listImageView);
+//        }
+//
+//        if((book!=null) && (book.getBookID()!=null) && (imageView!=null)) {
+//            MainActivity.database.downloadImage(imageView, this.getBookID(), false);
+//        }
+//    }
 }
