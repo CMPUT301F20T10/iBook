@@ -322,15 +322,6 @@ public class BookListFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == 1) { // if data changed, update
-            /*
-            if(data.getExtras().containsKey("PHOTO_CHANGE")){
-                Bitmap new_pic = (Bitmap)data.getExtras().get("PHOTO_CHANGE");
-                //Toast.makeText(getContext(),new_pic.toString(),Toast.LENGTH_SHORT).show();
-            }
-            */
-
-            // update the change
-            // Toast.makeText(getContext(), "updated", Toast.LENGTH_SHORT).show();
             DocumentReference docRef = db.collection("users").document(userID);
             docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override

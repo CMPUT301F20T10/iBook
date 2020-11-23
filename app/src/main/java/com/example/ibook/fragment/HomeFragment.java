@@ -22,6 +22,7 @@ import com.example.ibook.activities.ViewBookActivity;
 import com.example.ibook.entities.Book;
 import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -175,40 +176,6 @@ public class HomeFragment extends Fragment {
 
         //get all books from book collection
         //add to a bookList
-        db.collection("books").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                for (DocumentSnapshot document : task.getResult()) {
-
-                    Book book = new Book(document.getString("title"),
-                            document.getString("authors"),
-                            document.getString("date"),
-                            document.getString("description"),
-                            Book.Status.valueOf(document.getString("status")),
-                            document.getString("isbn"),
-                            document.getString("owner"),
-                            document.getString("bookID")
-                    );
-                    bookList.add(book);
-                }
-                for (Book book : bookList) {
-                    String author = book.getAuthors();
-                    String desc = book.getDescription();
-                    String title = book.getTitle();
-                    //make one whole string that contains title author and description
-                    System.out.println("author: " + author + " decc " + desc + "title: " + title);
-                    String string = author.concat(desc).concat(title).toLowerCase();
-                    //if string contains keyword add it to the resultList
-                    if (string.contains(query.toLowerCase()) && book.getStatus() != Book.Status.Borrowed && book.getStatus() != Book.Status.Accepted) {
-                        resultList.add(book);
-                    }
-                }
-                search_book_complete = true;
-            }
-        });
-        Log.d("", "Done book");
-
-
         //searches for userName that matches query
         MainActivity.database
                 .getDb()
@@ -247,24 +214,25 @@ public class HomeFragment extends Fragment {
                                             }
                                         }
                                     }
-                                }).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (resultList.isEmpty() && userList.isEmpty()) {
-                                    Toast.makeText(getContext(), "No results found", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    //pass resultList and userList to SearchBooksActivity for adapter to display
-                                    Intent intent = new Intent(getContext(), SearchResultsActivity.class);
-                                    System.out.println("final list " + userList);
-                                    intent.putExtra("books", resultList);
-                                    intent.putExtra("users", userList);
-                                    Log.d("", userList.size() + "HERE");
-                                    searchProgressBar.setVisibility(View.GONE);
-                                    startActivity(intent);
-                                }
-                                searchProgressBar.setVisibility(View.GONE);
-                            }
-                        });
+                                })
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (resultList.isEmpty() && userList.isEmpty()) {
+                                            Toast.makeText(getContext(), "No results found", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            //pass resultList and userList to SearchBooksActivity for adapter to display
+                                            Intent intent = new Intent(getContext(), SearchResultsActivity.class);
+                                            System.out.println("final list " + userList);
+                                            intent.putExtra("books", resultList);
+                                            intent.putExtra("users", userList);
+                                            Log.d("", userList.size() + "HERE");
+                                            searchProgressBar.setVisibility(View.GONE);
+                                            startActivity(intent);
+                                        }
+                                        searchProgressBar.setVisibility(View.GONE);
+                                    }
+                                });
 
                     }
                 });
