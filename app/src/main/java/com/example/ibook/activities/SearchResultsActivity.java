@@ -134,6 +134,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         //**Books list onitemclicklistener is inside the bookListAdapter now, so no need to set it**
         if (radioGroup.getCheckedRadioButtonId() == R.id.search_book) {
             //click on list view item
+            /*
             bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -144,6 +145,7 @@ public class SearchResultsActivity extends AppCompatActivity {
                     startActivityForResult(intent, 0);
                 }
             });
+            * */
 
         } else {//click on list view item
             userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

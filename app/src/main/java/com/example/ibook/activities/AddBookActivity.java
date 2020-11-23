@@ -127,7 +127,8 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                     });
 
                     if(imageAdded) {//Upload the image
-                        MainActivity.database.uploadImage(imageView,bookID);
+                        //MainActivity.database.uploadImage(imageView, bookID);
+                        Toast.makeText(getBaseContext(), "NEED TO UPDATE THE ADDING IMAGES IN ADDING BOOKS!", Toast.LENGTH_LONG).show();
                     }
                     Toast.makeText(getBaseContext(), "got book id inside the scope too" + bookID, Toast.LENGTH_LONG).show();
 
