@@ -159,7 +159,7 @@ public class ViewBookActivity extends AppCompatActivity {
 
 
                 // add the book to requested list
-                final DocumentReference docRef = db.collection("users").document(userID);
+                final DocumentReference docRef = db.collection("users").document(MainActivity.database.getCurrentUserUID());
 
                 docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -357,8 +357,8 @@ public class ViewBookActivity extends AppCompatActivity {
                            selectedBook = null;
                             if (task.isSuccessful()) {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
-                                    String checkISBN = (String)document.get("isbn");
-                                    requestReceiverID = (String)document.get("owner");
+                                    String checkISBN = (String) document.get("isbn");
+                                    requestReceiverID = (String) document.get("owner");
                                     if (checkISBN.equals(bookISBN)){
                                         selectedBook = new Book(
                                                 String.valueOf(document.get("title")),

@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         setupSignInListener();
         setupSignUpListener();
 
+
     }// onCreate
 
     protected void onResume() {
