@@ -18,11 +18,13 @@ import com.example.ibook.R;
 import com.example.ibook.entities.Book;
 import com.example.ibook.fragment.ScanFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +49,7 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
     private FirebaseFirestore db;
     private boolean imageAdded;
     private String userID;
-    private int bookNumber;
+    private String bookID;
     private Book originalBook;
     FirebaseAuth uAuth;
 
@@ -76,10 +78,11 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
 
 
         Intent intent = getIntent();
+        bookID = intent.getStringExtra("BOOK_ID");
+
+        db = FirebaseFirestore.getInstance();
         uAuth = FirebaseAuth.getInstance();
         userID = uAuth.getCurrentUser().getUid();
-
-        bookNumber = intent.getIntExtra("bookNumber", 0);
 
         getBookData();
 
@@ -139,92 +142,29 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
     }
 
     private void getBookData() {
-        db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("users").document(userID);
+        db.collection("books").document(bookID)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        originalBook = documentSnapshot.toObject(Book.class);
+                        bookNameEditText.setText(originalBook.getTitle());
+                        authorEditText.setText(originalBook.getAuthors());
+                        dateEditText.setText(originalBook.getDate());
+                        isbnEditText.setText(originalBook.getIsbn());
 
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-
-                        ArrayList<Book> hashList = (ArrayList<Book>) document.get("bookList");
-                        Map<String, Object> convertMap = (Map<String, Object>) hashList.get(bookNumber);
-                        Book book = new Book(
-                                String.valueOf(convertMap.get("title")),
-                                String.valueOf(convertMap.get("authors")),
-                                String.valueOf(convertMap.get("date")),
-                                String.valueOf(convertMap.get("description")),
-                                //from_string_to_enum(String.valueOf(convertMap.get("status"))),
-                                Book.Status.Available,
-                                String.valueOf(convertMap.get("isbn")),
-                                String.valueOf(convertMap.get("owner")),
-                                String.valueOf(convertMap.get("bookID"))
-                        );
-                        originalBook = book;
-
-                        bookNameEditText.setText(book.getTitle());
-                        authorEditText.setText(book.getAuthors());
-                        dateEditText.setText(book.getDate());
-                        isbnEditText.setText(book.getIsbn());
-
-                        if(book.getDescription()!= null) {
-                            descriptionEditText.setText(book.getDescription());
+                        if(originalBook.getDescription()!= null) {
+                            descriptionEditText.setText(originalBook.getDescription());
                         }
-                        MainActivity.database.downloadImage(imageView, book.getBookID());
-
-                    } else {
-                        //Log.d(TAG, "No such document");
+                        MainActivity.database.downloadImage(imageView, originalBook.getBookID());
                     }
-                } else {
-                    //Log.d(TAG, "get failed with ", task.getException());
-                }
-            }
-        });
+                });
 
     }
 
     // update book info
     private void updateBook(final Book book) {
-
-        DocumentReference docRef = db.collection("users").document(userID);
-
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-
-                        Map<String, Object> data;
-                        data = document.getData();
-                        ArrayList<Book> books = (ArrayList<Book>) document.getData().get("bookList");
-                        books.set(bookNumber, book);
-                        data.put("bookList", books);
-                        db.collection("users").document(userID).set(data);
-
-                        // also update book info to the book collection
-
-                        data = new HashMap();
-                        data.put("authors", book.getAuthors());
-                        data.put("date", book.getDate());
-                        data.put("description", book.getDescription());
-                        data.put("isbn", book.getIsbn());
-                        data.put("owner", book.getOwner());
-                        data.put("status", "Available");
-                        data.put("title", book.getTitle());
-                        db.collection("books").document(book.getBookID()).update(data);
-
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "No such document", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(getApplicationContext(), "got an error", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        db.collection("books").document(book.getBookID()).set(book);
     }
 
 

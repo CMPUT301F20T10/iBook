@@ -40,7 +40,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ViewBookActivity extends AppCompatActivity {
     private String userID;
-    private int bookNumber;
     private ArrayList<BookRequest> requests;
     private String bookID;
     private final int REQ_CAMERA_IMAGE = 1;
@@ -66,7 +65,6 @@ public class ViewBookActivity extends AppCompatActivity {
     private String owner;
     private String status;
 
-    public static String requestReceiverID;
     public static User requestReceiver;
     private User currentUser;
 
@@ -105,7 +103,6 @@ public class ViewBookActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         Intent intent = getIntent();
-        bookNumber = intent.getIntExtra("BOOK_NUMBER", 0);
         bookID = intent.getStringExtra("BOOK_ID");
         owner = intent.getStringExtra("OWNER");
         status = intent.getStringExtra("STATUS");
@@ -117,8 +114,7 @@ public class ViewBookActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ViewBookActivity.this, EditBookActivity.class);
-                intent.putExtra("ID", userID);
-                intent.putExtra("bookNumber", bookNumber);
+                intent.putExtra("BOOK_ID", bookID);
                 startActivity(intent);
                 setResult(1, intent);
             }
@@ -145,7 +141,7 @@ public class ViewBookActivity extends AppCompatActivity {
                         if (documentSnapshot.exists()) {
 
                             currentUser = documentSnapshot.toObject(User.class);
-                            final DocumentReference docRefRequestReceiver = db.collection("users").document(requestReceiverID);
+                            final DocumentReference docRefRequestReceiver = db.collection("users").document(owner);
 
                             docRefRequestReceiver.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
@@ -180,7 +176,6 @@ public class ViewBookActivity extends AppCompatActivity {
                                 }
                             });
                         }// if
-
                     }//onSuccess
 
                 });
@@ -201,15 +196,25 @@ public class ViewBookActivity extends AppCompatActivity {
 
 
         final CollectionReference requestRef = db.collection("bookRequest");
-        requestRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        requestRef
+                .whereEqualTo("requestedBookID", bookID)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                     String sender = document.getString("requestSenderID");
-                    String book = document.getString("requestedBookID");
-                    if (bookID == book) {
-                        requestAdapter.add("test");
-                    }
+                    db.collection("users")
+                            .document(sender)
+                            .get()
+                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    User sender = documentSnapshot.toObject(User.class);
+                                    requestAdapter.add(sender.getUserName() + " has requested this book");
+                                }
+                            });
+
                 }
             }
         });
@@ -218,39 +223,24 @@ public class ViewBookActivity extends AppCompatActivity {
 
 
     public void delete_book(View view) {
-
-        db.collection("books").document(selectedBook.getBookID()).delete();
-
-        DocumentReference docRef = db.collection("users").document(userID);
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    // if the book exists, delete it
-                    if (document.exists()) {
-                        Map<String, Object> data;
-                        data = document.getData();
-                        ArrayList<Book> books = (ArrayList<Book>) document.getData().get("bookList");
-                        //Need to delete image before book since image uses bookID for storage.
-                        Map<String, Object> convertMap = (Map<String, Object>) books.get(bookNumber);
-                        MainActivity.database.deleteImage(convertMap.get("bookID").toString());
-                        books.remove(bookNumber);
-                        data.put("bookList", books);
-                        db.collection("users")
-                                .document(userID).set(data);
-                        Intent intent = new Intent();
-                        setResult(1, intent);
-                        finish();
-                    } else {
-                        //Log.d(TAG, "No such document");
+        db.collection("books").document(selectedBook.getBookID())
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        db.collection("bookRequest")
+                                .whereEqualTo("requestedBookID", selectedBook.getBookID())
+                                .get()
+                                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                        for(DocumentSnapshot documentSnapshot: queryDocumentSnapshots) {
+                                            documentSnapshot.getReference().delete();
+                                        }
+                                    }
+                                });
                     }
-                } else {
-                    //Log.d(TAG, "get failed with ", task.getException());
-                }
-            }
-        });
-
+                });
     }
 
 
