@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -46,7 +45,7 @@ public class BookListFragment extends Fragment {
     private ListView bookListView;
     private BookListAdapter adapter;
     private ArrayList<Book> datalist;
-    private Button btn_addBook;
+
     private FirebaseFirestore db;
     private String userID;
     private String userName;
@@ -54,7 +53,10 @@ public class BookListFragment extends Fragment {
     private RadioGroup radioGroup;
     private Spinner mSpinner;
     private ArrayAdapter<CharSequence> spinner_adapter;
+
     private Button sortButton;
+    private Button addButton;
+    private Button cameraButton;
 
     private RadioButton ownBookButton;
     private RadioButton borrowBookButton;
@@ -66,14 +68,18 @@ public class BookListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_booklist, container, false);
         bookListView = root.findViewById(R.id.bookList);
-        btn_addBook = root.findViewById(R.id.button_add);
         mSpinner = root.findViewById(R.id.spinner);
-        sortButton = root.findViewById(R.id.sortBook);
+
+        sortButton = root.findViewById(R.id.button_filter);
+        cameraButton = root.findViewById(R.id.button_camera);
+        addButton = root.findViewById(R.id.button_add);
 
         ownBookButton = root.findViewById(R.id.ownButton);
         borrowBookButton = root.findViewById(R.id.borrowButton);
         requestBookButton = root.findViewById(R.id.requestButton);
         acceptBookButton = root.findViewById(R.id.acceptButton);
+
+        radioGroup = root.findViewById(R.id.selectState);
 
         datalist = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
@@ -141,7 +147,7 @@ public class BookListFragment extends Fragment {
 
 
         // set radioButtons for book filter
-        radioGroup = root.findViewById(R.id.selectState);
+
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -245,7 +251,7 @@ public class BookListFragment extends Fragment {
         });
 
         // add book button
-        btn_addBook.setOnClickListener(new View.OnClickListener() {
+        addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), AddBookActivity.class);
@@ -262,6 +268,9 @@ public class BookListFragment extends Fragment {
                 requestBookButton.setTextColor(Color.parseColor("#FF9900"));
                 borrowBookButton.setTextColor(Color.parseColor("#FF9900"));
                 ownBookButton.setTextColor(Color.parseColor("#FF9900"));
+                addButton.setVisibility(View.INVISIBLE);
+                sortButton.setVisibility(View.INVISIBLE);
+                cameraButton.setVisibility(View.VISIBLE);
             }
         });
 
@@ -272,6 +281,9 @@ public class BookListFragment extends Fragment {
                 requestBookButton.setTextColor(Color.parseColor("#FF9900"));
                 borrowBookButton.setTextColor(Color.parseColor("#FF9900"));
                 acceptBookButton.setTextColor(Color.parseColor("#FF9900"));
+                addButton.setVisibility(View.VISIBLE);
+                sortButton.setVisibility(View.VISIBLE);
+                cameraButton.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -282,6 +294,9 @@ public class BookListFragment extends Fragment {
                 ownBookButton.setTextColor(Color.parseColor("#FF9900"));
                 borrowBookButton.setTextColor(Color.parseColor("#FF9900"));
                 acceptBookButton.setTextColor(Color.parseColor("#FF9900"));
+                addButton.setVisibility(View.INVISIBLE);
+                sortButton.setVisibility(View.INVISIBLE);
+                cameraButton.setVisibility(View.VISIBLE);
             }
         });
 
@@ -292,6 +307,9 @@ public class BookListFragment extends Fragment {
                 ownBookButton.setTextColor(Color.parseColor("#FF9900"));
                 requestBookButton.setTextColor(Color.parseColor("#FF9900"));
                 acceptBookButton.setTextColor(Color.parseColor("#FF9900"));
+                addButton.setVisibility(View.INVISIBLE);
+                sortButton.setVisibility(View.INVISIBLE);
+                cameraButton.setVisibility(View.VISIBLE);
             }
         });
         return root;
@@ -338,9 +356,7 @@ public class BookListFragment extends Fragment {
                                         String.valueOf(convertMap.get("owner")),
                                         String.valueOf(convertMap.get("bookID"))
                                 ));
-
                             }
-
                             if (datalist == null) {
                                 datalist = new ArrayList<>();
                             } else {
