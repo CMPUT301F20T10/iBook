@@ -297,11 +297,7 @@ public class ViewBookActivity extends AppCompatActivity {
 
     /**
      * This method will check whether the current user is the owner of the book
-     *
-     * @Return:
-     * - 1 if the current user is the owner of
-     * - -1 if the current user is the holder
-     * - 0, otherwise
+     * and then set the UIs accordingly. 
      * */
     private void checkOwner() {
         if (userID.equals(owner)) {
