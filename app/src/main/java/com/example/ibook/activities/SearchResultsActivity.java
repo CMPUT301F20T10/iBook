@@ -67,11 +67,11 @@ public class SearchResultsActivity extends AppCompatActivity {
         bookList = (ArrayList<Book>) getIntent().getSerializableExtra("books");
         userList = (ArrayList<User>) getIntent().getSerializableExtra("users");
         if (bookList.isEmpty()) {
-            noResultText.setVisibility(View.GONE);
-        }else {
             noResultText.setVisibility(View.VISIBLE);
+        }else {
+            noResultText.setVisibility(View.GONE);
         }
-        
+
         bookListView.setVisibility(View.VISIBLE);
         userListView.setVisibility(View.GONE);
         LinearLayoutManager manager = new LinearLayoutManager(getApplicationContext());
@@ -79,7 +79,6 @@ public class SearchResultsActivity extends AppCompatActivity {
         bookListView.setHasFixedSize(true);
         booksAdapter = new BookListAdapter(bookList, getApplicationContext());
         bookListView.setAdapter(booksAdapter);
-        //listView.setAdapter(adapter);
 
         // set toggle buttons
         radioGroup = findViewById(R.id.selectState);
@@ -96,9 +95,9 @@ public class SearchResultsActivity extends AppCompatActivity {
                     book.setTextColor(Color.WHITE);
                     user.setTextColor(Color.parseColor("#FF9900"));
                     if (bookList.isEmpty()) {
-                        noResultText.setVisibility(View.GONE);
-                    } else {
                         noResultText.setVisibility(View.VISIBLE);
+                    } else {
+                        noResultText.setVisibility(View.GONE);
                     }
                     bookListView.setVisibility(View.VISIBLE);
                     userListView.setVisibility(View.GONE);
@@ -108,9 +107,9 @@ public class SearchResultsActivity extends AppCompatActivity {
                 }
                 if (radioButton.getText().toString().equals("Users")) {
                     if (userList.isEmpty()) {
-                        noResultText.setVisibility(View.GONE);
-                    }else {
                         noResultText.setVisibility(View.VISIBLE);
+                    }else {
+                        noResultText.setVisibility(View.GONE);
                     }
                     bookListView.setVisibility(View.GONE);
                     userListView.setVisibility(View.VISIBLE);

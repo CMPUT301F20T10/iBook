@@ -111,9 +111,24 @@ public class Database {
             return success[0];
         }
         try {
-            //FileInputStream is = openFileInput(tempFileName);
             Bitmap bitmap = BitmapFactory.decodeStream(is);
             Bitmap bitmapSmall = bitmap;
+            //Upload an icon image that is very small so we can access the book list faster
+            int maxSmallSize = 100;
+            double width = (double) bitmapSmall.getWidth()/bitmapSmall.getHeight()*maxSmallSize;
+            bitmapSmall = Bitmap.createScaledBitmap(bitmapSmall, (int) width, maxSmallSize, true);
+            ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+            bitmapSmall.compress(Bitmap.CompressFormat.PNG, 85, baos2);
+            byte[] dataSmall = baos2.toByteArray();
+            storageReference.child("coverImages/"+bookId+"icon").putBytes(dataSmall).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        success[0] = true;
+                    }
+                    Log.i("image", "Icon Image Upload succeeded");
+                }
+            });
             //Rescale the bitmap so that its smaller. We can't download images more than 1MB.
             int maxSize = 800;
             if(bitmap.getHeight() > maxSize) {
@@ -134,22 +149,6 @@ public class Database {
                         success[0] = true;
                     }
                     Log.i("image", "Full Image Upload succeeded");
-                }
-            });
-            //Now upload an icon image that is very small so we can access the book list faster
-            int maxSmallSize = 100;
-            double width = (double) bitmapSmall.getWidth()/bitmapSmall.getHeight()*maxSmallSize;
-            bitmapSmall = Bitmap.createScaledBitmap(bitmapSmall, (int) width, maxSmallSize, true);
-            ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
-            bitmapSmall.compress(Bitmap.CompressFormat.PNG, 85, baos2);
-            byte[] dataSmall = baos2.toByteArray();
-            storageReference.child("coverImages/"+bookId+"icon").putBytes(dataSmall).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        success[0] = true;
-                    }
-                    Log.i("image", "Icon Image Upload succeeded");
                 }
             });
             baos.close();
