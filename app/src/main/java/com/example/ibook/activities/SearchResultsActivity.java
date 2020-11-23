@@ -134,17 +134,19 @@ public class SearchResultsActivity extends AppCompatActivity {
         //**Books list onitemclicklistener is inside the bookListAdapter now, so no need to set it**
         if (radioGroup.getCheckedRadioButtonId() == R.id.search_book) {
             //click on list view item
-            bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent intent = new Intent(getApplicationContext(), ViewBookActivity.class);
-                    intent.putExtra("BOOK_ID", bookList.get(position).getBookID());
-                    intent.putExtra("OWNER", bookList.get(position).getOwner());
-                    intent.putExtra("STATUS", bookList.get(position).getStatus().toString());
-                    startActivityForResult(intent, 0);
-                }
-            });
-
+//            bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                @Override
+//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                    User user = new User();
+//
+//                    Intent intent = new Intent(getApplicationContext(), ViewBookActivity.class);
+//                    intent.putExtra("USER_ID", MainActivity.database.getCurrentUserUID());
+//                    intent.putExtra("BOOK_NUMBER", position);
+//                    intent.putExtra("IS_OWNER", -1);
+//                    intent.putExtra("BOOK_ISBN", bookList.get(position).getIsbn());
+//                    startActivityForResult(intent, 0);
+//                }
+//            });
         } else {//click on list view item
             userListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
