@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /***
  *This fragment contains the view for the home page and
@@ -45,7 +47,8 @@ import androidx.fragment.app.Fragment;
 public class HomeFragment extends Fragment {
 
     //Private variables
-    private ListView bookListView;
+    //private ListView bookListView;
+    private RecyclerView bookListView;
     private BookListAdapter adapter;
     private ArrayList<Book> datalist;
     private SearchView searchBar;
@@ -112,6 +115,9 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+        bookListView.setLayoutManager(manager);
+        bookListView.setHasFixedSize(true);
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
 
@@ -127,15 +133,16 @@ public class HomeFragment extends Fragment {
                                         String.valueOf(document.get("title")),
                                         String.valueOf(document.get("authors")),
                                         String.valueOf(document.get("date")),
-                                        (String.valueOf(document.get("description"))),
-                                        from_string_to_enum(String.valueOf(document.get("status"))),
+                                        String.valueOf(document.get("description")),
+                                        Book.Status.valueOf(String.valueOf(document.get("status"))),
                                         String.valueOf(document.get("isbn")),
                                         String.valueOf(document.get("owner")),
                                         String.valueOf(document.get("bookID"))
                                 ));
                                 //Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
                             }
-                            adapter.notifyDataSetChanged();
+                            //adapter.notifyDataSetChanged();
+                            bookListView.setAdapter(adapter);
                         } else {
                             Toast.makeText(getContext(), "got an error", Toast.LENGTH_SHORT).show();
 
@@ -143,20 +150,18 @@ public class HomeFragment extends Fragment {
                     }
                 });
 
-
-        // view book on the list
-        bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getContext(), ViewBookActivity.class);
-                User user = new User();
-                intent.putExtra("BOOK_NUMBER", position);
-                intent.putExtra("USER_ID", user.getUserName());
-                intent.putExtra("IS_OWNER", -1);
-                intent.putExtra("BOOK_ISBN", datalist.get(position).getIsbn());
-                startActivityForResult(intent, 0);
-            }
-        });
+        //onItemClick is inside of BookListAdapter now.
+//        // view book on the list
+//        bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent intent = new Intent(getContext(), ViewBookActivity.class);
+//                intent.putExtra("BOOK_ID", datalist.get(position).getBookID());
+//                intent.putExtra("OWNER", datalist.get(position).getOwner());
+//                intent.putExtra("STATUS", datalist.get(position).getStatus().toString());
+//                startActivityForResult(intent, 0);
+//            }
+//        });
 
 
         return root;
