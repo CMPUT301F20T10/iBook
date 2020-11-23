@@ -122,13 +122,10 @@ public class SearchResultsActivity extends AppCompatActivity {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    User user = new User();
-
                     Intent intent = new Intent(getApplicationContext(), ViewBookActivity.class);
-                    intent.putExtra("USER_ID", MainActivity.database.getCurrentUserUID());
-                    intent.putExtra("BOOK_NUMBER", position);
-                    intent.putExtra("IS_OWNER", -1);
-                    intent.putExtra("BOOK_ISBN", bookList.get(position).getIsbn());
+                    intent.putExtra("BOOK_ID", bookList.get(position).getBookID());
+                    intent.putExtra("OWNER", bookList.get(position).getOwner());
+                    intent.putExtra("STATUS", bookList.get(position).getStatus().toString());
                     startActivityForResult(intent, 0);
                 }
             });
