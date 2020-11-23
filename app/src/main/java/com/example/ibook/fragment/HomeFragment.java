@@ -128,8 +128,16 @@ public class HomeFragment extends Fragment {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 // todo: change email key word to username
-                                datalist.add(document.toObject(Book.class));
-                                
+                                datalist.add(new Book(
+                                        String.valueOf(document.get("title")),
+                                        String.valueOf(document.get("authors")),
+                                        String.valueOf(document.get("date")),
+                                        String.valueOf(document.get("description")),
+                                        Book.Status.valueOf(String.valueOf(document.get("status"))),
+                                        String.valueOf(document.get("isbn")),
+                                        String.valueOf(document.get("owner")),
+                                        String.valueOf(document.get("bookID"))
+                                ));
                                 //Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
                             }
                             //adapter.notifyDataSetChanged();
