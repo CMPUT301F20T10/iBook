@@ -5,8 +5,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
@@ -31,6 +34,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -68,7 +72,7 @@ public class ViewBookActivity extends AppCompatActivity {
     public static User requestReceiver;
     private User currentUser;
 
-
+    private static boolean imageChanged;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -93,6 +97,7 @@ public class ViewBookActivity extends AppCompatActivity {
         delete_button = findViewById(R.id.btn_delete_book);
         return_button = findViewById(R.id.btn_return_book);
 
+        imageChanged = false;
         requestList = findViewById(R.id.request_list);
         requests = new ArrayList<BookRequest>();
         final ArrayAdapter requestAdapter = new ArrayAdapter<>(getBaseContext(), R.layout.request_list_content, R.id.request_content, requests);
@@ -115,8 +120,7 @@ public class ViewBookActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(ViewBookActivity.this, EditBookActivity.class);
                 intent.putExtra("BOOK_ID", bookID);
-                startActivity(intent);
-                setResult(1, intent);
+                startActivityForResult(intent,3);
             }
         });
 
@@ -167,7 +171,7 @@ public class ViewBookActivity extends AppCompatActivity {
                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                                             bookRef.set(selectedBook);
                                             //TODO: Update the status of the book in the user collection bookList, the book collection has owner ID so you can use that to go to user collection
-                                            //TODO: and uodate his booklist;s book status
+                                            //TODO: and update his booklists' book status
 
                                             //maybe don't have to do this if we are always using the book collection and bookRequestCollection but still something to think about
 
@@ -220,6 +224,7 @@ public class ViewBookActivity extends AppCompatActivity {
     }
 
     public void delete_book(View view) {
+        MainActivity.database.deleteImage(selectedBook.getBookID());
         db.collection("books").document(selectedBook.getBookID())
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -238,6 +243,7 @@ public class ViewBookActivity extends AppCompatActivity {
                                 });
                     }
                 });
+
         setResult(1, getIntent());
         finish();
     }
@@ -251,10 +257,39 @@ public class ViewBookActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         // get data again when resume
-        SystemClock.sleep(500);
-        getBookData();
+
+        //getBookData();
     }
 
+    /**
+     * Get the results from Edit book so we can display the proper image.
+     * This is because the database is asynchronous so it won't upload the image in time
+     * for us to download. So we need to pass the bitmap through the intent.
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == 4 && requestCode == 3){
+            SystemClock.sleep(500);
+            //Set new image if it changed.
+            if(data.getExtras()!=null) {
+                try {
+                    Log.i("image", "changed");
+                    String tempFileName = data.getStringExtra("CHANGED_IMAGE");
+                    FileInputStream is = this.openFileInput(tempFileName);
+                    Bitmap new_pic = BitmapFactory.decodeStream(is);
+                    imageView = findViewById(R.id.imageView);
+                    imageView = EditBookActivity.scaleAndSetImage(new_pic, imageView);
+                    is.close();
+                    imageChanged = true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            getBookData();
+        }
+    }
 
     /**
      * This method will retrieve the data from the database,
@@ -278,7 +313,10 @@ public class ViewBookActivity extends AppCompatActivity {
                         if(selectedBook.getDescription()!= null) {
                             descriptionTextView.setText(selectedBook.getDescription());
                         }
-                        MainActivity.database.downloadImage(imageView, selectedBook.getBookID());
+                        if(!imageChanged) {
+                            MainActivity.database.downloadImage(imageView, selectedBook.getBookID(), true);
+                        }
+                        imageChanged = false;
                     }
                 });
     }
@@ -309,8 +347,8 @@ public class ViewBookActivity extends AppCompatActivity {
             delete_button.setEnabled(false); // make it disabled too
             requestList.setVisibility(View.GONE);
             request_button.setVisibility(View.GONE);
-            /*
-            db.collection("bookRequest")
+
+        /*   db.collection("bookRequest")
                     .whereEqualTo("requestedBookID", bookID)
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -327,10 +365,15 @@ public class ViewBookActivity extends AppCompatActivity {
                                         request_button.setVisibility(View.GONE);
                                     }
                                 }
+                                MainActivity.database.downloadImage(imageView, selectedBook.getBookID(),true);
+
+                            } else {
+                                Toast.makeText(getBaseContext(), "got an error", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
-            * */
+        */
+
         }
     }
 
