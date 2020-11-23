@@ -3,6 +3,7 @@ package com.example.ibook.fragment;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
@@ -66,6 +67,9 @@ public class NotificationsFragment extends Fragment {
     public Boolean isAccepted = false;
 
 
+    private RadioButton requestButton;
+    private RadioButton responseButton;
+
     //Maps
     private Marker marker;
     public static LatLng markerLoc = null;
@@ -81,11 +85,13 @@ public class NotificationsFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         View root = inflater.inflate(R.layout.fragment_notification, container, false);
         listView = root.findViewById(R.id.listView);
+        requestButton = root.findViewById(R.id.requestButton);
+        responseButton = root.findViewById(R.id.responseButton);
         requestsList = new ArrayList<>();
         responseList = new ArrayList<>();
         final DocumentReference docRef = db.collection("users").document(MainActivity.database.getCurrentUserUID());
 
-        final ArrayAdapter adapter = new ArrayAdapter<>(getContext(),R.layout.notification_list_content,R.id.textView, requestsList);
+        final ArrayAdapter adapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, requestsList);
         listView.setAdapter(adapter);
 
         currentUserID = MainActivity.database.getCurrentUserUID();
@@ -120,7 +126,7 @@ public class NotificationsFragment extends Fragment {
                     //user object intialized
                     currentUser = documentSnapshot.toObject(User.class);
                     notificationList = currentUser.getNotificationList();
-                    for (String notif:notificationList){
+                    for (String notif : notificationList) {
                         requestsList.add(notif);
                     }// for loop
                     Collections.reverse(requestsList);
@@ -145,11 +151,11 @@ public class NotificationsFragment extends Fragment {
                                 //going to the maps
                                 Intent mapsIntent = new Intent(getContext(), MapsActivity.class);
                                 mapsIntent.putExtra(MapsActivity.MAP_TYPE, MapsActivity.ADD_EDIT_LOCATION);
-                                if(markerLoc!=null) {
+                                if (markerLoc != null) {
                                     mapsIntent.putExtra("locationIncluded", true);
                                     mapsIntent.putExtra("markerLoc", markerLoc);
                                     mapsIntent.putExtra("markerText", markerText);
-                                }else{
+                                } else {
                                     mapsIntent.putExtra("locationIncluded", false);
                                 }
                                 startActivityForResult(mapsIntent, ADD_EDIT_LOCATION_REQUEST_CODE);
@@ -317,16 +323,32 @@ public class NotificationsFragment extends Fragment {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton radioButton = group.findViewById(checkedId);
-                if(radioButton.getText().toString().equals("Requests")){
-                    ArrayAdapter adapter = new ArrayAdapter<>(getContext(),R.layout.notification_list_content,R.id.textView, requestsList);
+                if (radioButton.getText().toString().equals("Requests")) {
+                    ArrayAdapter adapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, requestsList);
                     listView.setAdapter(adapter);
                 }// if
-                else{
+                else {
                     // TODO: display responses listview
                     // empty for now
-                    ArrayAdapter adapter = new ArrayAdapter<>(getContext(),R.layout.notification_list_content,R.id.textView,new ArrayList());
+                    ArrayAdapter adapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, new ArrayList());
                     listView.setAdapter(adapter);
                 }// else
+            }
+        });
+
+        responseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestButton.setTextColor(Color.parseColor("#FF9900"));
+                responseButton.setTextColor(Color.WHITE);
+            }
+        });
+
+        requestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                responseButton.setTextColor(Color.parseColor("#FF9900"));
+                requestButton.setTextColor(Color.WHITE);
             }
         });
 
@@ -338,7 +360,7 @@ public class NotificationsFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         //Add new gear
         if (resultCode == ADD_EDIT_LOCATION_RESULT_CODE && requestCode == ADD_EDIT_LOCATION_REQUEST_CODE) {
-            if(data.getBooleanExtra("locationIncluded", false)){
+            if (data.getBooleanExtra("locationIncluded", false)) {
                 markerLoc = (LatLng) data.getExtras().getParcelable("markerLoc");
                 markerText = data.getStringExtra("markerText");
             }

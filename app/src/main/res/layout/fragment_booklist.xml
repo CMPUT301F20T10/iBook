@@ -21,63 +21,89 @@
 
 
     <RadioGroup
+        android:id="@+id/selectState"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/selectState"
-        android:orientation="horizontal"
-        android:layout_marginTop="8dp"
         android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
         android:layout_marginRight="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/bookList"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/spinner"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header_booklist">
 
         <RadioButton
-            android:id="@+id/rb_1"
+            android:id="@+id/ownButton"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="50dp"
+            android:layout_weight="1"
             android:background="@drawable/selector_orange_radiobutton"
             android:button="@null"
             android:checked="true"
             android:gravity="center"
             android:text="Own"
-            android:textColor="#000"
+            android:textColor="#FFF"
             android:textSize="18sp" />
+
         <RadioButton
+            android:id="@+id/borrowButton"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="50dp"
+            android:layout_weight="1"
+            android:background="@drawable/selector_orange_radiobutton"
+            android:button="@null"
             android:gravity="center"
-            android:id="@+id/rb_2"
             android:text="Borrow"
-            android:button="@null"
-            android:textSize="18sp"
-            android:textColor="#000"
-            android:background="@drawable/selector_orange_radiobutton"/>
+            android:textColor="#FF9900"
+            android:textSize="18sp" />
+
         <RadioButton
+            android:id="@+id/requestButton"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="50dp"
+            android:layout_weight="1"
+            android:background="@drawable/selector_orange_radiobutton"
+            android:button="@null"
             android:gravity="center"
-            android:id="@+id/rb_3"
             android:text="Request"
-            android:button="@null"
-            android:textSize="18sp"
-            android:textColor="#000"
-            android:background="@drawable/selector_orange_radiobutton"/>
+            android:textColor="#FF9900"
+            android:textSize="18sp" />
+
         <RadioButton
+            android:id="@+id/acceptButton"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="50dp"
-            android:gravity="center"
-            android:id="@+id/rb_4"
-            android:text="Accept"
+            android:layout_weight="1"
+            android:background="@drawable/selector_orange_radiobutton"
             android:button="@null"
-            android:textSize="18sp"
-            android:textColor="#000"
-            android:background="@drawable/selector_orange_radiobutton"/>
+            android:gravity="center"
+            android:text="Accept"
+            android:textColor="#FF9900"
+            android:textSize="18sp" />
     </RadioGroup>
+
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+
+        android:spinnerMode="dropdown"
+        app:layout_constraintBottom_toTopOf="@id/bookList"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/selectState" />
+
+    <Button
+        android:id="@+id/sortBook"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:text="sort by titles"
+        app:layout_constraintBottom_toTopOf="@id/bookList"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/selectState" />
 
 
     <ListView
@@ -85,27 +111,55 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_below="@+id/header_booklist"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/selectState" />
+        app:layout_constraintTop_toBottomOf="@+id/spinner" />
 
     <Button
         android:id="@+id/button_add"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
         android:background="@drawable/ic_baseline_add_circle_24"
         android:clickable="true"
         android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <Button
+        android:id="@+id/button_filter"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/ic_baseline_filter_24"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toTopOf="@+id/button_add"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <Button
+        android:id="@+id/button_camera"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/ic_baseline_camera_circle"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
