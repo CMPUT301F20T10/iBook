@@ -148,7 +148,6 @@ public class HomeFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getContext(), ViewBookActivity.class);
-                intent.putExtra("BOOK_NUMBER", position);
                 intent.putExtra("BOOK_ID", datalist.get(position).getBookID());
                 intent.putExtra("OWNER", datalist.get(position).getOwner());
                 intent.putExtra("STATUS", datalist.get(position).getStatus().toString());
