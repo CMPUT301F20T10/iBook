@@ -114,7 +114,6 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                         && date.length() > 0
                         && isbn.length() > 0) {
 
-
                     bookID = db.collection("books").document().getId();
                     Book newBook = new Book(bookName, authorName, date, description, Book.Status.Available, isbn, userID, bookID);
 
