@@ -23,6 +23,7 @@ import com.example.ibook.activities.MainActivity;
 import com.example.ibook.activities.ViewBookActivity;
 import com.example.ibook.entities.Book;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -92,53 +93,23 @@ public class BookListFragment extends Fragment {
             return root;
         }
 
-        db.collection("users")
+        // load the owned book list
+        datalist.clear();
+        db.collection("books")
+                .whereEqualTo("owner", userID)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                // todo: change email key word to username
-                                String matchID = document.getId();
-                                //Toast.makeText(getContext(), id, Toast.LENGTH_SHORT).show();
-                                if (matchID.equals(userID)) {
-                                    //Toast.makeText(getContext(), "match", Toast.LENGTH_SHORT).show();
-
-                                    Map<String, Object> convertMap;
-                                    ArrayList<Book> hashList = (ArrayList<Book>) document.get("bookList");
-
-                                    for (int i = 0; i < hashList.size(); i += 1) {
-                                        convertMap = (Map<String, Object>) hashList.get(i);
-
-                                        datalist.add(new Book(
-                                                String.valueOf(convertMap.get("title")),
-                                                String.valueOf(convertMap.get("authors")),
-                                                String.valueOf(convertMap.get("date")),
-                                                String.valueOf(convertMap.get("description")),
-                                                from_string_to_enum(String.valueOf(convertMap.get("status"))),
-                                                String.valueOf(convertMap.get("isbn")),
-                                                String.valueOf(convertMap.get("owner")),
-                                                String.valueOf(convertMap.get("bookID"))
-                                        ));
-                                        //Toast.makeText(getContext(), String.valueOf(convertMap.get("description")), Toast.LENGTH_SHORT).show();
-                                    }
-                                    if (datalist == null) {
-                                        datalist = new ArrayList<>();
-                                    } else {
-                                        adapter = new BookListAdapter(datalist, getActivity());
-                                        bookListView.setAdapter(adapter);
-                                        Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
-                                    }
-
-                                }
-                            }
-                        } else {
-                            Toast.makeText(getContext(), "got an error", Toast.LENGTH_SHORT).show();
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots) {
+                            Book book = documentSnapshot.toObject(Book.class);
+                            datalist.add(book);
                         }
+                        adapter = new BookListAdapter(datalist, getActivity());
+                        bookListView.setAdapter(adapter);
+                        Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
                     }
                 });
-
 
         // set radioButtons for book filter
         radioGroup = root.findViewById(R.id.selectState);
@@ -164,7 +135,8 @@ public class BookListFragment extends Fragment {
                                     for (QueryDocumentSnapshot document : task.getResult()) {
                                         bookID = (String) document.get("requestedBookID");
                                         MainActivity.database.getDb().collection("books").document(bookID)
-                                                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                .get()
+                                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                             @Override
                                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                 ArrayList<Book> requestedBookList = new ArrayList<>();
@@ -238,7 +210,6 @@ public class BookListFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getContext(), ViewBookActivity.class);
-                intent.putExtra("BOOK_NUMBER", position);
                 intent.putExtra("BOOK_ID", datalist.get(position).getBookID());
                 intent.putExtra("OWNER", datalist.get(position).getOwner());
                 intent.putExtra("STATUS", datalist.get(position).getStatus().toString());
@@ -315,49 +286,22 @@ public class BookListFragment extends Fragment {
 
             // update the change
             // Toast.makeText(getContext(), "updated", Toast.LENGTH_SHORT).show();
-            DocumentReference docRef = db.collection("users").document(userID);
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            Map<String, Object> convertMap;
-
-                            ArrayList<Book> hashList = (ArrayList<Book>) document.get("bookList");
-                            datalist = new ArrayList<>();
-                            for (int i = 0; i < hashList.size(); i += 1) {
-                                convertMap = (Map<String, Object>) hashList.get(i);
-
-
-                                datalist.add(new Book(
-                                        String.valueOf(convertMap.get("title")),
-                                        String.valueOf(convertMap.get("authors")),
-                                        String.valueOf(convertMap.get("date")),
-                                        (String.valueOf(convertMap.get("description"))),
-                                        from_string_to_enum(String.valueOf(convertMap.get("status"))),
-                                        String.valueOf(convertMap.get("isbn")),
-                                        String.valueOf(convertMap.get("owner")),
-                                        String.valueOf(convertMap.get("bookID"))
-                                ));
-
+            datalist.clear();
+            db.collection("books")
+                    .whereEqualTo("owner", userID)
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots) {
+                                Book book = documentSnapshot.toObject(Book.class);
+                                datalist.add(book);
                             }
-
-                            if (datalist == null) {
-                                datalist = new ArrayList<>();
-                            } else {
-                                adapter = new BookListAdapter(datalist, getActivity());
-                                bookListView.setAdapter(adapter);
-                            }
-
-                        } else {
-                            Toast.makeText(getContext(), "No such document", Toast.LENGTH_SHORT).show();
+                            adapter = new BookListAdapter(datalist, getActivity());
+                            bookListView.setAdapter(adapter);
+                            Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
                         }
-                    } else {
-                        Toast.makeText(getContext(), "got an error", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+                    });
 
         }
     }

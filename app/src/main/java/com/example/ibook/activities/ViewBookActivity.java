@@ -194,7 +194,7 @@ public class ViewBookActivity extends AppCompatActivity {
             }//onClick
         });
 
-
+        // setting up the request list
         final CollectionReference requestRef = db.collection("bookRequest");
         requestRef
                 .whereEqualTo("requestedBookID", bookID)
@@ -214,13 +214,10 @@ public class ViewBookActivity extends AppCompatActivity {
                                     requestAdapter.add(sender.getUserName() + " has requested this book");
                                 }
                             });
-
                 }
             }
         });
     }
-
-
 
     public void delete_book(View view) {
         db.collection("books").document(selectedBook.getBookID())
@@ -270,16 +267,7 @@ public class ViewBookActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        selectedBook = new Book(
-                                String.valueOf(documentSnapshot.get("title")),
-                                String.valueOf(documentSnapshot.get("authors")),
-                                String.valueOf(documentSnapshot.get("date")),
-                                String.valueOf(documentSnapshot.get("description")),
-                                Book.Status.valueOf(String.valueOf(documentSnapshot.get("status"))),
-                                String.valueOf(documentSnapshot.get("isbn")),
-                                String.valueOf(documentSnapshot.get("owner")),
-                                String.valueOf(documentSnapshot.get("bookID"))
-                        );
+                        selectedBook = documentSnapshot.toObject(Book.class);
 
                         bookNameTextView.setText(selectedBook.getTitle());
                         authorTextView.setText(selectedBook.getAuthors());
@@ -291,13 +279,11 @@ public class ViewBookActivity extends AppCompatActivity {
                         MainActivity.database.downloadImage(imageView, selectedBook.getBookID());
                     }
                 });
-
-
     }
 
     /**
      * This method will check whether the current user is the owner of the book
-     * and then set the UIs accordingly. 
+     * and then set the UIs accordingly.
      * */
     private void checkOwner() {
         if (userID.equals(owner)) {
