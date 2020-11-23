@@ -126,8 +126,8 @@ public class HomeFragment extends Fragment {
                                         String.valueOf(document.get("title")),
                                         String.valueOf(document.get("authors")),
                                         String.valueOf(document.get("date")),
-                                        (String.valueOf(document.get("description"))),
-                                        from_string_to_enum(String.valueOf(document.get("status"))),
+                                        String.valueOf(document.get("description")),
+                                        Book.Status.valueOf(String.valueOf(document.get("status"))),
                                         String.valueOf(document.get("isbn")),
                                         String.valueOf(document.get("owner")),
                                         String.valueOf(document.get("bookID"))
@@ -148,11 +148,10 @@ public class HomeFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getContext(), ViewBookActivity.class);
-                User user = new User();
                 intent.putExtra("BOOK_NUMBER", position);
-                intent.putExtra("USER_ID", user.getUserName());
-                intent.putExtra("IS_OWNER", -1);
-                intent.putExtra("BOOK_ISBN", datalist.get(position).getIsbn());
+                intent.putExtra("BOOK_ID", datalist.get(position).getBookID());
+                intent.putExtra("OWNER", datalist.get(position).getOwner());
+                intent.putExtra("STATUS", datalist.get(position).getStatus().toString());
                 startActivityForResult(intent, 0);
             }
         });

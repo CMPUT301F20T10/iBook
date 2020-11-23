@@ -1,12 +1,18 @@
 package com.example.ibook.activities;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.View;
 import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +24,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,9 +40,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ViewBookActivity extends AppCompatActivity {
     private String userID;
-    private int bookNumber;
-    private int isOwner;
-    private String bookISBN;
+    private ArrayList<BookRequest> requests;
+    private String bookID;
     private final int REQ_CAMERA_IMAGE = 1;
     private final int REQ_GALLERY_IMAGE = 2;
 
@@ -48,20 +54,19 @@ public class ViewBookActivity extends AppCompatActivity {
 
     private TextView edit_button;
     private Button backButton;
-    //private Button delete_button;
     private Button delete_button;
     private Button request_button;
+    private Button return_button;
+    private ListView requestList;
 
     private FirebaseFirestore db;
-    private User user;
-    private DocumentReference docRef;
     FirebaseAuth uAuth;
     private Book selectedBook;
+    private String owner;
+    private String status;
 
-    public static String requestReceiverID;
     public static User requestReceiver;
     private User currentUser;
-    String userName;
 
 
 
@@ -80,58 +85,36 @@ public class ViewBookActivity extends AppCompatActivity {
         dateTextView = findViewById(R.id.ViewDate);
         isbnTextView = findViewById(R.id.ViewISBN);
         descriptionTextView = findViewById(R.id.descriptionView2);
-        edit_button = findViewById(R.id.editButton);
-        //delete_button = findViewById(R.id.btn_delete_book);
-        request_button = findViewById(R.id.btn_request_book);
-
         imageView = findViewById(R.id.imageView);
+
+        edit_button = findViewById(R.id.editButton);
+        request_button = findViewById(R.id.btn_request_book);
         backButton = findViewById(R.id.cancelButton);
         delete_button = findViewById(R.id.btn_delete_book);
+        return_button = findViewById(R.id.btn_return_book);
 
+        requestList = findViewById(R.id.request_list);
+        requests = new ArrayList<BookRequest>();
+        final ArrayAdapter requestAdapter = new ArrayAdapter<>(getBaseContext(), R.layout.request_list_content, R.id.request_content, requests);
+        requestList.setAdapter(requestAdapter);
 
         uAuth = FirebaseAuth.getInstance();
         userID = uAuth.getCurrentUser().getUid();
         db = FirebaseFirestore.getInstance();
 
-        docRef = db.collection("users").document(userID);//creating a document for the use
-
         Intent intent = getIntent();
-        //userID = intent.getStringExtra("USER_ID");
+        bookID = intent.getStringExtra("BOOK_ID");
+        owner = intent.getStringExtra("OWNER");
+        status = intent.getStringExtra("STATUS");
 
-        // The number of clicked book on the booklist
-        bookNumber = intent.getIntExtra("BOOK_NUMBER", 0);
-
-        // if isOwner = 0, the activity is being visited from user's own bookList page
-        // if isOwner = -1, the activity is being visited by other users (a random visit)
-        isOwner = intent.getIntExtra("IS_OWNER", 0);
-
-        if (isOwner == -1) {
-            // we hide edit/delete button if it's not the owner
-            edit_button.setVisibility(View.GONE);
-            delete_button.setVisibility(View.GONE);
-            delete_button.setEnabled(false); // make it disabled too
-            // Toast.makeText(getBaseContext(), String.valueOf(bookNumber), Toast.LENGTH_SHORT).show();
-            // Toast.makeText(getBaseContext(), userID, Toast.LENGTH_SHORT).show();
-
-//            user = new User();
-//            docRef = user.getDocumentReference();
-//            db = FirebaseFirestore.getInstance();
-        }
-        else {
-            // hide request button if the current user is the owner.
-            request_button.setVisibility(View.GONE);
-            request_button.setEnabled(false); // disable the button too
-        }
-
-        bookISBN = intent.getStringExtra("BOOK_ISBN");
         getBookData();
+        checkOwner();
 
         edit_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ViewBookActivity.this, EditBookActivity.class);
-                intent.putExtra("ID", userID);
-                intent.putExtra("bookNumber", bookNumber);
+                intent.putExtra("BOOK_ID", bookID);
                 startActivity(intent);
                 setResult(1, intent);
             }
@@ -156,19 +139,9 @@ public class ViewBookActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()) {
-                            //user object intialized
+
                             currentUser = documentSnapshot.toObject(User.class);
-//                            ArrayList<Book> books;
-//                            for(bookID in BOOK){
-//                                db.collection("users").document(bookId).get().addOnSuccessListener(
-//
-//                                        newBook = toobect(Book.class);
-//                                        books.add(newbook);
-//                                );
-//
-//                                adapter.set(newBook);
-//                            }
-                            final DocumentReference docRefRequestReceiver = db.collection("users").document(requestReceiverID);
+                            final DocumentReference docRefRequestReceiver = db.collection("users").document(owner);
 
                             docRefRequestReceiver.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
@@ -203,55 +176,9 @@ public class ViewBookActivity extends AppCompatActivity {
                                 }
                             });
                         }// if
-
                     }//onSuccess
 
                 });
-
-
-//                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                                                       @Override
-//                                                       public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                                                           if (task.isSuccessful()) {
-//                                                               DocumentSnapshot document = task.getResult();
-//                                                               if (document.exists()) {
-//                                                                   ArrayList<Book> hashList = (ArrayList<Book>) document.get("requestedBookList");
-//                                                                   String userName = (String) document.get("userName");
-//                                                                   hashList.add(selectedBook);
-//                                                                   docRef.update("requestedBookList", hashList).addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                                                       @Override
-//                                                                       public void onSuccess(Void aVoid) {
-//                                                                           Toast.makeText(ViewBookActivity.this, "Added to request book list successfully", Toast.LENGTH_SHORT).show();
-//                                                                       }
-//                                                                   });
-//                                                               }// if
-//                                                           }
-//                                                       }
-//                                                   });
-//
-//                requestReceiverID = selectedBook.getOwnerID();
-//
-//                final DocumentReference docRefRequestReceiver = db.collection("users").document(requestReceiverID);
-//
-//                docRefRequestReceiver.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                        if (task.isSuccessful()) {
-//                            DocumentSnapshot document = task.getResult();
-//                            if (document.exists()) {
-//                                ArrayList<String> hashList = (ArrayList<String>) document.get("notificationList");
-//                                String message = userName + "wants to borrow the book named" + selectedBook.getTitle();
-//                                hashList.add(message);
-//                                docRefRequestReceiver.update("notificationList", hashList).addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                    @Override
-//                                    public void onSuccess(Void aVoid) {
-//                                        Toast.makeText(ViewBookActivity.this, "Added to request book list successfully", Toast.LENGTH_SHORT).show();
-//                                    }
-//                                });
-//                            }// if
-//                        }
-//                    }
-//                });
 
 
                 System.out.println("Coming before db");
@@ -262,79 +189,58 @@ public class ViewBookActivity extends AppCompatActivity {
                    }
                });
 
-//                System.out.println(requestReceiver.getEmail() + " " + clickedBook.getTitle() + " " +MainActivity.user.getUserName());
-//
-//                Toast.makeText(ViewBookActivity.this, "title: " + clickedBook.getTitle() + "Username: " + MainActivity.user.getUserName() , Toast.LENGTH_SHORT).show();
-//                requestReceiver.addToNotificationList(MainActivity.user.getUserName() + "wants to borrow the book" + clickedBook.getTitle());
-//                MainActivity.database.getDb().collection("users").document(requestReceiverID).set(requestReceiver).addOnSuccessListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onSuccess(Void aVoid) {
-//                        Toast.makeText(ViewBookActivity.this, "Added to notification list successfully", Toast.LENGTH_SHORT).show();
-//                        finish();
-//                    }
-//                });
                 Toast.makeText(getBaseContext(), "This function is coming soon!", Toast.LENGTH_SHORT).show();
-                
 
             }//onClick
-        }); //requestButton SetOnClickListener
+        });
+
+
+        final CollectionReference requestRef = db.collection("bookRequest");
+        requestRef
+                .whereEqualTo("requestedBookID", bookID)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                    String sender = document.getString("requestSenderID");
+                    db.collection("users")
+                            .document(sender)
+                            .get()
+                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    User sender = documentSnapshot.toObject(User.class);
+                                    requestAdapter.add(sender.getUserName() + " has requested this book");
+                                }
+                            });
+
+                }
+            }
+        });
     }
 
 
 
     public void delete_book(View view) {
-
-        // delete book from book collection
-        /*db.collection("books")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        db.collection("books").document(selectedBook.getBookID())
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                // todo: change email key word to username
-                                String bookID = (String) document.getId();
-                                if(bookID.equals(selectedBook.getBookID())){
-                                    Toast.makeText(getBaseContext(), "match "+bookID, Toast.LENGTH_SHORT).show();
-                                    return;
-                                    //db.collection("books").document((String)document.getId()).delete();
-                                }
-                            }
-                        }
+                    public void onSuccess(Void aVoid) {
+                        db.collection("bookRequest")
+                                .whereEqualTo("requestedBookID", selectedBook.getBookID())
+                                .get()
+                                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                        for(DocumentSnapshot documentSnapshot: queryDocumentSnapshots) {
+                                            documentSnapshot.getReference().delete();
+                                        }
+                                    }
+                                });
                     }
-                });*/
-        db.collection("books").document(selectedBook.getBookID()).delete();
-
-        DocumentReference docRef = db.collection("users").document(userID);
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    // if the book exists, delete it
-                    if (document.exists()) {
-                        Map<String, Object> data;
-                        data = document.getData();
-                        ArrayList<Book> books = (ArrayList<Book>) document.getData().get("bookList");
-                        //Need to delete image before book since image uses bookID for storage.
-                        Map<String, Object> convertMap = (Map<String, Object>) books.get(bookNumber);
-                        MainActivity.database.deleteImage(convertMap.get("bookID").toString());
-                        books.remove(bookNumber);
-                        data.put("bookList", books);
-                        db.collection("users")
-                                .document(userID).set(data);
-                        Intent intent = new Intent();
-                        setResult(1, intent);
-                        finish();
-                    } else {
-                        //Log.d(TAG, "No such document");
-                    }
-                } else {
-                    //Log.d(TAG, "get failed with ", task.getException());
-                }
-            }
-        });
-
+                });
     }
 
 
@@ -358,89 +264,89 @@ public class ViewBookActivity extends AppCompatActivity {
     private void getBookData() {
         // if it's not owner's book, we cannot access the book from user
         // so find the book from book collection
-        if (isOwner == -1) {
-            db.collection("books")
+
+        db.collection("books").document(bookID)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        selectedBook = new Book(
+                                String.valueOf(documentSnapshot.get("title")),
+                                String.valueOf(documentSnapshot.get("authors")),
+                                String.valueOf(documentSnapshot.get("date")),
+                                String.valueOf(documentSnapshot.get("description")),
+                                Book.Status.valueOf(String.valueOf(documentSnapshot.get("status"))),
+                                String.valueOf(documentSnapshot.get("isbn")),
+                                String.valueOf(documentSnapshot.get("owner")),
+                                String.valueOf(documentSnapshot.get("bookID"))
+                        );
+
+                        bookNameTextView.setText(selectedBook.getTitle());
+                        authorTextView.setText(selectedBook.getAuthors());
+                        dateTextView.setText(selectedBook.getDate());
+                        isbnTextView.setText(selectedBook.getIsbn());
+                        if(selectedBook.getDescription()!= null) {
+                            descriptionTextView.setText(selectedBook.getDescription());
+                        }
+                        MainActivity.database.downloadImage(imageView, selectedBook.getBookID());
+                    }
+                });
+
+
+    }
+
+    /**
+     * This method will check whether the current user is the owner of the book
+     *
+     * @Return:
+     * - 1 if the current user is the owner of
+     * - -1 if the current user is the holder
+     * - 0, otherwise
+     * */
+    private void checkOwner() {
+        if (userID.equals(owner)) {
+            // owner
+            request_button.setVisibility(View.GONE);
+            request_button.setEnabled(false); // disable the button too
+            return_button.setVisibility(View.GONE);
+        }
+        else if (Book.Status.valueOf(status) != Book.Status.Borrowed) {
+            // normal users
+            edit_button.setVisibility(View.GONE);
+            delete_button.setVisibility(View.GONE);
+            delete_button.setEnabled(false); // make it disabled too
+            requestList.setVisibility(View.GONE);
+            return_button.setVisibility(View.GONE);
+        }
+        else {
+            // holder
+            edit_button.setVisibility(View.GONE);
+            delete_button.setVisibility(View.GONE);
+            delete_button.setEnabled(false); // make it disabled too
+            requestList.setVisibility(View.GONE);
+            request_button.setVisibility(View.GONE);
+            /*
+            db.collection("bookRequest")
+                    .whereEqualTo("requestedBookID", bookID)
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
                             if (task.isSuccessful()) {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
-                                    String checkISBN = (String)document.get("isbn");
-                                    requestReceiverID = (String)document.get("owner");
-                                    if (checkISBN.equals(bookISBN)){
-                                        selectedBook = new Book(
-                                                String.valueOf(document.get("title")),
-                                                String.valueOf(document.get("authors")),
-                                                String.valueOf(document.get("date")),
-                                                String.valueOf(document.get("description")),
-                                                Book.Status.Available,
-                                                String.valueOf(document.get("isbn")),
-                                                String.valueOf(document.get("owner")),
-                                                String.valueOf(document.get("bookID"))
-                                        );
-
-
-                                        //Toast.makeText(getBaseContext(), "match book!", Toast.LENGTH_SHORT).show();
-                                        break;
+                                    String senderId = String.valueOf(document.get("requestSenderID"));
+                                    if (userID == senderId) {
+                                        edit_button.setVisibility(View.GONE);
+                                        delete_button.setVisibility(View.GONE);
+                                        delete_button.setEnabled(false); // make it disabled too
+                                        requestList.setVisibility(View.GONE);
+                                        request_button.setVisibility(View.GONE);
                                     }
-
                                 }
-                                bookNameTextView.setText(selectedBook.getTitle());
-                                authorTextView.setText(selectedBook.getAuthors());
-                                dateTextView.setText(selectedBook.getDate());
-                                isbnTextView.setText(selectedBook.getIsbn());
-                                if(selectedBook.getDescription()!= null) {
-                                    descriptionTextView.setText(selectedBook.getDescription());
-                                }
-                                MainActivity.database.downloadImage(imageView, selectedBook.getBookID());
-
-                            } else {
-                                Toast.makeText(getBaseContext(), "got an error", Toast.LENGTH_SHORT).show();
-
                             }
                         }
                     });
-
-        } else {
-            // if it's owner's book, find it from user's collection
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            ArrayList<Book> hashList = (ArrayList<Book>) document.get("bookList");
-                            Map<String, Object> convertMap = (Map<String, Object>) hashList.get(bookNumber);
-                            selectedBook = new Book(
-                                    String.valueOf(convertMap.get("title")),
-                                    String.valueOf(convertMap.get("authors")),
-                                    String.valueOf(convertMap.get("date")),
-                                    (String.valueOf(convertMap.get("description"))),
-                                    //from_string_to_enum(String.valueOf(convertMap.get("status"))),
-                                    Book.Status.Available,
-                                    String.valueOf(convertMap.get("isbn")),
-                                    String.valueOf(convertMap.get("owner")),
-                                    String.valueOf(convertMap.get("bookID"))
-                            );
-                            bookNameTextView.setText(selectedBook.getTitle());
-                            authorTextView.setText(selectedBook.getAuthors());
-                            dateTextView.setText(selectedBook.getDate());
-                            isbnTextView.setText(selectedBook.getIsbn());
-                            if(selectedBook.getDescription()!= null) {
-                                descriptionTextView.setText(selectedBook.getDescription());
-                            }
-                            MainActivity.database.downloadImage(imageView, selectedBook.getBookID());
-
-                        } else {
-                            //Log.d(TAG, "No such document");
-                        }
-                    } else {
-                        //Log.d(TAG, "get failed with ", task.getException());
-                    }
-                }
-            });
+            * */
         }
     }
 
