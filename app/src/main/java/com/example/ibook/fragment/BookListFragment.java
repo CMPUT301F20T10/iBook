@@ -194,16 +194,21 @@ public class BookListFragment extends Fragment {
 
     private void getOwnBookList() {
         datalist.clear();
-        MainActivity.database.getUserDocumentReference().get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                User user = documentSnapshot.toObject(User.class);
-                datalist = user.getBookList();
-                Log.d("", datalist.size() + "");
-                adapter = new BookListAdapter(datalist, getContext());
-                bookListView.setAdapter(adapter);
-            }
-        });
+        MainActivity.database.getDb().collection("books")
+                .whereEqualTo("owner", MainActivity.database.getCurrentUserUID())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (DocumentSnapshot documentSnapshot: queryDocumentSnapshots) {
+                            Book book = documentSnapshot.toObject(Book.class);
+                            datalist.add(book);
+                        }
+                        Log.d("", datalist.size() + "");
+                        adapter = new BookListAdapter(datalist, getContext());
+                        bookListView.setAdapter(adapter);
+                    }
+                });
     }
 
     private void isButtonVisible(boolean isVisible, boolean isFilterVisible) {
