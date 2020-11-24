@@ -59,7 +59,7 @@ public class User implements Serializable {
 //    then I put them in accepeted booklist
 
     /**
-     *   no argument constructor for the firebase cloud
+     * no argument constructor for the firebase cloud
      */
     public User() {
 
@@ -68,6 +68,7 @@ public class User implements Serializable {
 
     /**
      * This constructor is called when a new user signs up
+     *
      * @param userName
      * @param password
      * @param email
@@ -117,13 +118,13 @@ public class User implements Serializable {
     }
 
 
-
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
     /**
      * This method returns the users booklist
+     *
      * @return arraylist of books of the user
      */
 
@@ -136,12 +137,13 @@ public class User implements Serializable {
         return notificationList;
     }
 
-    public void addToNotificationList (String message){
+    public void addToNotificationList(String message) {
         notificationList.add(message);
     }
 
-
-
+    public void addToBookList(Book book) {
+        bookList.add(book);
+    }
 
 
 }// users class
