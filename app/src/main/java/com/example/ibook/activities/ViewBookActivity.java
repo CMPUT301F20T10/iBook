@@ -1,9 +1,5 @@
 package com.example.ibook.activities;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,9 +19,7 @@ import com.example.ibook.R;
 import com.example.ibook.entities.Book;
 import com.example.ibook.entities.BookRequest;
 import com.example.ibook.entities.User;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -36,9 +30,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.Map;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -156,8 +148,8 @@ public class ViewBookActivity extends AppCompatActivity {
                                     docRefRequestReceiver.set(requestReceiver);
                                     Toast.makeText(getBaseContext(), "Coming here!", Toast.LENGTH_SHORT).show();
 
-
-                                    BookRequest newRequest = new BookRequest(currentUser.getUserID(),requestReceiver.getUserID(),selectedBook.getBookID());
+                                    // three requestStatus: Requested, Accepted, Confirmed
+                                    BookRequest newRequest = new BookRequest(currentUser.getUserID(),requestReceiver.getUserID(),selectedBook.getBookID(), "Requested");
                                     db.collection("bookRequest").document().set(newRequest);
 
                                     //change book status

@@ -7,11 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,9 +22,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -146,18 +141,7 @@ public class BookListFragment extends Fragment {
     }
 
     private void getBorrowBookList() {
-        //TODO:implement
         datalist.clear();
-    }
-
-    private void getAcceptedBookList() {
-        //TODO:implement
-        datalist.clear();
-    }
-
-    private void getRequestBookList() {
-        datalist.clear();
-        adapter.notifyDataSetChanged();
         String userID = MainActivity.user.getUserID();
         MainActivity.database
                 .getDb()
@@ -168,6 +152,12 @@ public class BookListFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                            if(documentSnapshot.contains("requestStatus")){
+                                // if the status is not confirmed, ignore it
+                                if(((String)documentSnapshot.get("requestStatus")).equals("Confirmed") == false){
+                                    continue;
+                                }
+                            }
                             String bookID = (String) documentSnapshot.get("requestedBookID");
                             MainActivity.database
                                     .getDb()
@@ -178,16 +168,83 @@ public class BookListFragment extends Fragment {
                                         @Override
                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                                             datalist.add(documentSnapshot.toObject(Book.class));
+                                            adapter.notifyDataSetChanged();
                                         }
                                     });
                         }
                     }
-                })
+                });
+    }
+
+    private void getAcceptedBookList() {
+        //TODO:implement
+        datalist.clear();
+        String userID = MainActivity.user.getUserID();
+        MainActivity.database
+                .getDb()
+                .collection("bookRequest")
+                .whereEqualTo("requestSenderID", userID)
+                .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        adapter = new BookListAdapter(datalist, getContext());
-                        bookListView.setAdapter(adapter);
+                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                            if(documentSnapshot.contains("requestStatus")){
+                                // if the status is not accepted, ignore it
+                                if(((String)documentSnapshot.get("requestStatus")).equals("Accepted") == false){
+                                    continue;
+                                }
+                            }
+                            String bookID = (String) documentSnapshot.get("requestedBookID");
+                            MainActivity.database
+                                    .getDb()
+                                    .collection("books")
+                                    .document(bookID)
+                                    .get()
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            datalist.add(documentSnapshot.toObject(Book.class));
+                                            adapter.notifyDataSetChanged();
+                                        }
+                                    });
+                        }
+                    }
+                });
+    }
+
+    private void getRequestBookList() {
+        datalist.clear();
+        String userID = MainActivity.user.getUserID();
+        MainActivity.database
+                .getDb()
+                .collection("bookRequest")
+                .whereEqualTo("requestSenderID", userID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                            if(documentSnapshot.contains("requestStatus")){
+                                // if the status is not requested, ignore it
+                                if(((String)documentSnapshot.get("requestStatus")).equals("Requested") == false){
+                                    continue;
+                                }
+                            }
+                            String bookID = (String) documentSnapshot.get("requestedBookID");
+                            MainActivity.database
+                                    .getDb()
+                                    .collection("books")
+                                    .document(bookID)
+                                    .get()
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            datalist.add(documentSnapshot.toObject(Book.class));
+                                            adapter.notifyDataSetChanged();
+                                        }
+                                    });
+                        }
                     }
                 });
     }
