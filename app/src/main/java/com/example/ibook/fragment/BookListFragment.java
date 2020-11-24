@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -24,6 +23,7 @@ import com.example.ibook.activities.ViewBookActivity;
 import com.example.ibook.entities.Book;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -40,7 +40,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-public class BookListFragment extends Fragment {
+public class BookListFragment extends Fragment{
 
     //Private variables
     private ListView bookListView;
@@ -55,11 +55,21 @@ public class BookListFragment extends Fragment {
     private Spinner mSpinner;
     private ArrayAdapter<CharSequence> spinner_adapter;
     private Button sortButton;
+    private FloatingActionButton filterButton;
+    private FloatingActionButton filter1;
+    private FloatingActionButton filter2;
+    private FloatingActionButton filter3;
+    private FloatingActionButton filter4;
+    private String filterStatus = "All";
+
 
     private RadioButton ownBookButton;
     private RadioButton borrowBookButton;
     private RadioButton requestBookButton;
     private RadioButton acceptBookButton;
+
+    // set up spinner
+    final private String[] all_filter_status = {"All", "Available", "Requested", "Accepted", "Borrowed"};
 
     @Nullable
     @Override
@@ -69,6 +79,12 @@ public class BookListFragment extends Fragment {
         btn_addBook = root.findViewById(R.id.button_add);
         mSpinner = root.findViewById(R.id.spinner);
         sortButton = root.findViewById(R.id.sortBook);
+        filterButton = root.findViewById(R.id.button_filter);
+        filter1 = root.findViewById(R.id.fab1);
+        filter2 = root.findViewById(R.id.fab2);
+        filter3 = root.findViewById(R.id.fab3);
+        filter4 = root.findViewById(R.id.fab4);
+
 
         ownBookButton = root.findViewById(R.id.ownButton);
         borrowBookButton = root.findViewById(R.id.borrowButton);
@@ -128,7 +144,7 @@ public class BookListFragment extends Fragment {
                                     } else {
                                         adapter = new BookListAdapter(datalist, getActivity());
                                         bookListView.setAdapter(adapter);
-                                        Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
                                     }
 
                                 }
@@ -147,11 +163,16 @@ public class BookListFragment extends Fragment {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton radioButton = group.findViewById(checkedId);
                 if (radioButton.getText().toString().equals("Own")) {
+
+                    // when click "own"
+                    isFilterVisible(1); // filter visible
                     adapter = new BookListAdapter(datalist, getActivity());
                     bookListView.setAdapter(adapter);
                 }
                 //if clicks on request booklist toggle button
                 else if (radioButton.getText().toString().equals("Request")) {
+
+                    isFilterVisible(0);
 
                     MainActivity.database.getDb().collection("bookRequest")
                             .whereEqualTo("requestSenderID", userID)
@@ -184,6 +205,8 @@ public class BookListFragment extends Fragment {
                             });// outer addOnCompleteListener
                     ;
                 } else {
+
+                    isFilterVisible(0);
                     adapter = new BookListAdapter(new ArrayList<Book>(), getActivity());
                     bookListView.setAdapter(adapter);
                 }//else
@@ -191,10 +214,9 @@ public class BookListFragment extends Fragment {
         });
 
 
-        // set up spinner
-        final String[] arr = {"All status", "Available", "Requested", "Accepted", "Borrowed"};
 
-        spinner_adapter = new ArrayAdapter<CharSequence>(getContext(), android.R.layout.simple_spinner_item, arr);
+
+        spinner_adapter = new ArrayAdapter<CharSequence>(getContext(), android.R.layout.simple_spinner_item, all_filter_status);
         mSpinner.setAdapter(spinner_adapter);
 
         // set spinner listener
@@ -203,11 +225,11 @@ public class BookListFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 // Toast.makeText(getContext(), "click " + arr[position], Toast.LENGTH_SHORT).show();
                 ArrayList<Book> filtered_book = new ArrayList<>();
-                if (arr[position].equals("All status")) {
+                if (all_filter_status[position].equals("All status")) {
                     filtered_book = datalist;
                 } else {
                     for (Book book : datalist) {
-                        if (book.getStatus().toString().equals(arr[position])) {
+                        if (book.getStatus().toString().equals(all_filter_status[position])) {
                             filtered_book.add(book);
                         }
                     }
@@ -294,7 +316,98 @@ public class BookListFragment extends Fragment {
                 acceptBookButton.setTextColor(Color.parseColor("#FF9900"));
             }
         });
+
+        // when click filter button
+        filterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "filter clicked", Toast.LENGTH_SHORT).show();
+                // todo: hide filter buttons AND change filter color when click
+            }
+        });
+
+        // status: "Available", "Requested", "Accepted", "Borrowed"
+        filter1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "filter Borrowed", Toast.LENGTH_SHORT).show();
+                if(filterStatus.equals("Borrowed"))
+                    filterStatus = "All";
+                else
+                    filterStatus = "Borrowed";
+                updateBookList();
+
+            }
+        });
+        filter2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "filter Accepted", Toast.LENGTH_SHORT).show();
+                if(filterStatus.equals("Accepted"))
+                    filterStatus = "All";
+                else
+                    filterStatus = "Accepted";
+                updateBookList();
+            }
+        });
+        filter3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "filter Requested", Toast.LENGTH_SHORT).show();
+                if(filterStatus.equals("Requested"))
+                    filterStatus = "All";
+                else
+                    filterStatus = "Requested";
+                updateBookList();
+            }
+        });
+        filter4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "filter Available", Toast.LENGTH_SHORT).show();
+                if(filterStatus.equals("Available"))
+                    filterStatus = "All";
+                else
+                    filterStatus = "Available";
+                updateBookList();
+            }
+        });
+
+
         return root;
+    }
+
+    private void isFilterVisible(int isVisible) {
+        if(isVisible == 1){
+            filterButton.setVisibility(View.VISIBLE);
+            filter1.setVisibility(View.VISIBLE);
+            filter2.setVisibility(View.VISIBLE);
+            filter3.setVisibility(View.VISIBLE);
+            filter4.setVisibility(View.VISIBLE);
+        }
+        else{
+            Toast.makeText(getContext(), "filter hide", Toast.LENGTH_SHORT).show();
+            filterButton.setVisibility(View.GONE);
+            filter1.setVisibility(View.GONE);
+            filter2.setVisibility(View.GONE);
+            filter3.setVisibility(View.GONE);
+            filter4.setVisibility(View.GONE);
+        }
+    }
+
+    public void updateBookList(){
+        ArrayList<Book> filtered_book = new ArrayList<>();
+        if (filterStatus.equals("All")) {
+            filtered_book = datalist;
+        } else {
+            for (Book book : datalist) {
+                if (book.getStatus().toString().equals(filterStatus)) {
+                    filtered_book.add(book);
+                }
+            }
+        }
+        adapter = new BookListAdapter(filtered_book, getActivity());
+        bookListView.setAdapter(adapter);
     }
 
 
@@ -360,9 +473,6 @@ public class BookListFragment extends Fragment {
         }
     }
 
-    public void filterBook() {
-
-    }
 
     public Book.Status from_string_to_enum(String input) {
         if (input.equals("Available"))
