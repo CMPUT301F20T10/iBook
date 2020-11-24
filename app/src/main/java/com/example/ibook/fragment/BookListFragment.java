@@ -106,7 +106,7 @@ public class BookListFragment extends Fragment {
         datalist = new ArrayList<>();
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
-        getOwnBookList();
+        
         setUpListener();
         isButtonVisible(true, false);
 
