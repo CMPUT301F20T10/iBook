@@ -47,8 +47,10 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
     /**
      * Creates the view holder when the list gets created to manage all the books
      * and keep scrolling as an on need basis.
+     *
      * @param parent
      * @param viewType
+     *
      * @return
      */
     @NonNull
@@ -60,13 +62,14 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
 
     /**
      * Updates data for a list item when needed. Works better than using notifydatasetchange all the time.
+     *
      * @param holder
      * @param position
      */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Book book = books.get(position);
-        if(book != null) {
+        if (book != null) {
             holder.setData(book);
         }
     }
@@ -75,6 +78,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
      * The method to get the id of book in the list with given position
      *
      * @param position the given position of the book
+     *
      * @return the id of the book, also the position of the book
      */
     @Override
@@ -100,6 +104,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
 
         /**
          * When the viewHolder is created we get its attributes from xml.
+         *
          * @param convertView
          */
         public ViewHolder(@NonNull View convertView) {
@@ -117,6 +122,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
          * Sets the attributes for a specific book in the list view.
          * Also downloads and sets the image from the database which works even for
          * asynchronous tasks.
+         *
          * @param book
          */
         void setData(final Book book) {
@@ -141,13 +147,13 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
             }
 
             //Set the image icon
-            if((book!=null) && (book.getBookID()!=null) && (imageView!=null)) {
+            if ((book != null) && (book.getBookID() != null) && (imageView != null)) {
                 MainActivity.database.downloadImage(imageView, book.getBookID(), false);
             }
 
             //Set the click listener for the list item and call the view book activity
             //Removes the need for an on click listener in the other classes.
-            itemView.setOnClickListener(new View.OnClickListener(){
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(context.getApplicationContext(), ViewBookActivity.class);

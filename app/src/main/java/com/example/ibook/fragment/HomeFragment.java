@@ -177,7 +177,6 @@ public class HomeFragment extends Fragment {
 
 
         //wait for method to complete
-//        android.os.SystemClock.sleep(1000);
 
         //get all books from book collection
         //add to a bookList
@@ -243,21 +242,6 @@ public class HomeFragment extends Fragment {
                 });
     }
 
-    public Book.Status from_string_to_enum(String input) {
-        if (input.equals("Available"))
-            return Book.Status.Available;
-
-        if (input.equals("Available"))
-            return Book.Status.Available;
-
-        if (input.equals("Available"))
-            return Book.Status.Available;
-
-        if (input.equals("Available"))
-            return Book.Status.Available;
-        // todo: change later
-        return Book.Status.Available;
-    }
 }
 
 
