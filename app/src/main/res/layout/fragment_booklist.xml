@@ -19,16 +19,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/stateTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:text=""
+        app:layout_constraintBaseline_toBaselineOf="@id/header_booklist"
+        app:layout_constraintStart_toEndOf="@+id/header_booklist" />
+
 
     <RadioGroup
         android:id="@+id/selectState"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/spinner"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header_booklist">
 
@@ -83,28 +95,6 @@
     </RadioGroup>
 
 
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_marginTop="10dp"
-
-        android:spinnerMode="dropdown"
-        app:layout_constraintBottom_toTopOf="@id/bookList"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/selectState" />
-
-    <Button
-        android:id="@+id/sortBook"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        android:text="sort by titles"
-        app:layout_constraintBottom_toTopOf="@id/bookList"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/selectState" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/bookList"
         android:layout_width="match_parent"
@@ -120,90 +110,153 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner" />
+        app:layout_constraintTop_toBottomOf="@+id/selectState" />
 
-    <Button
-        android:id="@+id/button_add"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/menu_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/ic_baseline_add_circle_24"
         android:clickable="true"
-        android:focusable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:fabSize="normal"
+        app:layout_constraintBottom_toTopOf="@+id/add_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_baseline_menu_24" />
 
-
-    <Button
-        android:id="@+id/button_camera"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/ic_baseline_camera_circle"
         android:clickable="true"
-        android:focusable="true"
-        android:visibility="gone"
+        app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_baseline_add_24" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab4"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="5dp"
-        app:srcCompat="@android:drawable/ic_btn_speak_now"
-        app:layout_constraintBottom_toTopOf="@+id/fab3"
-        app:layout_constraintRight_toRightOf="parent"
-        android:contentDescription="TODO" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab3"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="5dp"
-        app:srcCompat="@android:drawable/ic_btn_speak_now"
-        app:layout_constraintBottom_toTopOf="@+id/fab2"
-        app:layout_constraintRight_toRightOf="parent"
-        android:contentDescription="TODO" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab2"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="5dp"
-        app:srcCompat="@android:drawable/ic_menu_camera"
-        app:layout_constraintBottom_toTopOf="@+id/fab1"
-        app:layout_constraintRight_toRightOf="parent"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab1"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="5dp"
-        app:srcCompat="@android:drawable/ic_dialog_map"
-        app:layout_constraintBottom_toTopOf="@+id/button_filter"
-        app:layout_constraintRight_toRightOf="parent"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/button_filter"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
+        android:id="@+id/filter_all_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:background="@drawable/ic_baseline_filter_24"
-        app:srcCompat="@drawable/ic_baseline_filter_24"
+        android:baseline="?attr/dialogPreferredPadding"
         android:clickable="true"
-        android:focusable="true"
-        app:layout_constraintBottom_toTopOf="@+id/button_add"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:fabSize="mini"
+        app:layout_constraintBottom_toTopOf="@+id/menu_button"
+        app:layout_constraintEnd_toEndOf="@+id/menu_button"
+        app:layout_constraintStart_toStartOf="@+id/menu_button"
+        app:srcCompat="@drawable/ic_baseline_filter_list_24" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/filter_available_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:baseline="?attr/dialogPreferredPadding"
+        android:clickable="true"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toTopOf="@+id/filter_all_button"
+        app:layout_constraintEnd_toEndOf="@+id/menu_button"
+        app:layout_constraintStart_toStartOf="@+id/menu_button"
+        app:srcCompat="@drawable/ic_baseline_filter_list_24" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/filter_request_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:baseline="?attr/dialogPreferredPadding"
+        android:clickable="true"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toTopOf="@+id/filter_available_button"
+        app:layout_constraintEnd_toEndOf="@+id/menu_button"
+        app:layout_constraintStart_toStartOf="@+id/menu_button"
+        app:srcCompat="@drawable/ic_baseline_filter_list_24" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/filter_accepted_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:baseline="?attr/dialogPreferredPadding"
+        android:clickable="true"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toTopOf="@+id/filter_request_button"
+        app:layout_constraintEnd_toEndOf="@+id/menu_button"
+        app:layout_constraintStart_toStartOf="@+id/menu_button"
+        app:srcCompat="@drawable/ic_baseline_filter_list_24" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/filter_borrowed_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:baseline="?attr/dialogPreferredPadding"
+        android:clickable="true"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toTopOf="@+id/filter_accepted_button"
+        app:layout_constraintEnd_toEndOf="@+id/menu_button"
+        app:layout_constraintStart_toStartOf="@+id/menu_button"
+        app:srcCompat="@drawable/ic_baseline_filter_list_24" />
+
+    <TextView
+        android:id="@+id/allTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="All"
+        app:layout_constraintBaseline_toBaselineOf="@id/filter_all_button"
+        app:layout_constraintEnd_toStartOf="@+id/filter_all_button" />
+
+    <TextView
+
+        android:id="@+id/availableTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="Available"
+        app:layout_constraintBaseline_toBaselineOf="@id/filter_available_button"
+        app:layout_constraintEnd_toStartOf="@+id/filter_available_button" />
+
+
+    <TextView
+        android:id="@+id/requestTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="Request"
+        app:layout_constraintBaseline_toBaselineOf="@id/filter_request_button"
+        app:layout_constraintEnd_toStartOf="@+id/filter_request_button"
+        tools:layout_editor_absoluteY="453dp" />
+
+    <TextView
+        android:id="@+id/acceptedTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="Accepted"
+        app:layout_constraintBaseline_toBaselineOf="@id/filter_accepted_button"
+        app:layout_constraintEnd_toStartOf="@+id/filter_accepted_button"
+        tools:layout_editor_absoluteY="408dp" />
+
+    <TextView
+        android:id="@+id/borrowTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="Borrowed"
+        app:layout_constraintBaseline_toBaselineOf="@id/filter_borrowed_button"
+        app:layout_constraintEnd_toStartOf="@+id/filter_borrowed_button"
+        tools:layout_editor_absoluteY="368dp" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

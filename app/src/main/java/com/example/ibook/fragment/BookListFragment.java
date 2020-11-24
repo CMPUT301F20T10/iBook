@@ -46,7 +46,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class BookListFragment extends Fragment{
+public class BookListFragment extends Fragment {
 
     //Private variables
     //private ListView bookListView;
@@ -85,10 +85,10 @@ public class BookListFragment extends Fragment{
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_booklist, container, false);
         bookListView = root.findViewById(R.id.bookList);
-        mSpinner = root.findViewById(R.id.spinner);
+//        mSpinner = root.findViewById(R.id.spinner);
 
-        addButton = root.findViewById(R.id.button_add);
-        sortButton = root.findViewById(R.id.sortBook);
+        addButton = root.findViewById(R.id.add_button);
+//        sortButton = root.findViewById(R.id.sortBook);
         filterButton = root.findViewById(R.id.button_filter);
         filter1 = root.findViewById(R.id.fab1);
         filter2 = root.findViewById(R.id.fab2);
@@ -173,7 +173,6 @@ public class BookListFragment extends Fragment{
                 });
 
 
-
         // set radioButtons for book filter
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -205,18 +204,18 @@ public class BookListFragment extends Fragment{
                                         MainActivity.database.getDb().collection("books").document(bookID)
                                                 .get()
                                                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                ArrayList<Book> requestedBookList = new ArrayList<>();
-                                                DocumentSnapshot document = task.getResult();
-                                                Book book = document.toObject(Book.class);
-                                                System.out.println("Object " + book);
-                                                System.out.println("Title " + book.getTitle());
-                                                requestedBookList.add(book);
-                                                adapter = new BookListAdapter(requestedBookList, getActivity());
-                                                bookListView.setAdapter(adapter);
-                                            }// onComplete
-                                        });
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                        ArrayList<Book> requestedBookList = new ArrayList<>();
+                                                        DocumentSnapshot document = task.getResult();
+                                                        Book book = document.toObject(Book.class);
+                                                        System.out.println("Object " + book);
+                                                        System.out.println("Title " + book.getTitle());
+                                                        requestedBookList.add(book);
+                                                        adapter = new BookListAdapter(requestedBookList, getActivity());
+                                                        bookListView.setAdapter(adapter);
+                                                    }// onComplete
+                                                });
                                     }//for loop
 
 
@@ -231,8 +230,6 @@ public class BookListFragment extends Fragment{
                 }//else
             }
         });
-
-
 
 
         spinner_adapter = new ArrayAdapter<CharSequence>(getContext(), android.R.layout.simple_spinner_item, all_filter_status);
@@ -365,7 +362,7 @@ public class BookListFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 Toast.makeText(getContext(), "filter Borrowed", Toast.LENGTH_SHORT).show();
-                if(filterStatus.equals("Borrowed"))
+                if (filterStatus.equals("Borrowed"))
                     filterStatus = "All";
                 else
                     filterStatus = "Borrowed";
@@ -377,7 +374,7 @@ public class BookListFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 Toast.makeText(getContext(), "filter Accepted", Toast.LENGTH_SHORT).show();
-                if(filterStatus.equals("Accepted"))
+                if (filterStatus.equals("Accepted"))
                     filterStatus = "All";
                 else
                     filterStatus = "Accepted";
@@ -388,7 +385,7 @@ public class BookListFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 Toast.makeText(getContext(), "filter Requested", Toast.LENGTH_SHORT).show();
-                if(filterStatus.equals("Requested"))
+                if (filterStatus.equals("Requested"))
                     filterStatus = "All";
                 else
                     filterStatus = "Requested";
@@ -399,7 +396,7 @@ public class BookListFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 Toast.makeText(getContext(), "filter Available", Toast.LENGTH_SHORT).show();
-                if(filterStatus.equals("Available"))
+                if (filterStatus.equals("Available"))
                     filterStatus = "All";
                 else
                     filterStatus = "Available";
@@ -412,14 +409,13 @@ public class BookListFragment extends Fragment{
     }
 
     private void isFilterVisible(int isVisible) {
-        if(isVisible == 1){
+        if (isVisible == 1) {
             filterButton.setVisibility(View.VISIBLE);
             filter1.setVisibility(View.VISIBLE);
             filter2.setVisibility(View.VISIBLE);
             filter3.setVisibility(View.VISIBLE);
             filter4.setVisibility(View.VISIBLE);
-        }
-        else{
+        } else {
             //Toast.makeText(getContext(), "filter hide", Toast.LENGTH_SHORT).show();
             filterButton.setVisibility(View.GONE);
             filter1.setVisibility(View.GONE);
@@ -429,7 +425,7 @@ public class BookListFragment extends Fragment{
         }
     }
 
-    public void updateBookList(){
+    public void updateBookList() {
         ArrayList<Book> filtered_book = new ArrayList<>();
         if (filterStatus.equals("All")) {
             filtered_book = datalist;
@@ -456,7 +452,7 @@ public class BookListFragment extends Fragment{
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                             Book book = documentSnapshot.toObject(Book.class);
                             datalist.add(book);
                         }
