@@ -179,9 +179,10 @@ public class ViewBookActivity extends AppCompatActivity {
                                     docRefRequestReceiver.set(requestReceiver);
                                     Toast.makeText(getBaseContext(), "Coming here!", Toast.LENGTH_SHORT).show();
 
-
-                                    BookRequest newRequest = new BookRequest(currentUser.getUserID(),requestReceiver.getUserID(),selectedBook.getBookID());
-                                    db.collection("bookRequest").document().set(newRequest);
+                                    //make the document to get ID
+                                    String bookRequestID = db.collection("bookRequest").document().getId();
+                                    BookRequest newRequest = new BookRequest(currentUser.getUserID(),requestReceiver.getUserID(),selectedBook.getBookID(),currentUser.getUserName(),selectedBook.getTitle(),bookRequestID);
+                                    db.collection("bookRequest").document(bookRequestID).set(newRequest);
 
                                     //change book status
                                     System.out.println("Selected bookID: " + selectedBook.getBookID());
