@@ -3,6 +3,7 @@ package com.example.ibook.fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +19,12 @@ import android.widget.Toast;
 import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
 import com.example.ibook.activities.AddBookActivity;
+import com.example.ibook.activities.EditBookActivity;
 import com.example.ibook.activities.MainActivity;
 import com.example.ibook.activities.ViewBookActivity;
 import com.example.ibook.entities.Book;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,6 +35,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
@@ -39,11 +43,14 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class BookListFragment extends Fragment{
 
     //Private variables
-    private ListView bookListView;
+    //private ListView bookListView;
+    private RecyclerView bookListView;
     private BookListAdapter adapter;
     private ArrayList<Book> datalist;
     private Button btn_addBook;
@@ -94,6 +101,11 @@ public class BookListFragment extends Fragment{
         datalist = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
         uAuth = FirebaseAuth.getInstance();
+
+        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+        bookListView.setLayoutManager(manager);
+        bookListView.setHasFixedSize(true);
+
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
 
@@ -156,6 +168,7 @@ public class BookListFragment extends Fragment{
                 });
 
 
+
         // set radioButtons for book filter
         radioGroup = root.findViewById(R.id.selectState);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -185,7 +198,8 @@ public class BookListFragment extends Fragment{
                                     for (QueryDocumentSnapshot document : task.getResult()) {
                                         bookID = (String) document.get("requestedBookID");
                                         MainActivity.database.getDb().collection("books").document(bookID)
-                                                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                .get()
+                                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                             @Override
                                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                 ArrayList<Book> requestedBookList = new ArrayList<>();
@@ -255,16 +269,18 @@ public class BookListFragment extends Fragment{
         });
 
 
-        // view book on the list
-        bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getContext(), ViewBookActivity.class);
-                intent.putExtra("USER_ID", userID);
-                intent.putExtra("BOOK_NUMBER", position);
-                startActivityForResult(intent, 0);
-            }
-        });
+        //onItemClick is inside of BookListAdapter now.
+//        // view book on the list
+//        bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent intent = new Intent(getContext(), ViewBookActivity.class);
+//                intent.putExtra("BOOK_ID", datalist.get(position).getBookID());
+//                intent.putExtra("OWNER", datalist.get(position).getOwner());
+//                intent.putExtra("STATUS", datalist.get(position).getStatus().toString());
+//                startActivityForResult(intent, 0);
+//            }
+//        });
 
         // add book button
         btn_addBook.setOnClickListener(new View.OnClickListener() {
@@ -272,7 +288,8 @@ public class BookListFragment extends Fragment{
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), AddBookActivity.class);
                 intent.putExtra("USER_ID", userID);
-                startActivityForResult(intent, 0);
+                startActivity(intent);
+                //startActivityForResult(intent, 0);
             }
         });
 
@@ -386,7 +403,7 @@ public class BookListFragment extends Fragment{
             filter4.setVisibility(View.VISIBLE);
         }
         else{
-            Toast.makeText(getContext(), "filter hide", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getContext(), "filter hide", Toast.LENGTH_SHORT).show();
             filterButton.setVisibility(View.GONE);
             filter1.setVisibility(View.GONE);
             filter2.setVisibility(View.GONE);
@@ -411,67 +428,53 @@ public class BookListFragment extends Fragment{
     }
 
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        // load the owned book list
+        datalist.clear();
+        db.collection("books")
+                .whereEqualTo("owner", userID)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot documentSnapshot: queryDocumentSnapshots) {
+                            Book book = documentSnapshot.toObject(Book.class);
+                            datalist.add(book);
+                        }
+                        adapter = new BookListAdapter(datalist, getActivity());
+                        bookListView.setAdapter(adapter);
+                        //Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    // We don't need this anymore, now we will get the data whenever we get back to BookListFragment, see onResume().
+    /*
     @Override // if add/edit/delete books, update changes
     public void onActivityResult(int requestCode, int resultCode, final Intent data) {
         // TODO Auto-generated method stub
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == 1) { // if data changed, update
-            /*
-            if(data.getExtras().containsKey("PHOTO_CHANGE")){
-                Bitmap new_pic = (Bitmap)data.getExtras().get("PHOTO_CHANGE");
-                //Toast.makeText(getContext(),new_pic.toString(),Toast.LENGTH_SHORT).show();
-            }
-            */
 
-            // update the change
-            // Toast.makeText(getContext(), "updated", Toast.LENGTH_SHORT).show();
-            DocumentReference docRef = db.collection("users").document(userID);
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            Map<String, Object> convertMap;
-
-                            ArrayList<Book> hashList = (ArrayList<Book>) document.get("bookList");
-                            datalist = new ArrayList<>();
-                            for (int i = 0; i < hashList.size(); i += 1) {
-                                convertMap = (Map<String, Object>) hashList.get(i);
-
-
-                                datalist.add(new Book(
-                                        String.valueOf(convertMap.get("title")),
-                                        String.valueOf(convertMap.get("authors")),
-                                        String.valueOf(convertMap.get("date")),
-                                        (String.valueOf(convertMap.get("description"))),
-                                        from_string_to_enum(String.valueOf(convertMap.get("status"))),
-                                        String.valueOf(convertMap.get("isbn")),
-                                        String.valueOf(convertMap.get("owner")),
-                                        String.valueOf(convertMap.get("bookID"))
-                                ));
-
-                            }
-
-                            if (datalist == null) {
-                                datalist = new ArrayList<>();
-                            } else {
-                                adapter = new BookListAdapter(datalist, getActivity());
-                                bookListView.setAdapter(adapter);
-                            }
-
-                        } else {
-                            Toast.makeText(getContext(), "No such document", Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        Toast.makeText(getContext(), "got an error", Toast.LENGTH_SHORT).show();
-                    }
+            if(data.getExtras()!=null){
+                try {
+                    //String tempFileName = data.getStringExtra("CHANGED_IMAGE");
+                    //FileInputStream is = new FileInputStream(tempFileName);
+                    //Bitmap new_pic = BitmapFactory.decodeStream(is);
+                    //is.close();
+                    //imageView = findViewById(R.id.imageView);
+                    //imageView = EditBookActivity.scaleAndSetImage(new_pic, imageView, true);
+                    //imageChanged = true;
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            });
-
+            }
         }
     }
+    * */
 
 
     public Book.Status from_string_to_enum(String input) {

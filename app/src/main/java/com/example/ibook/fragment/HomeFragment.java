@@ -2,13 +2,10 @@ package com.example.ibook.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -17,13 +14,10 @@ import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
 import com.example.ibook.activities.MainActivity;
 import com.example.ibook.activities.SearchResultsActivity;
-import com.example.ibook.activities.SearchResultsActivity;
-import com.example.ibook.activities.ViewBookActivity;
 import com.example.ibook.entities.Book;
 import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -34,6 +28,8 @@ import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /***
  *This fragment contains the view for the home page and
@@ -44,7 +40,8 @@ import androidx.fragment.app.Fragment;
 public class HomeFragment extends Fragment {
 
     //Private variables
-    private ListView bookListView;
+    //private ListView bookListView;
+    private RecyclerView bookListView;
     private BookListAdapter adapter;
     private ArrayList<Book> datalist;
     private SearchView searchBar;
@@ -111,6 +108,9 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+        bookListView.setLayoutManager(manager);
+        bookListView.setHasFixedSize(true);
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
 
@@ -122,40 +122,29 @@ public class HomeFragment extends Fragment {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 // todo: change email key word to username
-                                datalist.add(new Book(
-                                        String.valueOf(document.get("title")),
-                                        String.valueOf(document.get("authors")),
-                                        String.valueOf(document.get("date")),
-                                        (String.valueOf(document.get("description"))),
-                                        from_string_to_enum(String.valueOf(document.get("status"))),
-                                        String.valueOf(document.get("isbn")),
-                                        String.valueOf(document.get("owner")),
-                                        String.valueOf(document.get("bookID"))
-                                ));
+                                datalist.add(document.toObject(Book.class));
                                 //Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
                             }
-                            adapter.notifyDataSetChanged();
+                            //adapter.notifyDataSetChanged();
+                            bookListView.setAdapter(adapter);
                         } else {
                             Toast.makeText(getContext(), "got an error", Toast.LENGTH_SHORT).show();
-
                         }
                     }
                 });
 
-
-        // view book on the list
-        bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getContext(), ViewBookActivity.class);
-                User user = new User();
-                intent.putExtra("BOOK_NUMBER", position);
-                intent.putExtra("USER_ID", user.getUserName());
-                intent.putExtra("IS_OWNER", -1);
-                intent.putExtra("BOOK_ISBN", datalist.get(position).getIsbn());
-                startActivityForResult(intent, 0);
-            }
-        });
+        //onItemClick is inside of BookListAdapter now.
+//        // view book on the list
+//        bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent intent = new Intent(getContext(), ViewBookActivity.class);
+//                intent.putExtra("BOOK_ID", datalist.get(position).getBookID());
+//                intent.putExtra("OWNER", datalist.get(position).getOwner());
+//                intent.putExtra("STATUS", datalist.get(position).getStatus().toString());
+//                startActivityForResult(intent, 0);
+//            }
+//        });
 
 
         return root;
