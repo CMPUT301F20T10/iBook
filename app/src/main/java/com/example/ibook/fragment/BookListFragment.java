@@ -125,54 +125,6 @@ public class BookListFragment extends Fragment {
             return root;
         }
 
-        db.collection("users")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                // todo: change email key word to username
-                                String matchID = document.getId();
-                                //Toast.makeText(getContext(), id, Toast.LENGTH_SHORT).show();
-                                if (matchID.equals(userID)) {
-                                    //Toast.makeText(getContext(), "match", Toast.LENGTH_SHORT).show();
-
-                                    Map<String, Object> convertMap;
-                                    ArrayList<Book> hashList = (ArrayList<Book>) document.get("bookList");
-
-                                    for (int i = 0; i < hashList.size(); i += 1) {
-                                        convertMap = (Map<String, Object>) hashList.get(i);
-
-                                        datalist.add(new Book(
-                                                String.valueOf(convertMap.get("title")),
-                                                String.valueOf(convertMap.get("authors")),
-                                                String.valueOf(convertMap.get("date")),
-                                                String.valueOf(convertMap.get("description")),
-                                                from_string_to_enum(String.valueOf(convertMap.get("status"))),
-                                                String.valueOf(convertMap.get("isbn")),
-                                                String.valueOf(convertMap.get("owner")),
-                                                String.valueOf(convertMap.get("bookID"))
-                                        ));
-                                        //Toast.makeText(getContext(), String.valueOf(convertMap.get("description")), Toast.LENGTH_SHORT).show();
-                                    }
-                                    if (datalist == null) {
-                                        datalist = new ArrayList<>();
-                                    } else {
-                                        adapter = new BookListAdapter(datalist, getActivity());
-                                        bookListView.setAdapter(adapter);
-                                        //Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
-                                    }
-
-                                }
-                            }
-                        } else {
-                            Toast.makeText(getContext(), "got an error", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
-
         // set radioButtons for book filter
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
