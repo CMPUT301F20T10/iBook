@@ -2,13 +2,10 @@ package com.example.ibook.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -17,23 +14,24 @@ import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
 import com.example.ibook.activities.MainActivity;
 import com.example.ibook.activities.SearchResultsActivity;
-import com.example.ibook.activities.SearchResultsActivity;
-import com.example.ibook.activities.ViewBookActivity;
 import com.example.ibook.entities.Book;
 import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /***
  *This fragment contains the view for the home page and
@@ -44,7 +42,8 @@ import androidx.fragment.app.Fragment;
 public class HomeFragment extends Fragment {
 
     //Private variables
-    private ListView bookListView;
+    //private ListView bookListView;
+    private RecyclerView bookListView;
     private BookListAdapter adapter;
     private ArrayList<Book> datalist;
     private SearchView searchBar;
@@ -111,6 +110,9 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+        bookListView.setLayoutManager(manager);
+        bookListView.setHasFixedSize(true);
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
 
@@ -121,42 +123,16 @@ public class HomeFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                // todo: change email key word to username
-                                datalist.add(new Book(
-                                        String.valueOf(document.get("title")),
-                                        String.valueOf(document.get("authors")),
-                                        String.valueOf(document.get("date")),
-                                        (String.valueOf(document.get("description"))),
-                                        from_string_to_enum(String.valueOf(document.get("status"))),
-                                        String.valueOf(document.get("isbn")),
-                                        String.valueOf(document.get("owner")),
-                                        String.valueOf(document.get("bookID"))
-                                ));
+                                datalist.add(document.toObject(Book.class));
                                 //Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
                             }
-                            adapter.notifyDataSetChanged();
+                            //adapter.notifyDataSetChanged();
+                            bookListView.setAdapter(adapter);
                         } else {
                             Toast.makeText(getContext(), "got an error", Toast.LENGTH_SHORT).show();
-
                         }
                     }
                 });
-
-
-        // view book on the list
-        bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getContext(), ViewBookActivity.class);
-                User user = new User();
-                intent.putExtra("BOOK_NUMBER", position);
-                intent.putExtra("USER_ID", user.getUserName());
-                intent.putExtra("IS_OWNER", -1);
-                intent.putExtra("BOOK_ISBN", datalist.get(position).getIsbn());
-                startActivityForResult(intent, 0);
-            }
-        });
-
 
         return root;
     }
@@ -168,47 +144,10 @@ public class HomeFragment extends Fragment {
      * the activity that shows the results.
      */
     public void searchData(final String query) {
-
-
         //wait for method to complete
-//        android.os.SystemClock.sleep(1000);
 
         //get all books from book collection
         //add to a bookList
-        db.collection("books").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                for (DocumentSnapshot document : task.getResult()) {
-
-                    Book book = new Book(document.getString("title"),
-                            document.getString("authors"),
-                            document.getString("date"),
-                            document.getString("description"),
-                            Book.Status.valueOf(document.getString("status")),
-                            document.getString("isbn"),
-                            document.getString("owner"),
-                            document.getString("bookID")
-                    );
-                    bookList.add(book);
-                }
-                for (Book book : bookList) {
-                    String author = book.getAuthors();
-                    String desc = book.getDescription();
-                    String title = book.getTitle();
-                    //make one whole string that contains title author and description
-                    System.out.println("author: " + author + " decc " + desc + "title: " + title);
-                    String string = author.concat(desc).concat(title).toLowerCase();
-                    //if string contains keyword add it to the resultList
-                    if (string.contains(query.toLowerCase()) && book.getStatus() != Book.Status.Borrowed && book.getStatus() != Book.Status.Accepted) {
-                        resultList.add(book);
-                    }
-                }
-                search_book_complete = true;
-            }
-        });
-        Log.d("", "Done book");
-
-
         //searches for userName that matches query
         MainActivity.database
                 .getDb()
@@ -240,50 +179,35 @@ public class HomeFragment extends Fragment {
                                             if (book.getAuthors().toLowerCase().contains(query.toLowerCase())
                                                     || book.getTitle().toLowerCase().contains(query.toLowerCase())
                                                     || book.getDescription().toLowerCase().contains(query.toLowerCase())
-                                                    && book.getStatus() != Book.Status.Borrowed
-                                                    && book.getStatus() != Book.Status.Accepted
                                             ) {
-                                                bookList.add(book);
+                                                if (book.getStatus() != Book.Status.Borrowed
+                                                        && book.getStatus() != Book.Status.Accepted) {
+                                                    resultList.add(book);
+                                                }
                                             }
                                         }
                                     }
-                                }).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (resultList.isEmpty() && userList.isEmpty()) {
-                                    Toast.makeText(getContext(), "No results found", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    //pass resultList and userList to SearchBooksActivity for adapter to display
-                                    Intent intent = new Intent(getContext(), SearchResultsActivity.class);
-                                    System.out.println("final list " + userList);
-                                    intent.putExtra("books", resultList);
-                                    intent.putExtra("users", userList);
-                                    Log.d("", userList.size() + "HERE");
-                                    searchProgressBar.setVisibility(View.GONE);
-                                    startActivity(intent);
-                                }
-                                searchProgressBar.setVisibility(View.GONE);
-                            }
-                        });
-
+                                })
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (resultList.isEmpty() && userList.isEmpty()) {
+                                            Toast.makeText(getContext(), "No results found", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            //pass resultList and userList to SearchBooksActivity for adapter to display
+                                            Intent intent = new Intent(getContext(), SearchResultsActivity.class);
+                                            System.out.println("final list " + userList);
+                                            intent.putExtra("books", resultList);
+                                            intent.putExtra("users", userList);
+                                            Log.d("", userList.size() + "HERE");
+                                            searchProgressBar.setVisibility(View.GONE);
+                                            startActivity(intent);
+                                        }
+                                        searchProgressBar.setVisibility(View.GONE);
+                                    }
+                                });
                     }
                 });
-    }
-
-    public Book.Status from_string_to_enum(String input) {
-        if (input.equals("Available"))
-            return Book.Status.Available;
-
-        if (input.equals("Available"))
-            return Book.Status.Available;
-
-        if (input.equals("Available"))
-            return Book.Status.Available;
-
-        if (input.equals("Available"))
-            return Book.Status.Available;
-        // todo: change later
-        return Book.Status.Available;
     }
 }
 

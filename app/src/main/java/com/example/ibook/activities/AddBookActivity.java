@@ -1,9 +1,12 @@
 package com.example.ibook.activities;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -25,6 +28,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,8 +44,7 @@ import androidx.appcompat.app.AppCompatActivity;
  *
  */
 public class AddBookActivity extends AppCompatActivity implements ScanFragment.OnFragmentInteractionListener {
-    private User user;
-    private Book book;
+    //    private User user;
     private EditText bookNameEditText;
     private EditText authorEditText;
     private EditText dateEditText;
@@ -50,14 +54,12 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
     private Button completeButton;
     private Button scanButton;
     private ImageView imageView;
-    private FirebaseFirestore db;
     private String userID;
     private ArrayList<Book> books;
     private final int REQ_CAMERA_IMAGE = 1;
     private final int REQ_GALLERY_IMAGE = 2;
     private boolean imageAdded;
     public static String bookID;
-    public static Boolean done;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +81,6 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
         imageView = findViewById(R.id.imageView);
         imageAdded = false;
 
-        db = FirebaseFirestore.getInstance();
         books = new ArrayList<>();
 
         Intent intent = getIntent();
@@ -109,82 +110,59 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                         && date.length() > 0
                         && isbn.length() > 0) {
 
-                    final DocumentReference docRef = db.collection("users").document(userID);
-                    docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            if (task.isSuccessful()) {
-                                DocumentSnapshot document = task.getResult();
-
-                                if (document.exists()) {
-                                    Map<String, Object> data;
-
-                                    // get data and overwrite it
-                                    data = document.getData();
-
-                                    //make a new book object
-//                                    Book book = new Book(bookName,authorName,date,isbn);
-//
-//                                    // add book to current users booklist
-//                                    SignUpActivity.user.addBook(book);
-//
-//                                    //Add to "book" collections in database
-//                                    SignUpActivity.database.getBookDocumentReference().set(book);
-//                                    //Add the book to  "user" Collections in database
-//                                    SignUpActivity.database.getUserDocumentReference().set(SignUpActivity.user);
-                                    bookID = db.collection("books").document().getId();
-                                    Book newbook = new Book(bookName, authorName, date, description, Book.Status.Available, isbn, userID, bookID);
-                                    books = (ArrayList<Book>) document.getData().get("bookList");
-                                    //If booksList is null we need to create a new books list
-                                    if (books == null) {
-                                        books = new ArrayList<Book>();
-                                    }
-                                    books.add(newbook);
-
-                                    data.put("bookList", books);
-                                    db.collection("users")
-                                            .document(userID).update(data);
-                                    Toast.makeText(getBaseContext(), "Add book successfully!", Toast.LENGTH_LONG).show();
-
-                                    done = true;
-                                    // TODO: use OOP to simplify it later
-                                    // also put data to database with book collection
-
-                                    data = new HashMap();
-                                    data.put("authors", authorName);
-                                    data.put("date", date);
-                                    data.put("description", description);
-                                    data.put("isbn", isbn);
-                                    data.put("owner", userID);
-                                    data.put("status", "Available");
-                                    data.put("title", bookName);
-                                    data.put("bookID",bookID);
-                                    if(imageAdded) {//Upload the image
-                                        MainActivity.database.uploadImage(imageView,bookID);
-                                    }
-
-
-                                    db.collection("books").document(bookID).set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Toast.makeText(getBaseContext(), "got book id Outside the scope too" + bookID, Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                                    if(done) {
-                                        Toast.makeText(getBaseContext(), "got book id inside the scope too" + bookID, Toast.LENGTH_LONG).show();
-                                        Intent intent = new Intent();
-                                        setResult(1, intent);
-                                        finish();
-                                    }// if
-                                } else {
-                                    Toast.makeText(getBaseContext(), "No such document", Toast.LENGTH_SHORT).show();
+                    bookID = MainActivity.database.getDb().collection("books").document().getId();
+                    final Book newBook = new Book(bookName, authorName, date, description, Book.Status.Available, isbn, userID, bookID);
+                    MainActivity.database.getDb().collection("books").document(bookID).set(newBook);
+                    MainActivity.database
+                            .getUserDocumentReference()
+                            .get()
+                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    User user = documentSnapshot.toObject(User.class);
+                                    user.addToBookList(newBook);
+                                    MainActivity.database.getUserDocumentReference().set(user);
                                 }
-                            } else {
-                                Toast.makeText(getBaseContext(), "got an error", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
+                            });
 
+
+                    Toast.makeText(getBaseContext(), "got book id inside the scope too" + bookID, Toast.LENGTH_LONG).show();
+
+
+                    Intent intent = new Intent();
+                    // If an image was added we upload it or else it uploads the default image
+                    try {
+                        if (!imageAdded) { //Need to upload the proper stock image
+                            //app:srcCompat="@android:drawable/ic_menu_gallery"
+                            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), android.R.drawable.ic_menu_gallery);
+                            storeLocally(bitmap);
+                        }
+                        MainActivity.database.uploadImage(openFileInput(MainActivity.database.tempFileName), bookID);
+                        intent.putExtra("CHANGED_IMAGE", MainActivity.database.tempFileName);
+                    } catch (Exception e) {
+                        Toast.makeText(getBaseContext(), "Image upload failed please try again", Toast.LENGTH_LONG).show();
+                        e.printStackTrace();
+                    }
+                    //setResult(1, intent);
+                    MainActivity.database
+                            .getUserDocumentReference()
+                            .get()
+                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    MainActivity.user = documentSnapshot.toObject(User.class);
+                                    MainActivity.user.addToBookList(newBook);
+                                    MainActivity.database
+                                            .getUserDocumentReference()
+                                            .set(MainActivity.user)
+                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    finish();
+                                                }
+                                            });
+                                }
+                            });
                 } else {
                     Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();
                 }
@@ -208,6 +186,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
             }
         });
     }
+
     // let user choose to use camera or gallery
     private void showImagePickerDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
@@ -252,7 +231,8 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
             if (resultCode == RESULT_OK) {
                 // get image data
                 Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                imageView.setImageBitmap(bitmap);
+                storeLocally(bitmap);
+                imageView = EditBookActivity.scaleAndSetImage(bitmap, imageView);
                 imageAdded = true;
             }
 
@@ -262,7 +242,8 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 Uri selectedImage = data.getData();
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
-                    imageView.setImageBitmap(bitmap);
+                    storeLocally(bitmap);
+                    imageView = EditBookActivity.scaleAndSetImage(bitmap, imageView);
                     imageAdded = true;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -271,14 +252,21 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
             }
         }
     }
-//    private void onSuccessChangePhoto(Bitmap bitmap) {
-//        //Intent intent = new Intent();
-//        //intent.putExtra("PHOTO_CHANGE", bitmap);
-//        //setResult(1, intent);
-//        // Comment: so far, we can only let user upload photo, but can't store it
-//        //      Thus, unfortunately, it won't be passed back to the previous activity
-//        // TODO: figure out how to scale image, compress it and store it to database
-//    }
+
+    private void storeLocally(Bitmap bitmap) {
+        try {//Pass the image through a temporary link on local storage
+            //Large bitmaps will crash the app.
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+            FileOutputStream fo = openFileOutput(MainActivity.database.tempFileName, Context.MODE_PRIVATE);
+            fo.write(baos.toByteArray());
+            // remember close file output
+            baos.close();
+            fo.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void onOkPressed(String ISBN) {
