@@ -2,13 +2,10 @@ package com.example.ibook.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -17,14 +14,11 @@ import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
 import com.example.ibook.activities.MainActivity;
 import com.example.ibook.activities.SearchResultsActivity;
-import com.example.ibook.activities.SearchResultsActivity;
-import com.example.ibook.activities.ViewBookActivity;
 import com.example.ibook.entities.Book;
 import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -129,23 +123,13 @@ public class HomeFragment extends Fragment {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 // todo: change email key word to username
-                                datalist.add(new Book(
-                                        String.valueOf(document.get("title")),
-                                        String.valueOf(document.get("authors")),
-                                        String.valueOf(document.get("date")),
-                                        String.valueOf(document.get("description")),
-                                        Book.Status.valueOf(String.valueOf(document.get("status"))),
-                                        String.valueOf(document.get("isbn")),
-                                        String.valueOf(document.get("owner")),
-                                        String.valueOf(document.get("bookID"))
-                                ));
+                                datalist.add(document.toObject(Book.class));
                                 //Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
                             }
                             //adapter.notifyDataSetChanged();
                             bookListView.setAdapter(adapter);
                         } else {
                             Toast.makeText(getContext(), "got an error", Toast.LENGTH_SHORT).show();
-
                         }
                     }
                 });

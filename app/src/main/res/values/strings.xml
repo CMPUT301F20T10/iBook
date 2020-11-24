@@ -21,5 +21,7 @@
     <string name="decline_button">Decline</string>
     <string name="header_searchResults">headerSearchResults</string>
     <string name="searchResults">Search Results</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

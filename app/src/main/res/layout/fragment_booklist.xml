@@ -135,18 +135,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
-    <Button
-        android:id="@+id/button_filter"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/ic_baseline_filter_24"
-        android:clickable="true"
-        android:focusable="true"
-        app:layout_constraintBottom_toTopOf="@+id/button_add"
-        app:layout_constraintRight_toRightOf="parent" />
 
     <Button
         android:id="@+id/button_camera"
@@ -160,6 +148,62 @@
         android:focusable="true"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab4"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="5dp"
+        app:srcCompat="@android:drawable/ic_btn_speak_now"
+        app:layout_constraintBottom_toTopOf="@+id/fab3"
+        app:layout_constraintRight_toRightOf="parent"
+        android:contentDescription="TODO" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab3"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="5dp"
+        app:srcCompat="@android:drawable/ic_btn_speak_now"
+        app:layout_constraintBottom_toTopOf="@+id/fab2"
+        app:layout_constraintRight_toRightOf="parent"
+        android:contentDescription="TODO" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab2"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="5dp"
+        app:srcCompat="@android:drawable/ic_menu_camera"
+        app:layout_constraintBottom_toTopOf="@+id/fab1"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab1"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="5dp"
+        app:srcCompat="@android:drawable/ic_dialog_map"
+        app:layout_constraintBottom_toTopOf="@+id/button_filter"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/button_filter"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/ic_baseline_filter_24"
+        app:srcCompat="@drawable/ic_baseline_filter_24"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toTopOf="@+id/button_add"
         app:layout_constraintRight_toRightOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
