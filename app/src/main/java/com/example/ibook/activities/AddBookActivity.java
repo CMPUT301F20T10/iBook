@@ -44,8 +44,7 @@ import androidx.appcompat.app.AppCompatActivity;
  *
  */
 public class AddBookActivity extends AppCompatActivity implements ScanFragment.OnFragmentInteractionListener {
-    private User user;
-    private Book book;
+    //    private User user;
     private EditText bookNameEditText;
     private EditText authorEditText;
     private EditText dateEditText;
@@ -55,14 +54,12 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
     private Button completeButton;
     private Button scanButton;
     private ImageView imageView;
-    private FirebaseFirestore db;
     private String userID;
     private ArrayList<Book> books;
     private final int REQ_CAMERA_IMAGE = 1;
     private final int REQ_GALLERY_IMAGE = 2;
     private boolean imageAdded;
     public static String bookID;
-    public static Boolean done;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +81,6 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
         imageView = findViewById(R.id.imageView);
         imageAdded = false;
 
-        db = FirebaseFirestore.getInstance();
         books = new ArrayList<>();
 
         Intent intent = getIntent();
@@ -114,31 +110,59 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                         && date.length() > 0
                         && isbn.length() > 0) {
 
-                    bookID = db.collection("books").document().getId();
-                    Book newBook = new Book(bookName, authorName, date, description, Book.Status.Available, isbn, userID, bookID);
-                    db.collection("books").document(bookID).set(newBook).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(getBaseContext(), "got book id Outside the scope too" + bookID, Toast.LENGTH_LONG).show();
-                        }
-                    });
+                    bookID = MainActivity.database.getDb().collection("books").document().getId();
+                    final Book newBook = new Book(bookName, authorName, date, description, Book.Status.Available, isbn, userID, bookID);
+                    MainActivity.database.getDb().collection("books").document(bookID).set(newBook);
+                    MainActivity.database
+                            .getUserDocumentReference()
+                            .get()
+                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    User user = documentSnapshot.toObject(User.class);
+                                    user.addToBookList(newBook);
+                                    MainActivity.database.getUserDocumentReference().set(user);
+                                }
+                            });
+
 
                     Toast.makeText(getBaseContext(), "got book id inside the scope too" + bookID, Toast.LENGTH_LONG).show();
+
+
                     Intent intent = new Intent();
-                    //If an image was added we upload it or else it uploads the default image
-                    try{
-                        if(!imageAdded) { //Need to upload the proper stock image
+                    // If an image was added we upload it or else it uploads the default image
+                    try {
+                        if (!imageAdded) { //Need to upload the proper stock image
                             //app:srcCompat="@android:drawable/ic_menu_gallery"
                             Bitmap bitmap = BitmapFactory.decodeResource(getResources(), android.R.drawable.ic_menu_gallery);
                             storeLocally(bitmap);
-                        }MainActivity.database.uploadImage(openFileInput(MainActivity.database.tempFileName), bookID);
+                        }
+                        MainActivity.database.uploadImage(openFileInput(MainActivity.database.tempFileName), bookID);
                         intent.putExtra("CHANGED_IMAGE", MainActivity.database.tempFileName);
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         Toast.makeText(getBaseContext(), "Image upload failed please try again", Toast.LENGTH_LONG).show();
                         e.printStackTrace();
                     }
                     //setResult(1, intent);
-                    finish();
+                    MainActivity.database
+                            .getUserDocumentReference()
+                            .get()
+                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    MainActivity.user = documentSnapshot.toObject(User.class);
+                                    MainActivity.user.addToBookList(newBook);
+                                    MainActivity.database
+                                            .getUserDocumentReference()
+                                            .set(MainActivity.user)
+                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    finish();
+                                                }
+                                            });
+                                }
+                            });
                 } else {
                     Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();
                 }
@@ -162,6 +186,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
             }
         });
     }
+
     // let user choose to use camera or gallery
     private void showImagePickerDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
@@ -238,7 +263,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
             // remember close file output
             baos.close();
             fo.close();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

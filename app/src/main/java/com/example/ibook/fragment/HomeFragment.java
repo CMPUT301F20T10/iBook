@@ -25,6 +25,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -122,7 +123,6 @@ public class HomeFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                // todo: change email key word to username
                                 datalist.add(document.toObject(Book.class));
                                 //Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
                             }
@@ -134,20 +134,6 @@ public class HomeFragment extends Fragment {
                     }
                 });
 
-        //onItemClick is inside of BookListAdapter now.
-//        // view book on the list
-//        bookListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Intent intent = new Intent(getContext(), ViewBookActivity.class);
-//                intent.putExtra("BOOK_ID", datalist.get(position).getBookID());
-//                intent.putExtra("OWNER", datalist.get(position).getOwner());
-//                intent.putExtra("STATUS", datalist.get(position).getStatus().toString());
-//                startActivityForResult(intent, 0);
-//            }
-//        });
-
-
         return root;
     }
 
@@ -158,8 +144,6 @@ public class HomeFragment extends Fragment {
      * the activity that shows the results.
      */
     public void searchData(final String query) {
-
-
         //wait for method to complete
 
         //get all books from book collection
@@ -195,10 +179,11 @@ public class HomeFragment extends Fragment {
                                             if (book.getAuthors().toLowerCase().contains(query.toLowerCase())
                                                     || book.getTitle().toLowerCase().contains(query.toLowerCase())
                                                     || book.getDescription().toLowerCase().contains(query.toLowerCase())
-                                                    && book.getStatus() != Book.Status.Borrowed
-                                                    && book.getStatus() != Book.Status.Accepted
                                             ) {
-                                                bookList.add(book);
+                                                if (book.getStatus() != Book.Status.Borrowed
+                                                        && book.getStatus() != Book.Status.Accepted) {
+                                                    resultList.add(book);
+                                                }
                                             }
                                         }
                                     }
@@ -221,11 +206,9 @@ public class HomeFragment extends Fragment {
                                         searchProgressBar.setVisibility(View.GONE);
                                     }
                                 });
-
                     }
                 });
     }
-
 }
 
 
