@@ -95,7 +95,6 @@ public class NotificationsFragment extends Fragment {
                     }// for loop
                     Collections.reverse(requestsList);
                     adapter.notifyDataSetChanged();
-
                 }// if
             }
 

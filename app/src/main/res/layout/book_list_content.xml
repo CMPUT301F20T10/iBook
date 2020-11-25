@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,55 +10,69 @@
         android:id="@+id/listBookTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
         android:text="Book Title"
         android:textColor="#000000"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/listImageView"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/listBookStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:text="Status: Available"
         android:textColor="#1E9F01"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/listImageView"
         app:layout_constraintTop_toBottomOf="@+id/listBookDescription" />
 
     <TextView
         android:id="@+id/listBookDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:text="Date: 2020/10/10"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/listBookAuthors"/>
+        app:layout_constraintStart_toEndOf="@+id/listImageView"
+        app:layout_constraintTop_toBottomOf="@+id/listBookAuthors" />
 
     <TextView
         android:id="@+id/listBookDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:background="#00FFFFFF"
-        android:text="Description: xxxxxxxxx xxxx xxx xx xxxxxxxx..."
-        app:layout_constraintStart_toStartOf="parent"
+        android:text="Description: xxxxxxxxxxxx..."
+        app:layout_constraintStart_toEndOf="@+id/listImageView"
         app:layout_constraintTop_toBottomOf="@+id/listBookDate" />
 
     <TextView
         android:id="@+id/listBookAuthors"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:text="Author(s): Name"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/listImageView"
         app:layout_constraintTop_toBottomOf="@+id/listBookTitle" />
 
     <ImageView
         android:id="@+id/listImageView"
         android:layout_width="128dp"
         android:layout_height="97dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:background="#00FFFFFF"
-        app:layout_constraintBottom_toBottomOf="@+id/listBookStatus"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_gallery" />
 

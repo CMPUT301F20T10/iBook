@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
@@ -46,6 +47,7 @@ public class ViewBookActivity extends AppCompatActivity {
     private String userID;
     private ArrayList<BookRequest> requests;
     private String bookID;
+    private String ownerID;
     private final int REQ_CAMERA_IMAGE = 1;
     private final int REQ_GALLERY_IMAGE = 2;
 
@@ -54,6 +56,7 @@ public class ViewBookActivity extends AppCompatActivity {
     private TextView dateTextView;
     private TextView isbnTextView;
     private TextView descriptionTextView;
+    private TextView ownerTextView;
     private ImageView imageView;
 
     private TextView edit_button;
@@ -88,6 +91,7 @@ public class ViewBookActivity extends AppCompatActivity {
         authorTextView = findViewById(R.id.ViewAuthor);
         dateTextView = findViewById(R.id.ViewDate);
         isbnTextView = findViewById(R.id.ViewISBN);
+        ownerTextView = findViewById(R.id.ownerTextView);
         descriptionTextView = findViewById(R.id.descriptionView2);
         imageView = findViewById(R.id.imageView);
 
@@ -120,7 +124,7 @@ public class ViewBookActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(ViewBookActivity.this, EditBookActivity.class);
                 intent.putExtra("BOOK_ID", bookID);
-                startActivityForResult(intent,3);
+                startActivityForResult(intent, 3);
             }
         });
 
@@ -134,8 +138,6 @@ public class ViewBookActivity extends AppCompatActivity {
         request_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
                 // add the book to requested list
                 final DocumentReference docRef = db.collection("users").document(userID);
 
@@ -157,7 +159,7 @@ public class ViewBookActivity extends AppCompatActivity {
                                     Toast.makeText(getBaseContext(), "Coming here!", Toast.LENGTH_SHORT).show();
 
 
-                                    BookRequest newRequest = new BookRequest(currentUser.getUserID(),requestReceiver.getUserID(),selectedBook.getBookID());
+                                    BookRequest newRequest = new BookRequest(currentUser.getUserID(), requestReceiver.getUserID(), selectedBook.getBookID());
                                     db.collection("bookRequest").document().set(newRequest);
 
                                     //change book status
@@ -184,17 +186,17 @@ public class ViewBookActivity extends AppCompatActivity {
 
                 });
 
-
                 System.out.println("Coming before db");
-               db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                   @Override
-                   public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                db.collection("users").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 
-                   }
-               });
+                    }
+                });
 
                 Toast.makeText(getBaseContext(), "This function is coming soon!", Toast.LENGTH_SHORT).show();
-
+                request_button.setBackgroundColor(Color.parseColor("#626363"));
+                request_button.setClickable(false);
             }//onClick
         });
 
@@ -204,23 +206,23 @@ public class ViewBookActivity extends AppCompatActivity {
                 .whereEqualTo("requestedBookID", bookID)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                    String sender = document.getString("requestSenderID");
-                    db.collection("users")
-                            .document(sender)
-                            .get()
-                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    User sender = documentSnapshot.toObject(User.class);
-                                    requestAdapter.add(sender.getUserName() + " has requested this book");
-                                }
-                            });
-                }
-            }
-        });
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            String sender = document.getString("requestSenderID");
+                            db.collection("users")
+                                    .document(sender)
+                                    .get()
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            User sender = documentSnapshot.toObject(User.class);
+                                            requestAdapter.add(sender.getUserName() + " has requested this book");
+                                        }
+                                    });
+                        }
+                    }
+                });
     }
 
     public void delete_book(View view) {
@@ -236,7 +238,7 @@ public class ViewBookActivity extends AppCompatActivity {
                                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                                     @Override
                                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                        for(DocumentSnapshot documentSnapshot: queryDocumentSnapshots) {
+                                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                                             documentSnapshot.getReference().delete();
                                         }
                                     }
@@ -250,7 +252,7 @@ public class ViewBookActivity extends AppCompatActivity {
     /**
      * This method will be invoked when the user's focus comes back to ViewBookActivity
      * It will refresh the data from the database, so that if any data was updated, they will be displayed correctly
-     * */
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -268,10 +270,10 @@ public class ViewBookActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(resultCode == 4 && requestCode == 3){
+        if (resultCode == 4 && requestCode == 3) {
             SystemClock.sleep(500);
             //Set new image if it changed.
-            if(data.getExtras()!=null) {
+            if (data.getExtras() != null) {
                 try {
                     Log.i("image", "changed");
                     String tempFileName = data.getStringExtra("CHANGED_IMAGE");
@@ -292,10 +294,11 @@ public class ViewBookActivity extends AppCompatActivity {
     /**
      * This method will retrieve the data from the database,
      * and assign the data to the TextViews, so that they are displayed correctly.
-     * */
+     */
     private void getBookData() {
         // if it's not owner's book, we cannot access the book from user
         // so find the book from book collection
+
 
         db.collection("books").document(bookID)
                 .get()
@@ -308,13 +311,25 @@ public class ViewBookActivity extends AppCompatActivity {
                         authorTextView.setText(selectedBook.getAuthors());
                         dateTextView.setText(selectedBook.getDate());
                         isbnTextView.setText(selectedBook.getIsbn());
-                        if(selectedBook.getDescription()!= null) {
+                        ownerID = selectedBook.getOwner();
+                        if (selectedBook.getDescription() != null) {
                             descriptionTextView.setText(selectedBook.getDescription());
                         }
-                        if(!imageChanged) {
+                        if (!imageChanged) {
                             MainActivity.database.downloadImage(imageView, selectedBook.getBookID(), true);
                         }
                         imageChanged = false;
+                    }
+                })
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        MainActivity.database.getDb().collection("users").document(ownerID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                ownerTextView.setText(documentSnapshot.toObject(User.class).getUserName());
+                            }
+                        });
                     }
                 });
     }
@@ -322,23 +337,21 @@ public class ViewBookActivity extends AppCompatActivity {
     /**
      * This method will check whether the current user is the owner of the book
      * and then set the UIs accordingly.
-     * */
+     */
     private void checkOwner() {
         if (userID.equals(owner)) {
             // owner
             request_button.setVisibility(View.GONE);
             request_button.setEnabled(false); // disable the button too
             return_button.setVisibility(View.GONE);
-        }
-        else if (Book.Status.valueOf(status) != Book.Status.Borrowed) {
+        } else if (Book.Status.valueOf(status) != Book.Status.Borrowed) {
             // normal users
             edit_button.setVisibility(View.GONE);
             delete_button.setVisibility(View.GONE);
             delete_button.setEnabled(false); // make it disabled too
             requestList.setVisibility(View.GONE);
             return_button.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             // holder
             edit_button.setVisibility(View.GONE);
             delete_button.setVisibility(View.GONE);

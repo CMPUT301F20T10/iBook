@@ -199,7 +199,6 @@ public class BookListFragment extends Fragment {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 User user = documentSnapshot.toObject(User.class);
                 datalist = user.getBookList();
-                Log.d("", datalist.size() + "");
                 adapter = new BookListAdapter(datalist, getContext());
                 bookListView.setAdapter(adapter);
             }

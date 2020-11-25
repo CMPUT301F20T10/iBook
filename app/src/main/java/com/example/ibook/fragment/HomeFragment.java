@@ -103,7 +103,6 @@ public class HomeFragment extends Fragment {
                 return false;
             }
 
-
             @Override
             public boolean onQueryTextChange(String newText) {
                 return false;
@@ -187,25 +186,22 @@ public class HomeFragment extends Fragment {
                                             }
                                         }
                                     }
-                                })
-                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        if (resultList.isEmpty() && userList.isEmpty()) {
-                                            Toast.makeText(getContext(), "No results found", Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            //pass resultList and userList to SearchBooksActivity for adapter to display
-                                            Intent intent = new Intent(getContext(), SearchResultsActivity.class);
-                                            System.out.println("final list " + userList);
-                                            intent.putExtra("books", resultList);
-                                            intent.putExtra("users", userList);
-                                            Log.d("", userList.size() + "HERE");
-                                            searchProgressBar.setVisibility(View.GONE);
-                                            startActivity(intent);
-                                        }
-                                        searchProgressBar.setVisibility(View.GONE);
-                                    }
-                                });
+                                }).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (resultList.isEmpty() && userList.isEmpty()) {
+                                    Toast.makeText(getContext(), "No results found", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    //pass resultList and userList to SearchBooksActivity for adapter to display
+                                    Intent intent = new Intent(getActivity(), SearchResultsActivity.class);
+                                    intent.putExtra("books", resultList);
+                                    intent.putExtra("users", userList);
+                                    searchProgressBar.setVisibility(View.GONE);
+                                    startActivity(intent);
+                                }
+                                searchProgressBar.setVisibility(View.GONE);
+                            }
+                        });
                     }
                 });
     }
