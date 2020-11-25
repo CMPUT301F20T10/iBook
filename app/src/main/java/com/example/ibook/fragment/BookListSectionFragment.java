@@ -135,24 +135,29 @@ public class BookListSectionFragment extends Fragment {
                 });
         bookList.clear();
         for (String ID : bookIDList) {
-            MainActivity.database.getDb().collection("books").document(ID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    bookList.add(documentSnapshot.toObject(Book.class));
-                }
-            });
+            MainActivity.database
+                    .getDb()
+                    .collection("books")
+                    .document(ID)
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            bookList.add(documentSnapshot.toObject(Book.class));
+                        }
+                    });
         }
     }
 
     private void getBorrowBookList() {
-        //TODO:implementation
+        //TODO:implement
     }
 
     private void getAcceptBookList() {
-        //TODO:implementation
+        //TODO:implement
     }
 
-    public boolean running() {
+    public boolean isRunning() {
         if (adapter == null || listView == null) {
             return false;
         }

@@ -3,26 +3,15 @@ package com.example.ibook.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.example.ibook.R;
 import com.example.ibook.SectionPageAdapter;
 import com.example.ibook.activities.AddBookActivity;
-import com.example.ibook.activities.MainActivity;
-import com.example.ibook.activities.ViewBookActivity;
-import com.example.ibook.entities.Book;
-import com.example.ibook.entities.User;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.tabs.TabLayout;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -96,17 +85,17 @@ public class BookListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (ownSection.running()) {
+        if (ownSection.isRunning()) {
             SystemClock.sleep(500);
             ownSection.getBookList();
         }
-        if (borrowSection.running()){
+        if (borrowSection.isRunning()){
             borrowSection.getBookList();
         }
-        if (requestSection.running()){
+        if (requestSection.isRunning()){
             requestSection.getBookList();
         }
-        if (acceptSection.running()){
+        if (acceptSection.isRunning()){
             acceptSection.getBookList();
         }
     }

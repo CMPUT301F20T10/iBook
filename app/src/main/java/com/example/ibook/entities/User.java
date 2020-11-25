@@ -12,7 +12,7 @@ public class User {
     private String email;
     private String phoneNumber;
     private ArrayList<Book> bookList;
-    private ArrayList<String> notificationList; //holds all the notifications for the user
+    private ArrayList<Request> requests; //holds all the notifications for the user
     private String userID;
 
 //
@@ -69,8 +69,9 @@ public class User {
         this.password = password;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.bookList = new ArrayList<Book>();
-        this.notificationList = new ArrayList<String>();
+        this.bookList = new ArrayList<>();
+        this.requests = new ArrayList<>();
+        this.responses = new ArrayList<>();
         this.userID = userID;
     }// constructor
 
@@ -123,13 +124,15 @@ public class User {
     }
 
 
-    public ArrayList<String> getNotificationList() {
-        return notificationList;
+    public ArrayList<Request> getRequests() {
+        return requests;
     }
 
-    public void addToNotificationList(String message) {
-        notificationList.add(message);
+    public void addToNotificationList(Request message) {
+        requests.add(message);
     }
 
-
+    public void setRequests(ArrayList<Request> requests) {
+        this.requests = requests;
+    }
 }// users class

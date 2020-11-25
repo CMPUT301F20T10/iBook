@@ -49,7 +49,6 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
     private final int REQ_CAMERA_IMAGE = 1;
     private final int REQ_GALLERY_IMAGE = 2;
     private boolean imageAdded;
-    public static String bookID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,9 +98,9 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                     // added to the book list
                     Book book = new Book(title, author, date, description, isbn, userID);
                     book.setBookID(bookID);
-                    if(imageAdded) {//Upload the image
-                                        MainActivity.database.uploadImage(imageView,bookID);
-                                    }
+                    if (imageAdded) {//Upload the image
+                        MainActivity.database.uploadImage(imageView, bookID);
+                    }
 
                     final DocumentReference userDoc =
                             MainActivity.database.getDb().collection("users").document(userID);

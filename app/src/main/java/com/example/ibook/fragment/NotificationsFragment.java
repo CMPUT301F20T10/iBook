@@ -47,25 +47,8 @@ public class NotificationsFragment extends Fragment {
     private ViewPager viewPager;
     private TabLayout tabLayout;
 
-    private FirebaseFirestore db;
-    private ArrayList<String> notificationList;
-    private ListView listView;
-    private ArrayList<String> requestsList;
-    private ArrayList<String> responseList;
-    private RadioGroup radioGroup;
-    private DocumentReference userDoc;
-    public static String requestSenderID;
-    private NotificationsSectionFragment requestSection;
-    private NotificationsSectionFragment responseSection;
-
-    //Maps
-    private Marker marker;
-    public static LatLng markerLoc = null;
-    public static String markerText;
-    public static final int ADD_EDIT_LOCATION_REQUEST_CODE = 455;
-    public static final int VIEW_LOCATION_REQUEST_CODE = 456;
-    public static final int ADD_EDIT_LOCATION_RESULT_CODE = 457;
-    public static final int VIEW_LOCATION_RESULT_CODE = 458;
+    private RequestSectionFragment requestSection;
+    private ResponseSectionFragment responseSection;
 
     @Nullable
     @Override
@@ -75,8 +58,8 @@ public class NotificationsFragment extends Fragment {
         viewPager = root.findViewById(R.id.viewPager);
         tabLayout = root.findViewById(R.id.tabLayout);
 
-        requestSection = new NotificationsSectionFragment("Request");
-        responseSection = new NotificationsSectionFragment("Response");
+        requestSection = new RequestSectionFragment();
+        responseSection = new ResponseSectionFragment();
 
         setUpViewPager(viewPager);
         tabLayout.setupWithViewPager(viewPager);
