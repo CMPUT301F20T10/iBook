@@ -2,25 +2,20 @@ package com.example.ibook;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ibook.activities.MainActivity;
 import com.example.ibook.activities.ViewBookActivity;
 import com.example.ibook.entities.Book;
-import com.example.ibook.entities.User;
 
 import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import static androidx.core.content.ContextCompat.startActivity;
 
@@ -164,6 +159,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
                     intent.putExtra("OWNER", book.getOwner());
                     intent.putExtra("STATUS", book.getStatus().toString());
                     startActivity(context.getApplicationContext(), intent, null);
+
                 }
             });
         }

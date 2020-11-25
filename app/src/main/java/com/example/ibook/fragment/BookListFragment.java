@@ -66,6 +66,8 @@ public class BookListFragment extends Fragment {
     private TextView filterAvailableText;
     private TextView stateText;
 
+    private int isOnToggle = 0;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -142,6 +144,7 @@ public class BookListFragment extends Fragment {
 
     private void getBorrowBookList() {
         datalist.clear();
+        adapter.notifyDataSetChanged();
         String userID = MainActivity.user.getUserID();
         MainActivity.database
                 .getDb()
@@ -152,9 +155,12 @@ public class BookListFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                            // only for ignoring old data
+                            if(!documentSnapshot.contains("requestStatus"))
+                                continue;
                             if(documentSnapshot.contains("requestStatus")){
                                 // if the status is not confirmed, ignore it
-                                if(((String)documentSnapshot.get("requestStatus")).equals("Confirmed") == false){
+                                if(!((String) documentSnapshot.get("requestStatus")).equals("Confirmed")){
                                     continue;
                                 }
                             }
@@ -179,6 +185,7 @@ public class BookListFragment extends Fragment {
     private void getAcceptedBookList() {
         //TODO:implement
         datalist.clear();
+        adapter.notifyDataSetChanged();
         String userID = MainActivity.user.getUserID();
         MainActivity.database
                 .getDb()
@@ -189,9 +196,12 @@ public class BookListFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                            // only for ignoring old data
+                            if(!documentSnapshot.contains("requestStatus"))
+                                continue;
                             if(documentSnapshot.contains("requestStatus")){
                                 // if the status is not accepted, ignore it
-                                if(((String)documentSnapshot.get("requestStatus")).equals("Accepted") == false){
+                                if(!((String) documentSnapshot.get("requestStatus")).equals("Accepted")){
                                     continue;
                                 }
                             }
@@ -215,6 +225,7 @@ public class BookListFragment extends Fragment {
 
     private void getRequestBookList() {
         datalist.clear();
+        adapter.notifyDataSetChanged();
         String userID = MainActivity.user.getUserID();
         MainActivity.database
                 .getDb()
@@ -225,9 +236,12 @@ public class BookListFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                            // only for ignoring old data
+                            if(!documentSnapshot.contains("requestStatus"))
+                                continue;
                             if(documentSnapshot.contains("requestStatus")){
                                 // if the status is not requested, ignore it
-                                if(((String)documentSnapshot.get("requestStatus")).equals("Requested") == false){
+                                if(!((String) documentSnapshot.get("requestStatus")).equals("Requested")){
                                     continue;
                                 }
                             }
@@ -327,6 +341,7 @@ public class BookListFragment extends Fragment {
                 ownBookButton.setTextColor(Color.parseColor("#FF9900"));
                 addButton.setVisibility(View.INVISIBLE);
                 menuButton.setVisibility(View.INVISIBLE);
+                isOnToggle = 3;
 
                 isButtonVisible(false, false);
                 getAcceptedBookList();
@@ -344,6 +359,8 @@ public class BookListFragment extends Fragment {
                 acceptBookButton.setTextColor(Color.parseColor("#FF9900"));
                 addButton.setVisibility(View.VISIBLE);
                 menuButton.setVisibility(View.VISIBLE);
+                isOnToggle = 0;
+
                 isButtonVisible(true, false);
                 getOwnBookList();
                 stateText.setText("");
@@ -359,6 +376,7 @@ public class BookListFragment extends Fragment {
                 acceptBookButton.setTextColor(Color.parseColor("#FF9900"));
                 addButton.setVisibility(View.INVISIBLE);
                 menuButton.setVisibility(View.INVISIBLE);
+                isOnToggle = 2;
 
                 isButtonVisible(false, false);
                 getRequestBookList();
@@ -375,6 +393,7 @@ public class BookListFragment extends Fragment {
                 acceptBookButton.setTextColor(Color.parseColor("#FF9900"));
                 addButton.setVisibility(View.INVISIBLE);
                 menuButton.setVisibility(View.INVISIBLE);
+                isOnToggle = 1;
 
                 isButtonVisible(false, false);
                 getBorrowBookList();
@@ -437,8 +456,19 @@ public class BookListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // load the owned book list
-        datalist.clear();
-        getOwnBookList();
+        // load booklist
+
+        if(isOnToggle == 0){
+            getOwnBookList();
+        }
+        if(isOnToggle == 1){
+            getBorrowBookList();
+        }
+        if(isOnToggle == 2){
+            getRequestBookList();
+        }
+        if(isOnToggle == 3){
+            getAcceptedBookList();
+        }
     }
 }
