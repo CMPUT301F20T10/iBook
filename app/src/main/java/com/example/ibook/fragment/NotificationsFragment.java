@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,22 +22,34 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
+import com.example.ibook.UserListAdapter;
 import com.example.ibook.activities.MainActivity;
 import com.example.ibook.activities.MapsActivity;
 import com.example.ibook.activities.ViewBookActivity;
+import com.example.ibook.entities.Book;
+import com.example.ibook.entities.BookRequest;
 import com.example.ibook.entities.Database;
 import com.example.ibook.entities.User;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import org.w3c.dom.Document;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +59,8 @@ import java.util.Collections;
  */
 public class NotificationsFragment extends Fragment {
 
-    User currentUser;
+    public BookRequest bookRequest;
+    public String bookID;
     private FirebaseFirestore db;
     private ArrayList<String> notificationList;
     private ListView listView;
@@ -54,6 +69,8 @@ public class NotificationsFragment extends Fragment {
     private RadioGroup radioGroup;
     private DocumentReference userDoc;
     public static String requestSenderID;
+    private String currentUserID;
+    private String currentUsername;
 
     private RadioButton requestButton;
     private RadioButton responseButton;
@@ -66,6 +83,7 @@ public class NotificationsFragment extends Fragment {
     public static final int VIEW_LOCATION_REQUEST_CODE = 456;
     public static final int ADD_EDIT_LOCATION_RESULT_CODE = 457;
     public static final int VIEW_LOCATION_RESULT_CODE = 458;
+     ArrayAdapter adapter;
 
     @Nullable
     @Override
@@ -77,168 +95,277 @@ public class NotificationsFragment extends Fragment {
         responseButton = root.findViewById(R.id.responseButton);
         requestsList = new ArrayList<>();
         responseList = new ArrayList<>();
+        radioGroup = root.findViewById(R.id.selectState);
         final DocumentReference docRef = db.collection("users").document(MainActivity.database.getCurrentUserUID());
 
-        final ArrayAdapter adapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, requestsList);
+        adapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, requestsList);
         listView.setAdapter(adapter);
-
-        //get users request list
-        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    //user object intialized
-                    currentUser = documentSnapshot.toObject(User.class);
-                    notificationList = currentUser.getNotificationList();
-                    for (String notif : notificationList) {
-                        requestsList.add(notif);
-                    }// for loop
-                    Collections.reverse(requestsList);
-                    adapter.notifyDataSetChanged();
-                }// if
-            }
-
-        });
+        currentUserID = MainActivity.database.getCurrentUserUID();
 
 
-        //alert dialog on click item
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setMessage("Would you like to accept or decline this request?")
-                        .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                //going to the maps
-                                Intent mapsIntent = new Intent(getContext(), MapsActivity.class);
-                                mapsIntent.putExtra(MapsActivity.MAP_TYPE, MapsActivity.ADD_EDIT_LOCATION);
-                                if (markerLoc != null) {
-                                    mapsIntent.putExtra("locationIncluded", true);
-                                    mapsIntent.putExtra("markerLoc", markerLoc);
-                                    mapsIntent.putExtra("markerText", markerText);
-                                } else {
-                                    mapsIntent.putExtra("locationIncluded", false);
-                                }
-                                startActivityForResult(mapsIntent, ADD_EDIT_LOCATION_REQUEST_CODE);
-                            }
-                        })
-                        .setNegativeButton("Decline", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                String[] notification = requestsList.get(position).split(" ");
-                                final String requestSenderUsername = notification[0];
-                                MainActivity.database.getDb().collection("users")
-                                        .whereEqualTo("userName", requestSenderUsername)
-                                        .get()
-                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                //don't need the for loop since username will be unique in our app, so only 1 result with the match.
-                                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                                    requestSenderID = document.getId();
-
-                                                }// for loop
-                                                System.out.println("UserID: " + requestSenderID);
-                                                MainActivity.database.getDb().collection("bookRequest")
-                                                        .whereEqualTo("requestSenderID", requestSenderID)
-                                                        .get()
-                                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                            @Override
-                                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                                String bookID;
-                                                                //don't need the for loop since username will be unique in our app, so only 1 result with the match.
-                                                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                                                    //delete the document
-                                                                    bookID = (String) document.get("requestedBookID");
-                                                                    document.getReference().delete();
-                                                                    //check if there are any other request on the same book, if no, then change book status
-                                                                    final String finalBookID = bookID;
-                                                                    MainActivity.database.getDb().collection("bookRequest")
-                                                                            .whereEqualTo("requestedBookID", bookID)
-                                                                            .get()
-                                                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                                                @Override
-                                                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                                                    // checks if there are no other documents with request on the book
-                                                                                    if (task.getResult().isEmpty()) {
-                                                                                        //so update book status
-                                                                                        MainActivity.database.getDb().collection("books").document(finalBookID)
-                                                                                                .update("status", "Available");
-                                                                                    }// if
-                                                                                }
-                                                                            });
-                                                                }// for loop
-
-                                                                //get current userDocument and remove request from the notification list
-                                                                MainActivity.database.getUserDocumentReference().get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                                    @Override
-                                                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                                        User currentUser = documentSnapshot.toObject(User.class);
-                                                                        currentUser.getNotificationList().remove(position);
-                                                                        MainActivity.database.getUserDocumentReference().set(currentUser).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                                            @Override
-                                                                            public void onSuccess(Void aVoid) {
-                                                                                Toast.makeText(getContext(), "Declined request from " + requestSenderUsername, Toast.LENGTH_SHORT).show();
-                                                                            }
-                                                                        });
-                                                                    }//onSuccess
-                                                                });
-
-                                                            }// inner onComplete
-                                                        });// most outer onCompleteListener(so done)
-
-
-                                                //add decline message notification to requestSender
-                                                System.out.println("Checking if the userID of requestSender is correct : " + requestSenderID);
-                                                MainActivity.database.getDb().collection("users").document(requestSenderID)
-                                                        .get()
-                                                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                            @Override
-                                                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                                User requestSender = documentSnapshot.toObject(User.class);
-                                                                requestSender.addToNotificationList(currentUser.getUserName() + " declined your request ");
-                                                                //update database
-                                                                MainActivity.database.getDb().collection("users").document(requestSenderID).set(requestSender);
-                                                                Toast.makeText(getContext(), "Updated Notification of Sender", Toast.LENGTH_SHORT).show();
-                                                            }//onSuccess
-                                                        });
-
-                                                //now check if there are anyother requests on the same book, if no requests, then change book status
-
-
-                                            }//onComplete
-
-                                        });// addOnCompleteListener
-
-                                System.out.println("Username " + requestSenderUsername + "| userID: " + requestSenderID);
-
-                                requestsList.remove(position);
-                                adapter.notifyDataSetChanged();
-                            }
-                        });
-                AlertDialog alert = builder.create();
-                alert.show();
-            }
-        });
-
-
-        // set toggle buttons
-        radioGroup = root.findViewById(R.id.selectState);
+        //radio button change listener
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton radioButton = group.findViewById(checkedId);
+                if (radioButton.getText().toString().equals("Responses")) {
+                    //Go to user collection and get his notification/response list
+                    MainActivity.database.getDb().collection("users").document(MainActivity.database.getCurrentUserUID())
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                    DocumentSnapshot document = (DocumentSnapshot) task.getResult();
+                                    User currentUser = document.toObject(User.class);
+                                    ArrayList<String> list = new ArrayList<String>();
+                                    list = currentUser.getNotificationList();
+                                    Collections.reverse(list);// reverse list to put the data in right order
+                                    adapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, list);
+                                    listView.setAdapter(adapter);
+                                }//onComplete
+                            });// onCompleteListener
+                }// if - "Responses" toggle
                 if (radioButton.getText().toString().equals("Requests")) {
-                    ArrayAdapter adapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, requestsList);
+                    adapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, requestsList);
                     listView.setAdapter(adapter);
-                }// if
-                else {
-                    // TODO: display responses listview
-                    // empty for now
-                    ArrayAdapter adapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, new ArrayList());
-                    listView.setAdapter(adapter);
-                }// else
-            }
-        });
+                }// if "Requests" toggle
+            }//onCheckedChanged
+        });// onCheckedChangedListener
+
+        //Retrieve requests for the current user from database (Making use of the bookRequest Collection)
+        MainActivity.database.getDb().collection("bookRequest")
+                .whereEqualTo("requestReceiverID", MainActivity.database.getCurrentUserUID())
+                .whereEqualTo("requestStatus", "Requested")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        //Arraylist to hold the BookRequest objects
+                        final ArrayList<BookRequest> bookRequestArrayList =new ArrayList<BookRequest>();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            bookRequest = document.toObject(BookRequest.class);
+                            bookRequestArrayList.add(bookRequest);
+                            //adding the notification or message to requestList
+                            requestsList.add(bookRequest.getRequestSenderUsername() + " wants to borrow your book called " + bookRequest.getRequestedBookTitle());
+                        }// for loop
+                        //update the listView
+                        adapter.notifyDataSetChanged();
+
+                        //alert dialog on click item
+                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                                //get the person who sent the request
+                                final String requestSenderID = bookRequestArrayList.get(position).getRequestSenderID();
+                                final String requestedBookID = bookRequestArrayList.get(position).getRequestedBookID();
+                                final String bookRequestID = bookRequestArrayList.get(position).getBookRequestID();
+                                final BookRequest bookReq = bookRequestArrayList.get(position);
+                                //final String requestSenderUsername = notification[0];
+                                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                                builder.setMessage("Would you like to accept or decline this request?")
+                                        //Accept
+                                        .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+
+                                                //TODO: Add ISBN SCANNER HERE
+
+                                                //going to the maps
+                                                bookReq.setRequestStatus("Accepted");
+                                                MainActivity.database.getDb().collection("bookRequest").document(bookRequestID).set(bookReq)
+                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
+
+                                                            }//onSuccess
+                                                        });
+
+                                                Intent mapsIntent = new Intent(getContext(), MapsActivity.class);
+                                                mapsIntent.putExtra(MapsActivity.MAP_TYPE, MapsActivity.ADD_EDIT_LOCATION);
+                                                if (markerLoc != null) {
+                                                    mapsIntent.putExtra("locationIncluded", true);
+                                                    mapsIntent.putExtra("markerLoc", markerLoc);
+                                                    mapsIntent.putExtra("markerText", markerText);
+                                                } else {
+                                                    mapsIntent.putExtra("locationIncluded", false);
+                                                }
+                                                startActivityForResult(mapsIntent, ADD_EDIT_LOCATION_REQUEST_CODE);
+
+                                                //get the request Sender information from database, since we need to notify that person
+                                                MainActivity.database.getDb().collection("users").document(requestSenderID)
+                                                        .get()
+                                                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                DocumentSnapshot document = (DocumentSnapshot) task.getResult();
+                                                                final User senderUser = document.toObject(User.class);
+
+                                                                //Get the username of the current user/owner
+                                                                MainActivity.database.getDb().collection("users").document(MainActivity.database.getCurrentUserUID())
+                                                                        .get()
+                                                                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                                            @Override
+                                                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                                DocumentSnapshot currentUserDoc = (DocumentSnapshot) task.getResult();
+                                                                                final User currentUser = currentUserDoc.toObject(User.class);
+                                                                                currentUsername = currentUser.getUserName();
+                                                                                senderUser.addToNotificationList(currentUsername + " accepted your borrow request on the book named " + bookRequest.getRequestedBookTitle());
+
+                                                                                //update accept message to sender
+                                                                                MainActivity.database.getDb().collection("users").document(senderUser.getUserID()).set(senderUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                    @Override
+                                                                                    public void onSuccess(Void aVoid) {
+                                                                                        Toast.makeText(getContext(), "Added accept message to " + senderUser.getUserName(), Toast.LENGTH_LONG).show();
+                                                                                    }//onSuccess
+                                                                                });
+                                                                            }//onComplete --CurrentUser
+                                                                        });//OnCompleteListener
+                                                            }//onComplete -- RequestSender
+                                                        });
+
+                                                //delete the request from the listview when that request is accepted
+                                                requestsList.remove(position);
+                                                adapter.notifyDataSetChanged();
+
+                                               //remove other bookRequests on the same book in the bookRequest collection
+                                                MainActivity.database.getDb().collection("bookRequest")
+                                                        .whereEqualTo("requestedBookID",requestedBookID)
+                                                        .whereNotEqualTo("requestSenderID", requestSenderID)
+                                                        .get()
+                                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                                //delete all documents that meet the query
+                                                                BookRequest deleteRequest = null;
+                                                                for(QueryDocumentSnapshot document : task.getResult()) {
+                                                                    deleteRequest = document.toObject(BookRequest.class);
+                                                                    //int index = bookRequestArrayList.indexOf(deleteRequest);
+                                                                    //requestsList.remove(index);
+                                                                   // adapter.notifyDataSetChanged();
+                                                                    document.getReference().delete();
+                                                                }//for loop
+                                                            }//onComplete
+                                                        });
+
+                                                //update the book Status to be accepted
+                                                MainActivity.database.getDb().collection("books").document(requestedBookID)
+                                                        .get()
+                                                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                DocumentSnapshot document = (DocumentSnapshot) task.getResult();
+                                                                Book book = document.toObject(Book.class);
+                                                                book.setStatus(Book.Status.Accepted);
+                                                                MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
+                                                            }// onComplete
+                                                        });
+
+                                            }//onClick on Accept button in dialog
+
+                                        })
+                                        //on decline request
+                                        .setNegativeButton("Decline", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                final String bookRequestID = bookRequestArrayList.get(position).getBookRequestID();
+                                                final String requestedBookID = bookRequestArrayList.get(position).getRequestedBookID();
+                                                final String bookTitle = bookRequestArrayList.get(position).getRequestedBookTitle();
+                                                //Delete the document if the request is declined
+                                                MainActivity.database.getDb().collection("bookRequest").document(bookRequestID)
+                                                        .get()
+                                                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                DocumentSnapshot document = (DocumentSnapshot) task.getResult();
+                                                                document.getReference().delete();
+                                                                Toast.makeText(getContext(), "Deleted Document", Toast.LENGTH_SHORT).show();
+                                                                //Update book status to "Available" if there are no more requests on that book
+                                                                Toast.makeText(getContext(), "Changed book status before to Available (last req deleted)" + requestedBookID, Toast.LENGTH_LONG).show();
+                                                                MainActivity.database.getDb().collection("bookRequest")
+                                                                        .whereEqualTo("requestedBookID", requestedBookID )
+                                                                        .whereEqualTo("requestStatus", "Requested")
+                                                                        .get()
+                                                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                                            @Override
+                                                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                                                //check if anyother requests in bookReqest on same book
+                                                                                if(task.getResult().isEmpty()){
+                                                                                    MainActivity.database.getDb().collection("books").document(requestedBookID)
+                                                                                            .get()
+                                                                                            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                                                                @Override
+                                                                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                                                    DocumentSnapshot document = (DocumentSnapshot) task.getResult();
+                                                                                                    Book book = document.toObject(Book.class);
+                                                                                                    //Set status Available since only request was declined
+                                                                                                    book.setStatus(Book.Status.Available);
+
+                                                                                                    MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                                        @Override
+                                                                                                        public void onSuccess(Void aVoid) {
+                                                                                                            //Toast.makeText(getContext(), "Changed book status actual to Available (last req deleted)" + requestedBookID, Toast.LENGTH_LONG).show();
+                                                                                                        }
+                                                                                                    });
+                                                                                                }
+                                                                                            });
+                                                                                }// if
+                                                                            }//onComplete
+                                                                        }); // addOnCompleteListener
+
+                                                                //update the response/notificationlist of the sender user
+                                                                MainActivity.database.getDb().collection("users").document(requestSenderID)
+                                                                        .get()
+                                                                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                                            @Override
+                                                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                                DocumentSnapshot document = (DocumentSnapshot) task.getResult();
+                                                                                final User senderUser = document.toObject(User.class);
+
+                                                                                //Get the username of the current user/owner
+                                                                                MainActivity.database.getDb().collection("users").document(currentUserID)
+                                                                                        .get()
+                                                                                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                                                            @Override
+                                                                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                                                DocumentSnapshot currentUserDoc = (DocumentSnapshot) task.getResult();
+                                                                                                final User currentUser = currentUserDoc.toObject(User.class);
+                                                                                                currentUsername = currentUser.getUserName();
+                                                                                                senderUser.addToNotificationList(currentUsername + " declined your borrow request on the book named " + bookTitle);
+                                                                                                //update the sender's user collection with new notification list
+                                                                                                MainActivity.database.getDb().collection("users").document(requestSenderID).set(senderUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                                    @Override
+                                                                                                    public void onSuccess(Void aVoid) {
+                                                                                                        //Toast.makeText(getContext(), "Added accept message to " + senderUser.getUserName(), Toast.LENGTH_LONG).show();
+                                                                                                    }
+                                                                                                });
+
+                                                                                                MainActivity.database.getDb().collection("users").document(currentUserID).set(currentUser).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                                    @Override
+                                                                                                    public void onSuccess(Void aVoid) {
+                                                                                                       // Toast.makeText(getContext(), "Added accept message to owner to tell him who he accepted " + currentUsername, Toast.LENGTH_LONG).show();
+                                                                                                    }
+                                                                                                });
+                                                                                            }
+                                                                                        });
+                                                                            }//onComplete
+                                                                        });
+
+
+                                                            }//onComplete
+                                                        }); //addOnCompleteListener
+
+
+                                                //delete the request from the listview when a request is declined
+                                                requestsList.remove(position);
+                                                adapter.notifyDataSetChanged();
+                                            }// onClick
+                                        });
+                                AlertDialog alert = builder.create();
+                                alert.show();
+                            }
+                        });
+                    }//onComplete - BookRequest
+                }); // onCompleteListener -- BookRequest
+
+
 
         responseButton.setOnClickListener(new View.OnClickListener() {
             @Override
