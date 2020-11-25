@@ -220,7 +220,7 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                         startActivityForResult(intent, REQ_GALLERY_IMAGE);
                     }
                 })
-                .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNeutralButton("Delete Image", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
