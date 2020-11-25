@@ -7,6 +7,7 @@ public class BookRequest {
     private String requestSenderUsername;
     private String requestedBookTitle;
     private String bookRequestID;
+    private String requestStatus;
 
 
 
@@ -14,14 +15,24 @@ public class BookRequest {
 
     }// no arg constructor for database
 
-    public BookRequest(String requestSenderID, String requestReceiverID, String requestedBook,String requestSenderUsername, String requestedBookTitle,String bookRequestID) {
+    public BookRequest(String requestSenderID, String requestReceiverID, String requestedBook,String requestSenderUsername, String requestedBookTitle,String bookRequestID,String requestStatus) {
         this.requestReceiverID = requestReceiverID;
         this.requestSenderID = requestSenderID;
         this.requestedBookID = requestedBook;
         this.requestSenderUsername = requestSenderUsername;
         this.requestedBookTitle = requestedBookTitle;
         this.bookRequestID = bookRequestID;
+        this.requestStatus = requestStatus;
     }// constructor
+
+    public String getRequestStatus() {
+        return requestStatus;
+    }
+
+    public void setRequestStatus(String requestStatus) {
+        this.requestStatus = requestStatus;
+    }
+
 
     public String getRequestSenderUsername() {
         return requestSenderUsername;

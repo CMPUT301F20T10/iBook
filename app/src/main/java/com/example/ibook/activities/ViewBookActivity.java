@@ -158,7 +158,7 @@ public class ViewBookActivity extends AppCompatActivity {
 
                                     //make the document to get ID
                                     String bookRequestID = db.collection("bookRequest").document().getId();
-                                    BookRequest newRequest = new BookRequest(currentUser.getUserID(),requestReceiver.getUserID(),selectedBook.getBookID(),currentUser.getUserName(),selectedBook.getTitle(),bookRequestID);
+                                    BookRequest newRequest = new BookRequest(currentUser.getUserID(),requestReceiver.getUserID(),selectedBook.getBookID(),currentUser.getUserName(),selectedBook.getTitle(),bookRequestID,"Requested");
                                     db.collection("bookRequest").document(bookRequestID).set(newRequest);
 
                                     //change book status
