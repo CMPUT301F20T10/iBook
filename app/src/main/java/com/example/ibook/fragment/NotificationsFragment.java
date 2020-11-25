@@ -83,7 +83,7 @@ public class NotificationsFragment extends Fragment {
     public static final int VIEW_LOCATION_REQUEST_CODE = 456;
     public static final int ADD_EDIT_LOCATION_RESULT_CODE = 457;
     public static final int VIEW_LOCATION_RESULT_CODE = 458;
-     ArrayAdapter adapter;
+    ArrayAdapter adapter;
 
     @Nullable
     @Override
@@ -141,7 +141,7 @@ public class NotificationsFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         //Arraylist to hold the BookRequest objects
-                        final ArrayList<BookRequest> bookRequestArrayList =new ArrayList<BookRequest>();
+                        final ArrayList<BookRequest> bookRequestArrayList = new ArrayList<BookRequest>();
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             bookRequest = document.toObject(BookRequest.class);
                             bookRequestArrayList.add(bookRequest);
@@ -226,9 +226,9 @@ public class NotificationsFragment extends Fragment {
                                                 requestsList.remove(position);
                                                 adapter.notifyDataSetChanged();
 
-                                               //remove other bookRequests on the same book in the bookRequest collection
+                                                //remove other bookRequests on the same book in the bookRequest collection
                                                 MainActivity.database.getDb().collection("bookRequest")
-                                                        .whereEqualTo("requestedBookID",requestedBookID)
+                                                        .whereEqualTo("requestedBookID", requestedBookID)
                                                         .whereNotEqualTo("requestSenderID", requestSenderID)
                                                         .get()
                                                         .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -236,11 +236,11 @@ public class NotificationsFragment extends Fragment {
                                                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                                                 //delete all documents that meet the query
                                                                 BookRequest deleteRequest = null;
-                                                                for(QueryDocumentSnapshot document : task.getResult()) {
+                                                                for (QueryDocumentSnapshot document : task.getResult()) {
                                                                     deleteRequest = document.toObject(BookRequest.class);
                                                                     //int index = bookRequestArrayList.indexOf(deleteRequest);
                                                                     //requestsList.remove(index);
-                                                                   // adapter.notifyDataSetChanged();
+                                                                    // adapter.notifyDataSetChanged();
                                                                     document.getReference().delete();
                                                                 }//for loop
                                                             }//onComplete
@@ -280,14 +280,14 @@ public class NotificationsFragment extends Fragment {
                                                                 //Update book status to "Available" if there are no more requests on that book
                                                                 Toast.makeText(getContext(), "Changed book status before to Available (last req deleted)" + requestedBookID, Toast.LENGTH_LONG).show();
                                                                 MainActivity.database.getDb().collection("bookRequest")
-                                                                        .whereEqualTo("requestedBookID", requestedBookID )
+                                                                        .whereEqualTo("requestedBookID", requestedBookID)
                                                                         .whereEqualTo("requestStatus", "Requested")
                                                                         .get()
                                                                         .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                                             @Override
                                                                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                                                                 //check if anyother requests in bookReqest on same book
-                                                                                if(task.getResult().isEmpty()){
+                                                                                if (task.getResult().isEmpty()) {
                                                                                     MainActivity.database.getDb().collection("books").document(requestedBookID)
                                                                                             .get()
                                                                                             .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -340,7 +340,7 @@ public class NotificationsFragment extends Fragment {
                                                                                                 MainActivity.database.getDb().collection("users").document(currentUserID).set(currentUser).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                                                     @Override
                                                                                                     public void onSuccess(Void aVoid) {
-                                                                                                       // Toast.makeText(getContext(), "Added accept message to owner to tell him who he accepted " + currentUsername, Toast.LENGTH_LONG).show();
+                                                                                                        // Toast.makeText(getContext(), "Added accept message to owner to tell him who he accepted " + currentUsername, Toast.LENGTH_LONG).show();
                                                                                                     }
                                                                                                 });
                                                                                             }
@@ -364,7 +364,6 @@ public class NotificationsFragment extends Fragment {
                         });
                     }//onComplete - BookRequest
                 }); // onCompleteListener -- BookRequest
-
 
 
         responseButton.setOnClickListener(new View.OnClickListener() {
