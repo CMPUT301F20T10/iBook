@@ -113,21 +113,8 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                     bookID = MainActivity.database.getDb().collection("books").document().getId();
                     final Book newBook = new Book(bookName, authorName, date, description, Book.Status.Available, isbn, userID, bookID);
                     MainActivity.database.getDb().collection("books").document(bookID).set(newBook);
-                    MainActivity.database
-                            .getUserDocumentReference()
-                            .get()
-                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    User user = documentSnapshot.toObject(User.class);
-                                    user.addToBookList(newBook);
-                                    MainActivity.database.getUserDocumentReference().set(user);
-                                }
-                            });
-
 
                     Toast.makeText(getBaseContext(), "got book id inside the scope too" + bookID, Toast.LENGTH_LONG).show();
-
 
                     Intent intent = new Intent();
                     // If an image was added we upload it or else it uploads the default image
@@ -144,29 +131,10 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                         e.printStackTrace();
                     }
                     //setResult(1, intent);
-                    MainActivity.database
-                            .getUserDocumentReference()
-                            .get()
-                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    MainActivity.user = documentSnapshot.toObject(User.class);
-                                    MainActivity.user.addToBookList(newBook);
-                                    MainActivity.database
-                                            .getUserDocumentReference()
-                                            .set(MainActivity.user)
-                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    finish();
-                                                }
-                                            });
-                                }
-                            });
                 } else {
                     Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();
                 }
-
+                finish();
             }
         });
 
@@ -213,10 +181,11 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                         startActivityForResult(intent, REQ_GALLERY_IMAGE);
                     }
                 })
-                .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNeutralButton("Delete Image", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
+                        imageView.setImageResource(android.R.color.transparent);
+                        imageAdded = false;
                     }
                 });
         AlertDialog dialog = builder.create();
