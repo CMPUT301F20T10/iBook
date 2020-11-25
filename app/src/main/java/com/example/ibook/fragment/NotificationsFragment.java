@@ -194,7 +194,7 @@ public class NotificationsFragment extends Fragment {
 
         MainActivity.database.getDb().collection("bookRequest")
                 .whereEqualTo("requestReceiverID", MainActivity.database.getCurrentUserUID())
-                .whereNotEqualTo("requestStatus", "Accepted")
+                .whereEqualTo("requestStatus", "Requested")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override

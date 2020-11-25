@@ -4,10 +4,12 @@ public class BookRequest {
     private String requestReceiverID;
     private String requestSenderID;
     private String requestedBookID;
+
     private String requestSenderUsername;
     private String requestedBookTitle;
     private String bookRequestID;
     private String requestStatus;
+
 
 
 
@@ -24,6 +26,7 @@ public class BookRequest {
         this.bookRequestID = bookRequestID;
         this.requestStatus = requestStatus;
     }// constructor
+
 
     public String getRequestStatus() {
         return requestStatus;
@@ -58,6 +61,7 @@ public class BookRequest {
         this.requestedBookTitle = requestedBookTitle;
     }
 
+
     public String getRequestReceiverID() {
         return requestReceiverID;
     }
@@ -81,6 +85,8 @@ public class BookRequest {
     public void setRequestedBookID(String requestedBookID) {
         this.requestedBookID = requestedBookID;
     }
+
+
 //use this two messages to populate the notification list in the user class when its appropriate
 
 }// BookRequest class

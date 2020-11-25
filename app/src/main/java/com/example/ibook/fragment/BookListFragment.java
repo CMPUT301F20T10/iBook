@@ -7,11 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,9 +22,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -71,6 +66,8 @@ public class BookListFragment extends Fragment {
     private TextView filterAvailableText;
     private TextView stateText;
 
+    private int isOnToggle = 0;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -106,7 +103,7 @@ public class BookListFragment extends Fragment {
         datalist = new ArrayList<>();
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
-        getOwnBookList();
+        
         setUpListener();
         isButtonVisible(true, false);
 
@@ -146,13 +143,84 @@ public class BookListFragment extends Fragment {
     }
 
     private void getBorrowBookList() {
-        //TODO:implement
         datalist.clear();
+        adapter.notifyDataSetChanged();
+        String userID = MainActivity.user.getUserID();
+        MainActivity.database
+                .getDb()
+                .collection("bookRequest")
+                .whereEqualTo("requestSenderID", userID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                            // only for ignoring old data
+                            if(!documentSnapshot.contains("requestStatus"))
+                                continue;
+                            if(documentSnapshot.contains("requestStatus")){
+                                // if the status is not confirmed, ignore it
+                                if(!((String) documentSnapshot.get("requestStatus")).equals("Confirmed")){
+                                    continue;
+                                }
+                            }
+                            String bookID = (String) documentSnapshot.get("requestedBookID");
+                            MainActivity.database
+                                    .getDb()
+                                    .collection("books")
+                                    .document(bookID)
+                                    .get()
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            datalist.add(documentSnapshot.toObject(Book.class));
+                                            adapter.notifyDataSetChanged();
+                                        }
+                                    });
+                        }
+                    }
+                });
     }
 
     private void getAcceptedBookList() {
         //TODO:implement
         datalist.clear();
+        adapter.notifyDataSetChanged();
+        String userID = MainActivity.user.getUserID();
+        MainActivity.database
+                .getDb()
+                .collection("bookRequest")
+                .whereEqualTo("requestSenderID", userID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                            // only for ignoring old data
+                            if(!documentSnapshot.contains("requestStatus"))
+                                continue;
+                            if(documentSnapshot.contains("requestStatus")){
+                                // if the status is not accepted, ignore it
+                                if(!((String) documentSnapshot.get("requestStatus")).equals("Accepted")){
+                                    continue;
+                                }
+                            }
+                            String bookID = (String) documentSnapshot.get("requestedBookID");
+                            MainActivity.database
+                                    .getDb()
+                                    .collection("books")
+                                    .document(bookID)
+                                    .get()
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            datalist.add(documentSnapshot.toObject(Book.class));
+                                            adapter.notifyDataSetChanged();
+                                        }
+                                    });
+                        }
+                    }
+                });
     }
 
     private void getRequestBookList() {
@@ -168,6 +236,15 @@ public class BookListFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                            // only for ignoring old data
+                            if(!documentSnapshot.contains("requestStatus"))
+                                continue;
+                            if(documentSnapshot.contains("requestStatus")){
+                                // if the status is not requested, ignore it
+                                if(!((String) documentSnapshot.get("requestStatus")).equals("Requested")){
+                                    continue;
+                                }
+                            }
                             String bookID = (String) documentSnapshot.get("requestedBookID");
                             MainActivity.database
                                     .getDb()
@@ -178,32 +255,31 @@ public class BookListFragment extends Fragment {
                                         @Override
                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                                             datalist.add(documentSnapshot.toObject(Book.class));
+                                            adapter.notifyDataSetChanged();
                                         }
                                     });
                         }
-                    }
-                })
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        adapter = new BookListAdapter(datalist, getContext());
-                        bookListView.setAdapter(adapter);
                     }
                 });
     }
 
     private void getOwnBookList() {
         datalist.clear();
-        MainActivity.database.getUserDocumentReference().get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                User user = documentSnapshot.toObject(User.class);
-                datalist = user.getBookList();
-                Log.d("", datalist.size() + "");
-                adapter = new BookListAdapter(datalist, getContext());
-                bookListView.setAdapter(adapter);
-            }
-        });
+        MainActivity.database.getDb().collection("books")
+                .whereEqualTo("owner", MainActivity.database.getCurrentUserUID())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (DocumentSnapshot documentSnapshot: queryDocumentSnapshots) {
+                            Book book = documentSnapshot.toObject(Book.class);
+                            datalist.add(book);
+                        }
+                        Log.d("", datalist.size() + "");
+                        adapter = new BookListAdapter(datalist, getContext());
+                        bookListView.setAdapter(adapter);
+                    }
+                });
     }
 
     private void isButtonVisible(boolean isVisible, boolean isFilterVisible) {
@@ -270,6 +346,7 @@ public class BookListFragment extends Fragment {
                 ownBookButton.setTextColor(Color.parseColor("#FF9900"));
                 addButton.setVisibility(View.INVISIBLE);
                 menuButton.setVisibility(View.INVISIBLE);
+                isOnToggle = 3;
 
                 isButtonVisible(false, false);
                 getAcceptedBookList();
@@ -287,6 +364,8 @@ public class BookListFragment extends Fragment {
                 acceptBookButton.setTextColor(Color.parseColor("#FF9900"));
                 addButton.setVisibility(View.VISIBLE);
                 menuButton.setVisibility(View.VISIBLE);
+                isOnToggle = 0;
+
                 isButtonVisible(true, false);
                 getOwnBookList();
                 stateText.setText("");
@@ -302,6 +381,7 @@ public class BookListFragment extends Fragment {
                 acceptBookButton.setTextColor(Color.parseColor("#FF9900"));
                 addButton.setVisibility(View.INVISIBLE);
                 menuButton.setVisibility(View.INVISIBLE);
+                isOnToggle = 2;
 
                 isButtonVisible(false, false);
                 getRequestBookList();
@@ -318,6 +398,7 @@ public class BookListFragment extends Fragment {
                 acceptBookButton.setTextColor(Color.parseColor("#FF9900"));
                 addButton.setVisibility(View.INVISIBLE);
                 menuButton.setVisibility(View.INVISIBLE);
+                isOnToggle = 1;
 
                 isButtonVisible(false, false);
                 getBorrowBookList();
@@ -380,8 +461,19 @@ public class BookListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // load the owned book list
-        datalist.clear();
-        getOwnBookList();
+        // load booklist
+
+        if(isOnToggle == 0){
+            getOwnBookList();
+        }
+        if(isOnToggle == 1){
+            getBorrowBookList();
+        }
+        if(isOnToggle == 2){
+            getRequestBookList();
+        }
+        if(isOnToggle == 3){
+            getAcceptedBookList();
+        }
     }
 }
