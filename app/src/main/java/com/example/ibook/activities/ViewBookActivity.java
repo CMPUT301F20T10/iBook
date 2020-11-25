@@ -194,14 +194,12 @@ public class ViewBookActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         requestReceiver = documentSnapshot.toObject(User.class);
-                        requestReceiver.addToNotificationList(currentUser.getUserName() + " wants to borrow your book " + selectedBook.getTitle());
-                        //updating notificaion list of the user in database
-                        docRefRequestReceiver.set(requestReceiver);
-                        Toast.makeText(getBaseContext(), "Coming here!", Toast.LENGTH_SHORT).show();
+
 
                         // three requestStatus: Requested, Accepted, Confirmed
-                        BookRequest newRequest = new BookRequest(currentUser.getUserID(), requestReceiver.getUserID(), selectedBook.getBookID(), "Requested");
-                        db.collection("bookRequest").document().set(newRequest);
+                        String bookRequestID = MainActivity.database.getDb().collection("bookRequest").document().getId();
+                        BookRequest newRequest = new BookRequest(currentUser.getUserID(), requestReceiver.getUserID(), selectedBook.getBookID(), currentUser.getUserName(),selectedBook.getTitle(),bookRequestID,"Requested");
+                        db.collection("bookRequest").document(bookRequestID).set(newRequest);
 
                         //change book status
                         System.out.println("Selected bookID: " + selectedBook.getBookID());

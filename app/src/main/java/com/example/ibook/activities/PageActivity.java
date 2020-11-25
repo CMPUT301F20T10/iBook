@@ -8,10 +8,19 @@ import android.widget.SearchView;
 
 import com.example.ibook.entities.Book;
 import com.example.ibook.R;
+import com.example.ibook.entities.User;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -31,6 +40,7 @@ public class PageActivity extends AppCompatActivity {
     private ArrayList<Book> bookDataList;
     private SearchView searchBar;
     private String username;
+    private User currentUser;
 
     /**
      * The onCreate method when activity is creating
@@ -47,7 +57,7 @@ public class PageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_page);
 
         // Set the navigation view
-        BottomNavigationView navigationView = findViewById(R.id.nav_view);
+        final BottomNavigationView navigationView = findViewById(R.id.nav_view);
 
         // Build the navigation bar
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
@@ -56,6 +66,20 @@ public class PageActivity extends AppCompatActivity {
                 R.id.navigation_booklist,
                 R.id.navigation_user
         ).build();
+
+        MainActivity.database.getUserDocumentReference().get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    //user object intialized
+                    currentUser = documentSnapshot.toObject(User.class);
+                    //set the notification count
+                    navigationView.getOrCreateBadge(R.id.navigation_notifications).setNumber(currentUser.getNotificationList().size());
+                }// if
+            }//onSuccess
+        });
+
+
 
         // Set up the navigation bar controller
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -70,6 +94,6 @@ public class PageActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        // TODO: double click back button to exit the program
+
     } //onBackPressed
 }
