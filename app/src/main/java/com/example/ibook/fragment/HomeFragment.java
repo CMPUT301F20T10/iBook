@@ -115,24 +115,6 @@ public class HomeFragment extends Fragment {
         adapter = new BookListAdapter(datalist, getActivity());
         bookListView.setAdapter(adapter);
 
-        db.collection("books")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                datalist.add(document.toObject(Book.class));
-                                //Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
-                            }
-                            //adapter.notifyDataSetChanged();
-                            bookListView.setAdapter(adapter);
-                        } else {
-                            Toast.makeText(getContext(), "got an error", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
         return root;
     }
 
@@ -202,6 +184,28 @@ public class HomeFragment extends Fragment {
                                 searchProgressBar.setVisibility(View.GONE);
                             }
                         });
+                    }
+                });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        db.collection("books")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                datalist.add(document.toObject(Book.class));
+                                //Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
+                            }
+                            //adapter.notifyDataSetChanged();
+                            bookListView.setAdapter(adapter);
+                        } else {
+                            Toast.makeText(getContext(), "got an error", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
     }
