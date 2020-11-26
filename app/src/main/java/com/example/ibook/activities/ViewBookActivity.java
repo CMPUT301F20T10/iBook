@@ -31,7 +31,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -217,7 +216,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         requestReceiver = documentSnapshot.toObject(User.class);
 
 
-                        // three requestStatus: Requested, Accepted, Confirmed
+                        // three requestStatus: Requested, Accepted, Borrowed
                         String bookRequestID = MainActivity.database.getDb().collection("bookRequest").document().getId();
                         BookRequest newRequest = new BookRequest(currentUser.getUserID(), requestReceiver.getUserID(), selectedBook.getBookID(), currentUser.getUserName(), selectedBook.getTitle(), bookRequestID, "Requested");
                         db.collection("bookRequest").document(bookRequestID).set(newRequest);
@@ -261,45 +260,9 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
             @Override
             public void onClick(View v) {
                 //BookRequest newRequest = new BookRequest(currentUser.getUserID(),requestReceiver.getUserID(),selectedBook.getBookID(), "Requested");
-                //db.collection("bookRequest").document().set(newRequest);
+                // return a accepted book
+                new ScanFragment().show(getSupportFragmentManager(), "Scan ISBN");
 
-                MainActivity.database
-                        .getDb()
-                        .collection("bookRequest")
-                        .whereEqualTo("requestSenderID", userID)
-                        .get()
-                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                    if (!((String) documentSnapshot.get("requestedBookID")).equals(bookID)) {
-                                        continue; // continue if not this book
-                                    }
-                                    BookRequest newRequest = documentSnapshot.toObject(BookRequest.class);
-                                    // todo: so far, no need to change request status
-
-                                    final DocumentReference docRef = db.collection("users").document(newRequest.getRequestReceiverID());
-
-                                    docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                            requestReceiver = documentSnapshot.toObject(User.class);
-                                            requestReceiver.addToNotificationList(currentUser.getUserName() + " wants to return your book " + selectedBook.getTitle());
-                                            docRef.set(requestReceiver);
-
-                                            Toast.makeText(getBaseContext(), "raised a return request", Toast.LENGTH_SHORT).show();
-                                            finish();
-                                        }
-                                    });
-
-
-                                }
-                            }
-                        });
-
-
-                // Q: finish the activity or not?
-                //finish();
             }
         });
     }
@@ -309,9 +272,12 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
             @Override
             public void onClick(View v) {
                 new ScanFragment().show(getSupportFragmentManager(), "Scan ISBN");
+
             }
         });
     }
+
+    //private void //ivan
 
     private void setUpBackButtonListener() {
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -626,7 +592,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                         return_button.setVisibility(View.GONE);
                                         scanButton.setVisibility(View.VISIBLE);
 
-                                    } else if (((String) documentSnapshot.get("requestStatus")).equals("Confirmed")) {
+                                    } else if (((String) documentSnapshot.get("requestStatus")).equals("Borrowed")) {
                                         // may want to return the book
                                         edit_button.setVisibility(View.GONE);
                                         delete_button.setVisibility(View.GONE);
@@ -706,6 +672,10 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
 
     @Override
     public void onOkPressed(String ISBN) {
+        Toast.makeText(getBaseContext(), ISBN, Toast.LENGTH_SHORT).show();
+        // TODO: delete the line below
+        // just for test, make them equal
+        ISBN = isbn;
 
         if (ISBN.equals(isbn)) {
             // if the book is requested.
@@ -738,15 +708,78 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                             }
                         });
 
+                // also update data to request collection
+                MainActivity.database.getDb().collection("bookRequest")
+                        .whereEqualTo("requestedBookID", bookID)
+                        .whereEqualTo("requestSenderID", userID)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    String requestID = (String)document.getId();
+                                    BookRequest bookReq = document.toObject(BookRequest.class);
+                                    bookReq.setRequestStatus("Borrowed");
+                                    MainActivity.database.getDb().collection("bookRequest").document(requestID).set(bookReq);
+                                }
+                            }
+                        });
+
             }
             // TODO: How you guys want to do that?
             // if the book is borrowed -> returned ??
             if (Book.Status.valueOf(status).equals(Book.Status.Borrowed)) {
+                MainActivity.database
+                        .getDb()
+                        .collection("bookRequest")
+                        .whereEqualTo("requestSenderID", userID)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                    if (!((String) documentSnapshot.get("requestedBookID")).equals(bookID)) {
+                                        continue; // continue if not this book
+                                    }
 
-            }
-            // if the book is returned -> available ??
-            if (Book.Status.valueOf(status).equals(Book.Status.Borrowed)) {
+                                    // change the book status to returning!
 
+                                    MainActivity.database
+                                            .getDb()
+                                            .collection("books")
+                                            .document(bookID)
+                                            .get()
+                                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                    Book book = documentSnapshot.toObject(Book.class);
+                                                    book.setStatus(Book.Status.Returning);
+                                                    MainActivity.database.getDb().collection("books").document(bookID).set(book);
+                                                    // TODO: Do we need to update the book list in the user list
+                                                }
+                                            });
+
+                                    BookRequest newRequest = documentSnapshot.toObject(BookRequest.class);
+
+
+                                    final DocumentReference docRef = db.collection("users").document(newRequest.getRequestReceiverID());
+
+                                    docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            requestReceiver = documentSnapshot.toObject(User.class);
+                                            requestReceiver.addToNotificationList(currentUser.getUserName() + " wants to return your book " + selectedBook.getTitle());
+                                            docRef.set(requestReceiver);
+
+                                            Toast.makeText(getBaseContext(), "raised a return request", Toast.LENGTH_SHORT).show();
+                                            finish();
+                                        }
+                                    });
+
+
+                                }
+                            }
+                        });
             }
 
         } else {
