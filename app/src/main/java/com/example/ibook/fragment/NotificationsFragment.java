@@ -12,20 +12,16 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import com.example.ibook.R;
 import com.example.ibook.activities.MainActivity;
 import com.example.ibook.activities.MapsActivity;
-import com.example.ibook.activities.PageActivity;
 import com.example.ibook.entities.Book;
 import com.example.ibook.entities.BookRequest;
 import com.example.ibook.entities.User;
@@ -50,6 +46,9 @@ import com.karumi.dexter.listener.single.PermissionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 /**
@@ -95,7 +94,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
     private Button rescanButton;
     private Button cancelButton;
     private Button confirmButton;
-    private TextView isbnView;
+    private EditText isbnView;
     private TextView textView;
     private String scanISBN;
 
@@ -115,6 +114,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
         confirmButton = root.findViewById(R.id.confirm);
         textView = root.findViewById(R.id.textView6);
         title = root.findViewById(R.id.header_notifications);
+        scanISBN = "";
 
         requestsList = new ArrayList<>();
         responseList = new ArrayList<>();
@@ -314,9 +314,12 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setVisible(false);
-                isbnView.setText("");
+
+                // get ISBN from the editText
+                // test ISBN: 123651565616
+                scanISBN = isbnView.getText().toString();
                 if (scanISBN.equals(selectedBookISBN)) {
+                    Toast.makeText(getContext(), "ISBN matches!", Toast.LENGTH_LONG).show();
                     Intent mapsIntent = new Intent(getContext(), MapsActivity.class);
                     mapsIntent.putExtra(MapsActivity.MAP_TYPE, MapsActivity.ADD_EDIT_LOCATION);
                     if (markerLoc != null) {
@@ -327,6 +330,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                         mapsIntent.putExtra("locationIncluded", false);
                     }
                     startActivityForResult(mapsIntent, ADD_EDIT_LOCATION_REQUEST_CODE);
+                    setVisible(false); // end scanning part
                 } else {
                     Toast.makeText(getContext(), "ISBN does not match", Toast.LENGTH_LONG).show();
                 }
@@ -429,6 +433,10 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
 
     //TODO: fix data set
     private void acceptRequest() {
+
+        // ISBN for test: 123651565616
+
+        Toast.makeText(getContext(), "got location!", Toast.LENGTH_SHORT).show();
         bookReq.setRequestStatus("Accepted");
         MainActivity.database.getDb().collection("bookRequest").document(bookRequestID).set(bookReq);
         //get the request Sender information from database, since we need to notify that person
