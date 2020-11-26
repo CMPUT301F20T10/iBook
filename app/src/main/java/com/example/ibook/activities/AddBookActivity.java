@@ -111,7 +111,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 if (bookName.length() > 0
                         && authorName.length() > 0
                         && dateIsValid(date)
-                        && isbnCheck(isbn)) {
+                        && isbnIsValid(isbn)) {
                     finish();
 
                     bookID = MainActivity.database.getDb().collection("books").document().getId();
@@ -241,17 +241,15 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
             e.printStackTrace();
         }
     }
-    public boolean isbnCheck(String isbn){
-        boolean valid;
+    public boolean isbnIsValid(String isbn){
         if (isbn.matches("[0-9]+") && (isbn.length() == 10 || isbn.length() == 13)) {
-            valid = true;
+            return true;
         }
         else{
-            valid = false;
             Toast.makeText(getBaseContext(), "ISBN must be 10 or 13 digit number", Toast.LENGTH_SHORT).show();
-
+            return false;
         }
-        return valid;
+
     }
     public boolean dateIsValid(String date) {
 
