@@ -79,10 +79,7 @@ public class NotificationsFragment extends Fragment {
     private Marker marker;
     public static LatLng markerLoc = null;
     public static String markerText;
-    public static final int ADD_EDIT_LOCATION_REQUEST_CODE = 455;
-    public static final int VIEW_LOCATION_REQUEST_CODE = 456;
-    public static final int ADD_EDIT_LOCATION_RESULT_CODE = 457;
-    public static final int VIEW_LOCATION_RESULT_CODE = 458;
+
     ArrayAdapter adapter;
 
     @Nullable
@@ -188,7 +185,7 @@ public class NotificationsFragment extends Fragment {
                                                 } else {
                                                     mapsIntent.putExtra("locationIncluded", false);
                                                 }
-                                                startActivityForResult(mapsIntent, ADD_EDIT_LOCATION_REQUEST_CODE);
+                                                startActivityForResult(mapsIntent, MapsActivity.ADD_EDIT_LOCATION_REQUEST_CODE);
 
                                                 //get the request Sender information from database, since we need to notify that person
                                                 MainActivity.database.getDb().collection("users").document(requestSenderID)
@@ -389,15 +386,11 @@ public class NotificationsFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //Add new gear
-        if (resultCode == ADD_EDIT_LOCATION_RESULT_CODE && requestCode == ADD_EDIT_LOCATION_REQUEST_CODE) {
+        if (resultCode == MapsActivity.ADD_EDIT_LOCATION_RESULT_CODE && requestCode == MapsActivity.ADD_EDIT_LOCATION_REQUEST_CODE) {
             if (data.getBooleanExtra("locationIncluded", false)) {
                 markerLoc = (LatLng) data.getExtras().getParcelable("markerLoc");
                 markerText = data.getStringExtra("markerText");
             }
-            //Clear the map so existing marker gets removed
-            //mMap.clear();
-            //addMarker();
-            //addLocation.setText("Edit Location");
         }
     }
 

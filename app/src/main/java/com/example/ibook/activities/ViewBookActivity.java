@@ -9,6 +9,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.DragEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -25,8 +27,15 @@ import com.example.ibook.entities.Book;
 import com.example.ibook.entities.BookRequest;
 import com.example.ibook.entities.User;
 import com.example.ibook.fragment.ScanFragment;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -45,8 +54,9 @@ import java.util.logging.Logger;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
-public class ViewBookActivity extends AppCompatActivity implements ScanFragment.OnFragmentInteractionListener {
+public class ViewBookActivity extends AppCompatActivity implements ScanFragment.OnFragmentInteractionListener, OnMapReadyCallback {
     private String userID;
     private ArrayList<BookRequest> requests;
     private String bookID;
@@ -90,13 +100,14 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     private RequestAdapter requestAdapter;
 
     //Maps
-    private Marker marker;
-    public static LatLng markerLoc = null;
-    public static String markerText;
-    public static final int ADD_EDIT_LOCATION_REQUEST_CODE = 455;
-    public static final int VIEW_LOCATION_REQUEST_CODE = 456;
-    public static final int ADD_EDIT_LOCATION_RESULT_CODE = 457;
-    public static final int VIEW_LOCATION_RESULT_CODE = 458;
+    private static LatLng markerLoc = null;
+    private static String markerText;
+    private static boolean editMapsLocation = false;
+    private GoogleMap mMap;
+    private final LatLng defaultLocation = new LatLng(53.54685611047399, -113.49431332200767);
+    private static final double DEFAULT_ZOOM = 5.0;
+    private static final double MARKER_ZOOM = 15.0;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -146,6 +157,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
 
         getBookData();
         checkCases();
+        setUpMaps();
 
         edit_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -387,16 +399,13 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == ADD_EDIT_LOCATION_RESULT_CODE && requestCode == ADD_EDIT_LOCATION_REQUEST_CODE) {
+        if (resultCode == MapsActivity.ADD_EDIT_LOCATION_RESULT_CODE && requestCode == MapsActivity.ADD_EDIT_LOCATION_REQUEST_CODE) {
             if (data.getBooleanExtra("locationIncluded", false)) {
                 markerLoc = (LatLng) data.getExtras().getParcelable("markerLoc");
                 markerText = data.getStringExtra("markerText");
                 acceptRequest();
             }
-            //Clear the map so existing marker gets removed
-            //mMap.clear();
-            //addMarker();
-            //addLocation.setText("Edit Location");
+            setUpMaps();
         }
         if (resultCode == 4 && requestCode == 3) {
             SystemClock.sleep(500);
@@ -690,11 +699,115 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
             } else {
                 mapsIntent.putExtra("locationIncluded", false);
             }
-            startActivityForResult(mapsIntent, ADD_EDIT_LOCATION_REQUEST_CODE);
+            startActivityForResult(mapsIntent, MapsActivity.ADD_EDIT_LOCATION_REQUEST_CODE);
         } else {
             Toast.makeText(getBaseContext(), "ISBN does not match", Toast.LENGTH_SHORT).show();
         }
     }
 
 
+    /**
+     * Set up the google maps fragment so that the owner or borrower of a book can see the location to meet.
+     * The owner can edit the location until the book has been confirmed as borrowed.
+     * Once the book is confirmed as borrowed then the borrower can edit the location to eventually return the book.
+     */
+    private void setUpMaps() {
+        if(userID.equals(owner) || isRelated) {
+            //Set up the google maps fragment
+            boolean abledToSetMapsUp = false;
+            Button editViewButton = findViewById(R.id.EditViewMapsButton);
+            ConstraintLayout mapsConstraintLayout = findViewById(R.id.mapsConstraintLayout);
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.mapsSmallFragment);
+            mapFragment.getMapAsync(this);
+            mapsConstraintLayout.setVisibility(View.GONE);
+            final Book.Status bookStatus = Book.Status.valueOf(status);
+
+            //Set the visibility and properties of the maps and buttons
+            if (userID.equals(owner)) {
+                //The owner has accepted a request for the book so can still edit the location.
+                if (bookStatus.equals(Book.Status.Accepted)) {
+                    editViewButton.setText("Edit");
+                    mapsConstraintLayout.setVisibility(View.VISIBLE);
+                    editMapsLocation = true;
+                    abledToSetMapsUp = true;
+                }
+                //Once the book is borrowed the owner can no longer edit the location
+                else if (bookStatus.equals(Book.Status.Borrowed)) {
+                    editViewButton.setText("View");
+                    mapsConstraintLayout.setVisibility(View.VISIBLE);
+                    abledToSetMapsUp = true;
+                }
+            }
+            else if (isRelated){
+                //The borrower can edit the location once the book is in his hands.
+                //This is useful when trying to return the book as he can set the location to return it to.
+                if (bookStatus.equals(Book.Status.Borrowed)) {
+                    editViewButton.setText("Edit");
+                    mapsConstraintLayout.setVisibility(View.VISIBLE);
+                    editMapsLocation = true;
+                    abledToSetMapsUp = true;
+                }else  if (bookStatus.equals(Book.Status.Accepted)){
+                    editViewButton.setText("View");
+                    mapsConstraintLayout.setVisibility(View.VISIBLE);
+                    abledToSetMapsUp = true;
+                }
+            }
+
+            if(abledToSetMapsUp) {
+                //Set the button click listener depending if the person view the book is currently
+                //allowed to edit the location or only view it.
+                editViewButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent mapsIntent = new Intent(getApplicationContext(), MapsActivity.class);
+                        if (markerLoc != null) {
+                            mapsIntent.putExtra("locationIncluded", true);
+                            mapsIntent.putExtra("markerLoc", markerLoc);
+                            mapsIntent.putExtra("markerText", markerText);
+                        } else {
+                            mapsIntent.putExtra("locationIncluded", false);
+                        }
+                        if (editMapsLocation) { //Start the activity so that the person can edit the location
+                            mapsIntent.putExtra(MapsActivity.MAP_TYPE, MapsActivity.ADD_EDIT_LOCATION);
+                            startActivityForResult(mapsIntent, MapsActivity.ADD_EDIT_LOCATION_REQUEST_CODE);
+                        } else { //Start the maps activity in view only mode
+                            mapsIntent.putExtra(MapsActivity.MAP_TYPE, MapsActivity.VIEW_LOCATION);
+                            startActivityForResult(mapsIntent, MapsActivity.VIEW_LOCATION_REQUEST_CODE);
+                        }
+                    }
+                });
+
+            }
+        }
+        //Draw the map
+        if(mMap!=null) {
+
+            mMap.clear();
+            addMarker();
+        }
+    }
+
+
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        //Disable scrolling when moving around the map to fix scrolling bug
+        mMap.getUiSettings().setScrollGesturesEnabled(false);
+        addMarker();
+    }
+
+    /**
+     * Add the google maps marker and zoom in on the location.
+     */
+    private void addMarker() {
+        if(markerLoc!=null) {
+            mMap.addMarker(new MarkerOptions().position(markerLoc).title(markerText));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerLoc,(float) MARKER_ZOOM));
+            //marker.showInfoWindow();
+        }else{
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation,(float) DEFAULT_ZOOM));
+        }
+    }
 }
