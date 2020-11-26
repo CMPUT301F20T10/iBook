@@ -257,11 +257,6 @@
                     android:layout_marginBottom="16dp"
                     android:scrollbars="none" />
 
-                <ListView
-                    android:id="@+id/listTest"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp" />
-
                 <Button
                     android:id="@+id/btn_request_book"
                     android:layout_width="match_parent"
@@ -306,6 +301,19 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/scan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_baseline_camera_alt_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
