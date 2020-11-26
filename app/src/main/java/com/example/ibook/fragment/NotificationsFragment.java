@@ -417,18 +417,23 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //Add new gear
-        if (resultCode == ADD_EDIT_LOCATION_RESULT_CODE && requestCode == ADD_EDIT_LOCATION_REQUEST_CODE) {
-            if (data.getBooleanExtra("locationIncluded", false)) {
-                markerLoc = (LatLng) data.getExtras().getParcelable("markerLoc");
-                markerText = data.getStringExtra("markerText");
-            }
+        Toast.makeText(getContext(),String.valueOf(resultCode)+" "+String.valueOf(requestCode),Toast.LENGTH_SHORT).show();
+
+        // todo: the resultCode = 0 here, don't know why, so I ignored it
+        //if (resultCode == ADD_EDIT_LOCATION_RESULT_CODE && requestCode == ADD_EDIT_LOCATION_REQUEST_CODE) {
+        if(requestCode == ADD_EDIT_LOCATION_REQUEST_CODE){
+            //if (data.getBooleanExtra("locationIncluded", false)) {
+            //    markerLoc = (LatLng) data.getExtras().getParcelable("markerLoc");
+            //    markerText = data.getStringExtra("markerText");
+            //}
             //TODO: fix data set
-            acceptRequest();
+            //acceptRequest();
             //Clear the map so existing marker gets removed
             //mMap.clear();
             //addMarker();
             //addLocation.setText("Edit Location");
         }
+        acceptRequest();
     }
 
     //TODO: fix data set
