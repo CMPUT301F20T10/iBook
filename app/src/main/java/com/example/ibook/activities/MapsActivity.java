@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.ibook.R;
+import com.example.ibook.fragment.NotificationsFragment;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -91,7 +92,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }else{
                     intent.putExtra("locationIncluded", false);
                 }
-                //setResult(AddEditGearActivity.ADD_EDIT_LOCATION_RESULT_CODE, intent);
+                setResult(NotificationsFragment.ADD_EDIT_LOCATION_RESULT_CODE, intent);
                 finish();
             }
         });

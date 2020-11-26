@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
@@ -31,19 +32,29 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firestore.v1.DocumentTransform;
+import com.google.protobuf.Timestamp;
+import com.google.rpc.context.AttributeContext;
 
 import java.io.FileInputStream;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import io.grpc.Server;
 
 public class ViewBookActivity extends AppCompatActivity implements ScanFragment.OnFragmentInteractionListener {
     private String userID;
@@ -212,6 +223,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 final DocumentReference docRefRequestReceiver = db.collection("users").document(owner);
 
                 docRefRequestReceiver.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         requestReceiver = documentSnapshot.toObject(User.class);
@@ -219,8 +231,11 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
 
                         // three requestStatus: Requested, Accepted, Confirmed
                         String bookRequestID = MainActivity.database.getDb().collection("bookRequest").document().getId();
+
                         BookRequest newRequest = new BookRequest(currentUser.getUserID(), requestReceiver.getUserID(), selectedBook.getBookID(), currentUser.getUserName(), selectedBook.getTitle(), bookRequestID, "Requested");
                         db.collection("bookRequest").document(bookRequestID).set(newRequest);
+
+
 
                         //change book status
                         System.out.println("Selected bookID: " + selectedBook.getBookID());

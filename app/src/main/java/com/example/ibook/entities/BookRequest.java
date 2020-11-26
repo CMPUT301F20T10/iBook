@@ -1,5 +1,17 @@
 package com.example.ibook.entities;
 
+import com.google.firebase.database.Exclude;
+import com.google.firebase.database.ServerValue;
+import com.google.firebase.firestore.FieldValue;
+import com.google.protobuf.Timestamp;
+
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.text.DateFormat.getDateTimeInstance;
+
 public class BookRequest {
     private String requestReceiverID;
     private String requestSenderID;
@@ -12,12 +24,11 @@ public class BookRequest {
 
 
 
-
     public BookRequest(){
 
     }// no arg constructor for database
 
-    public BookRequest(String requestSenderID, String requestReceiverID, String requestedBook,String requestSenderUsername, String requestedBookTitle,String bookRequestID,String requestStatus) {
+    public BookRequest(String requestSenderID, String requestReceiverID, String requestedBook, String requestSenderUsername, String requestedBookTitle, String bookRequestID, String requestStatus) {
         this.requestReceiverID = requestReceiverID;
         this.requestSenderID = requestSenderID;
         this.requestedBookID = requestedBook;
@@ -26,6 +37,8 @@ public class BookRequest {
         this.bookRequestID = bookRequestID;
         this.requestStatus = requestStatus;
     }// constructor
+
+
 
 
     public String getRequestStatus() {
