@@ -527,9 +527,8 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     private void getBookData() {
         // if it's not owner's book, we cannot access the book from user
         // so find the book from book collection
-
-
-        db.collection("books").document(bookID)
+        db.collection("books")
+                .document(bookID)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -554,12 +553,17 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        MainActivity.database.getDb().collection("users").document(ownerID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                ownerTextView.setText(documentSnapshot.toObject(User.class).getUserName());
-                            }
-                        });
+                        MainActivity.database
+                                .getDb()
+                                .collection("users")
+                                .document(ownerID)
+                                .get()
+                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                        ownerTextView.setText(documentSnapshot.toObject(User.class).getUserName());
+                                    }
+                                });
                     }
                 });
     }
