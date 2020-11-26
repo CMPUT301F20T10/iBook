@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,6 +46,7 @@ import java.util.logging.Logger;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 public class ViewBookActivity extends AppCompatActivity implements ScanFragment.OnFragmentInteractionListener {
     private String userID;
@@ -69,6 +71,10 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     private Button request_button;
     private Button return_button;
     private ListView requestList;
+
+    private ListView test;
+    private ArrayList<String> testMessage;
+    private ArrayAdapter<String> testAdapter;
 
     private FirebaseFirestore db;
     FirebaseAuth uAuth;
@@ -121,6 +127,17 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         backButton = findViewById(R.id.cancelButton);
         delete_button = findViewById(R.id.btn_delete_book);
         return_button = findViewById(R.id.btn_return_book);
+
+        test = findViewById(R.id.listTest);
+        testMessage = new ArrayList<>();
+        testMessage.add("adada");
+        testMessage.add("askjhfas");
+        testMessage.add("adada");
+        testMessage.add("askjhfas");
+
+        testAdapter = new ArrayAdapter<>(getBaseContext(), R.layout.request_list_content,
+                R.id.request_content, testMessage);
+        test.setAdapter(testAdapter);
 
         imageChanged = false;
         requestList = findViewById(R.id.request_list);
