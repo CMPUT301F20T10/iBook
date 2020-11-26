@@ -178,7 +178,7 @@ public class HomeFragment extends Fragment {
                                     Intent intent = new Intent(getActivity(), SearchResultsActivity.class);
                                     intent.putExtra("books", resultList);
                                     intent.putExtra("users", userList);
-                                    System.out.println("Query in 1st activity"+query);
+
                                     intent.putExtra("query",query);
                                     searchProgressBar.setVisibility(View.GONE);
                                     startActivity(intent);

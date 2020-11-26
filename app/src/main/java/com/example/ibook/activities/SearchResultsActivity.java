@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -40,7 +41,6 @@ public class SearchResultsActivity extends AppCompatActivity {
     private BookListAdapter booksAdapter;
     private ArrayList<Book> bookList = new ArrayList<>();
     private ArrayList<User> userList = new ArrayList<>();
-    private ArrayList<Book> anotherlist;
     private RecyclerView bookListView;
     private ListView userListView;
     private RadioGroup radioGroup;
@@ -72,11 +72,12 @@ public class SearchResultsActivity extends AppCompatActivity {
         backButton = findViewById(R.id.cancelButton);
         noResultText = findViewById(R.id.noResultTextView);
 
+        //get results from home fragment
         Intent intent = getIntent();
         query = intent.getStringExtra("query");
-        System.out.println("Query right after getting: "+query);
         bookList = (ArrayList<Book>) getIntent().getSerializableExtra("books");
         userList = (ArrayList<User>) getIntent().getSerializableExtra("users");
+
         if (bookList.isEmpty()) {
             noResultText.setVisibility(View.VISIBLE);
         }else {
@@ -91,53 +92,29 @@ public class SearchResultsActivity extends AppCompatActivity {
         booksAdapter = new BookListAdapter(bookList, getApplicationContext());
         bookListView.setAdapter(booksAdapter);
 
-        // set toggle buttons
+
         radioGroup = findViewById(R.id.selectState);
         book = findViewById(R.id.search_book);
         user = findViewById(R.id.search_user);
         setUpListListener();
 
-
+        // set toggle buttons
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton radioButton = group.findViewById(checkedId);
                 if (radioButton.getText().toString().equals("Books")) {
-                   anotherlist = new ArrayList<>();
-                    MainActivity.database
-                            .getDb()
-                            .collection("books")
-                            .get()
-                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                    for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                        Book book = documentSnapshot.toObject(Book.class);
-                                        if (book.getAuthors().toLowerCase().contains(query.toLowerCase())
-                                                || book.getTitle().toLowerCase().contains(query.toLowerCase())
-                                                || book.getDescription().toLowerCase().contains(query.toLowerCase())
-                                        ) {
-                                            if (book.getStatus() != Book.Status.Borrowed
-                                                    && book.getStatus() != Book.Status.Accepted) {
-                                                anotherlist.add(book);
-                                            }
-                                        }
-                                    }
-                                    booksAdapter = new BookListAdapter(anotherlist, getApplicationContext());
-                                    bookListView.setAdapter(booksAdapter);
-                                }
-                            });
+
+                    updateBookResults();
+
                     book.setTextColor(Color.WHITE);
                     user.setTextColor(Color.parseColor("#FF9900"));
-                    if (bookList.isEmpty()) {
-                        noResultText.setVisibility(View.VISIBLE);
-                    } else {
-                        noResultText.setVisibility(View.GONE);
-                    }
+
+
+
                     bookListView.setVisibility(View.VISIBLE);
                     userListView.setVisibility(View.GONE);
-                    booksAdapter = new BookListAdapter(bookList, getApplicationContext());
-                    bookListView.setAdapter(booksAdapter);
+
                     //setUpListListener();
                 }
                 if (radioButton.getText().toString().equals("Users")) {
@@ -196,12 +173,8 @@ public class SearchResultsActivity extends AppCompatActivity {
             });
         }
     }
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        System.out.println("Query: "+query);
-        final ArrayList<Book> list = new ArrayList<>();
+    public void updateBookResults(){
+        bookList= new ArrayList<>();
         MainActivity.database
                 .getDb()
                 .collection("books")
@@ -217,48 +190,27 @@ public class SearchResultsActivity extends AppCompatActivity {
                             ) {
                                 if (book.getStatus() != Book.Status.Borrowed
                                         && book.getStatus() != Book.Status.Accepted) {
-                                    list.add(book);
+                                    bookList.add(book);
                                 }
                             }
                         }
-                        booksAdapter = new BookListAdapter(list, getApplicationContext());
+                        if (bookList.isEmpty()) {
+                            noResultText.setVisibility(View.VISIBLE);
+                        }else {
+                            noResultText.setVisibility(View.GONE);
+                        }
+                        booksAdapter = new BookListAdapter(bookList, getApplicationContext());
                         bookListView.setAdapter(booksAdapter);
+
                     }
                 });
-//        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(RadioGroup group, int checkedId) {
-//                RadioButton radioButton = group.findViewById(checkedId);
-//                if (radioButton.getText().toString().equals("Books")) {
-//                    book.setTextColor(Color.WHITE);
-//                    user.setTextColor(Color.parseColor("#FF9900"));
-//                    if (bookList.isEmpty()) {
-//                        noResultText.setVisibility(View.VISIBLE);
-//                    } else {
-//                        noResultText.setVisibility(View.GONE);
-//                    }
-//                    bookListView.setVisibility(View.VISIBLE);
-//                    userListView.setVisibility(View.GONE);
-//                    booksAdapter = new BookListAdapter(list, getApplicationContext());
-//                    bookListView.setAdapter(booksAdapter);
-//                    //setUpListListener();
-//                }
-//                if (radioButton.getText().toString().equals("Users")) {
-//                    if (userList.isEmpty()) {
-//                        noResultText.setVisibility(View.VISIBLE);
-//                    }else {
-//                        noResultText.setVisibility(View.GONE);
-//                    }
-//                    bookListView.setVisibility(View.GONE);
-//                    userListView.setVisibility(View.VISIBLE);
-//                    user.setTextColor(Color.WHITE);
-//                    book.setTextColor(Color.parseColor("#FF9900"));
-//                    UserListAdapter adapter = new UserListAdapter(userList, getApplicationContext());
-//                    userListView.setAdapter(adapter);
-//                    setUpListListener();
-//                }
-//            }
-//        });
+
+        }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateBookResults();
     }
 
 
