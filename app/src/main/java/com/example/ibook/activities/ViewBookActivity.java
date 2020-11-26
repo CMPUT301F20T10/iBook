@@ -14,7 +14,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -39,6 +38,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -49,7 +49,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.logging.Logger;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -98,6 +97,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     private int requestPosition;
 
     private RequestAdapter requestAdapter;
+    private FloatingActionButton scanButton;
 
     //Maps
     private static LatLng markerLoc = null;
@@ -126,15 +126,15 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         ownerTextView = findViewById(R.id.ownerTextView);
         descriptionTextView = findViewById(R.id.descriptionView2);
         imageView = findViewById(R.id.imageView);
-
         edit_button = findViewById(R.id.editButton);
         request_button = findViewById(R.id.btn_request_book);
         backButton = findViewById(R.id.cancelButton);
         delete_button = findViewById(R.id.btn_delete_book);
         return_button = findViewById(R.id.btn_return_book);
+        scanButton = findViewById(R.id.scan);
+        requestList = findViewById(R.id.request_list);
 
         imageChanged = false;
-        requestList = findViewById(R.id.request_list);
         requests = new ArrayList<BookRequest>();
         requestAdapter = new RequestAdapter(requests, getApplicationContext());
         requestList.setAdapter(requestAdapter);
@@ -159,68 +159,64 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         checkCases();
         setUpMaps();
 
-        edit_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ViewBookActivity.this, EditBookActivity.class);
-                intent.putExtra("BOOK_ID", bookID);
-                startActivityForResult(intent, 3);
-            }
-        });
+        setUpEditButtonListener();
+        setUpBackButtonListener();
+        setUpScanButtonListener();
+        setUpReturnButtonListener();
+        setUpRequestButtonListener();
+        setUpRequestListListener();
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        // setting up the request list
+        MainActivity.database
+                .getDb()
+                .collection("bookRequest")
+                .whereEqualTo("requestedBookID", bookID)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            requests.add(document.toObject(BookRequest.class));
+                        }
+                        requestAdapter = new RequestAdapter(requests, getApplicationContext());
+                        requestList.setAdapter(requestAdapter);
+                    }
+                });
+    }
 
-        return_button.setOnClickListener(new View.OnClickListener() {
+    private void setUpRequestListListener() {
+        requestList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
-                //BookRequest newRequest = new BookRequest(currentUser.getUserID(),requestReceiver.getUserID(),selectedBook.getBookID(), "Requested");
-                //db.collection("bookRequest").document().set(newRequest);
-
-                MainActivity.database
-                        .getDb()
-                        .collection("bookRequest")
-                        .whereEqualTo("requestSenderID", userID)
-                        .get()
-                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                bookReq = requests.get(position);
+                requestSenderID = bookReq.getRequestSenderID();
+                bookRequestID = bookReq.getBookRequestID();
+                requestPosition = position;
+                AlertDialog.Builder builder = new AlertDialog.Builder(ViewBookActivity.this);
+                builder.setMessage("Would you like to accept or decline this request?")
+                        .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                             @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                    if (!((String) documentSnapshot.get("requestedBookID")).equals(bookID)) {
-                                        continue; // continue if not this book
-                                    }
-                                    BookRequest newRequest = documentSnapshot.toObject(BookRequest.class);
-                                    // todo: so far, no need to change request status
-
-                                    final DocumentReference docRef = db.collection("users").document(newRequest.getRequestReceiverID());
-
-                                    docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                            requestReceiver = documentSnapshot.toObject(User.class);
-                                            requestReceiver.addToNotificationList(currentUser.getUserName() + " wants to return your book " + selectedBook.getTitle());
-                                            docRef.set(requestReceiver);
-
-                                            Toast.makeText(getBaseContext(), "raised a return request", Toast.LENGTH_SHORT).show();
-                                            finish();
-                                        }
-                                    });
-
-
-                                }
+                            public void onClick(DialogInterface dialog, int which) {
+                                new ScanFragment().show(getSupportFragmentManager(), "Scan ISBN");
+                            }
+                        })
+                        .setNegativeButton("Decline", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                declineRequest();
+                                updateBookInf();
+                                requests.remove(requestPosition);
+                                requestAdapter = new RequestAdapter(requests, getApplicationContext());
+                                requestList.setAdapter(requestAdapter);
                             }
                         });
-
-
-                // Q: finish the activity or not?
-                //finish();
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
             }
         });
+    }
 
+    private void setUpRequestButtonListener() {
         request_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -270,59 +266,85 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 request_button.setClickable(false);
             }//onClick
         });
+    }
 
-        requestList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    private void setUpReturnButtonListener() {
+        return_button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                bookReq = requests.get(position);
-                requestSenderID = bookReq.getRequestSenderID();
-                bookRequestID = bookReq.getBookRequestID();
-                requestPosition = position;
-                AlertDialog.Builder builder = new AlertDialog.Builder(ViewBookActivity.this);
-                builder.setMessage("Would you like to accept or decline this request?")
-                        .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+            public void onClick(View v) {
+                //BookRequest newRequest = new BookRequest(currentUser.getUserID(),requestReceiver.getUserID(),selectedBook.getBookID(), "Requested");
+                //db.collection("bookRequest").document().set(newRequest);
+
+                MainActivity.database
+                        .getDb()
+                        .collection("bookRequest")
+                        .whereEqualTo("requestSenderID", userID)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                new ScanFragment().show(getSupportFragmentManager(), "Scan ISBN");
-                            }
-                        })
-                        .setNegativeButton("Decline", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                declineRequest();
-                                updateBookInf();
-                                requests.remove(requestPosition);
-                                requestAdapter = new RequestAdapter(requests, getApplicationContext());
-                                requestList.setAdapter(requestAdapter);
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                    if (!((String) documentSnapshot.get("requestedBookID")).equals(bookID)) {
+                                        continue; // continue if not this book
+                                    }
+                                    BookRequest newRequest = documentSnapshot.toObject(BookRequest.class);
+                                    // todo: so far, no need to change request status
+
+                                    final DocumentReference docRef = db.collection("users").document(newRequest.getRequestReceiverID());
+
+                                    docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            requestReceiver = documentSnapshot.toObject(User.class);
+                                            requestReceiver.addToNotificationList(currentUser.getUserName() + " wants to return your book " + selectedBook.getTitle());
+                                            docRef.set(requestReceiver);
+
+                                            Toast.makeText(getBaseContext(), "raised a return request", Toast.LENGTH_SHORT).show();
+                                            finish();
+                                        }
+                                    });
+
+
+                                }
                             }
                         });
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
+
+
+                // Q: finish the activity or not?
+                //finish();
+            }
+        });
+    }
+
+    private void setUpScanButtonListener() {
+        scanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new ScanFragment().show(getSupportFragmentManager(), "Scan ISBN");
+            }
+        });
+    }
+
+    private void setUpBackButtonListener() {
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
 
-        // setting up the request list
-        final CollectionReference requestRef = db.collection("bookRequest");
-        requestRef
-                .whereEqualTo("requestedBookID", bookID)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            requests.add(document.toObject(BookRequest.class));
-                        }
-                        Log.d("", requests.size() + "");
 
-                    }
-                })
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        requestAdapter = new RequestAdapter(requests, getApplicationContext());
-                        requestList.setAdapter(requestAdapter);
-                    }
-                });
+    }
+
+    private void setUpEditButtonListener() {
+        edit_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ViewBookActivity.this, EditBookActivity.class);
+                intent.putExtra("BOOK_ID", bookID);
+                startActivityForResult(intent, 3);
+            }
+        });
     }
 
     private void updateBookInf() {
@@ -514,9 +536,8 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     private void getBookData() {
         // if it's not owner's book, we cannot access the book from user
         // so find the book from book collection
-
-
-        db.collection("books").document(bookID)
+        db.collection("books")
+                .document(bookID)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -541,12 +562,17 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        MainActivity.database.getDb().collection("users").document(ownerID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                ownerTextView.setText(documentSnapshot.toObject(User.class).getUserName());
-                            }
-                        });
+                        MainActivity.database
+                                .getDb()
+                                .collection("users")
+                                .document(ownerID)
+                                .get()
+                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                        ownerTextView.setText(documentSnapshot.toObject(User.class).getUserName());
+                                    }
+                                });
                     }
                 });
     }
@@ -556,9 +582,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
      * and then set the UIs accordingly.
      */
     private void checkCases() {
-
         final Book.Status bookStatus = Book.Status.valueOf(status);
-
         // owner
         if (userID.equals(owner)) {
             if (bookStatus.equals(Book.Status.Available) || bookStatus.equals(Book.Status.Requested)) {
@@ -575,6 +599,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 request_button.setVisibility(View.GONE);
                 requestList.setVisibility(View.GONE);
                 return_button.setVisibility(View.GONE);
+                scanButton.setVisibility(View.VISIBLE);
             }
         } else {
             isRelated = false;
@@ -608,6 +633,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                         request_button.setVisibility(View.GONE);
                                         requestList.setVisibility(View.GONE);
                                         return_button.setVisibility(View.GONE);
+                                        scanButton.setVisibility(View.VISIBLE);
 
                                     } else if (((String) documentSnapshot.get("requestStatus")).equals("Confirmed")) {
                                         // may want to return the book
@@ -689,17 +715,49 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
 
     @Override
     public void onOkPressed(String ISBN) {
+
         if (ISBN.equals(isbn)) {
-            Intent mapsIntent = new Intent(getApplicationContext(), MapsActivity.class);
-            mapsIntent.putExtra(MapsActivity.MAP_TYPE, MapsActivity.ADD_EDIT_LOCATION);
-            if (markerLoc != null) {
-                mapsIntent.putExtra("locationIncluded", true);
-                mapsIntent.putExtra("markerLoc", markerLoc);
-                mapsIntent.putExtra("markerText", markerText);
-            } else {
-                mapsIntent.putExtra("locationIncluded", false);
+            // if the book is requested.
+            if (Book.Status.valueOf(status).equals(Book.Status.Requested)) {
+                Intent mapsIntent = new Intent(getApplicationContext(), MapsActivity.class);
+                mapsIntent.putExtra(MapsActivity.MAP_TYPE, MapsActivity.ADD_EDIT_LOCATION);
+                if (markerLoc != null) {
+                    mapsIntent.putExtra("locationIncluded", true);
+                    mapsIntent.putExtra("markerLoc", markerLoc);
+                    mapsIntent.putExtra("markerText", markerText);
+                } else {
+                    mapsIntent.putExtra("locationIncluded", false);
+                }
+                startActivityForResult(mapsIntent, MapsActivity.ADD_EDIT_LOCATION_REQUEST_CODE);
             }
-            startActivityForResult(mapsIntent, MapsActivity.ADD_EDIT_LOCATION_REQUEST_CODE);
+            //if the book is accepted -> borrowed
+            if (Book.Status.valueOf(status).equals(Book.Status.Accepted)) {
+                MainActivity.database
+                        .getDb()
+                        .collection("books")
+                        .document(bookID)
+                        .get()
+                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                Book book = documentSnapshot.toObject(Book.class);
+                                book.setStatus(Book.Status.Borrowed);
+                                MainActivity.database.getDb().collection("books").document(bookID).set(book);
+                                // TODO: Do we need to update the book list in the user list
+                            }
+                        });
+
+            }
+            // TODO: How you guys want to do that?
+            // if the book is borrowed -> returned ??
+            if (Book.Status.valueOf(status).equals(Book.Status.Borrowed)) {
+
+            }
+            // if the book is returned -> available ??
+            if (Book.Status.valueOf(status).equals(Book.Status.Borrowed)) {
+
+            }
+
         } else {
             Toast.makeText(getBaseContext(), "ISBN does not match", Toast.LENGTH_SHORT).show();
         }
