@@ -1,6 +1,8 @@
 package com.example.ibook.activities;
 
+import android.app.NotificationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -9,6 +11,8 @@ import android.widget.SearchView;
 import com.example.ibook.entities.Book;
 import com.example.ibook.R;
 import com.example.ibook.entities.User;
+import com.example.ibook.fragment.NotificationsFragment;
+import com.example.ibook.fragment.ScanFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -78,7 +82,6 @@ public class PageActivity extends AppCompatActivity {
                 }// if
             }//onSuccess
         });
-
 
 
         // Set up the navigation bar controller
