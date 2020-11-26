@@ -27,6 +27,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static final String MAP_TYPE = "MAP_TYPE";
     public static final String ADD_EDIT_LOCATION = "ADD_EDIT_LOCATION";
     public static final String VIEW_LOCATION = "VIEW_LOCATION";
+    public static final int ADD_EDIT_LOCATION_REQUEST_CODE = 455;
+    public static final int VIEW_LOCATION_REQUEST_CODE = 456;
+    public static final int ADD_EDIT_LOCATION_RESULT_CODE = 457;
+    public static final int VIEW_LOCATION_RESULT_CODE = 458;
+    public static final LatLng defaultLocation = new LatLng(52.26815368056734, -113.81286688148975);
+    public static final double DEFAULT_ZOOM = 7.0;
+    public static final double MARKER_ZOOM = 15.0;
 
     private Button saveMarker;
     private Button goBack;
@@ -35,9 +42,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Marker marker;
     private LatLng markerLoc = null;
     private String markerText = "Meeting Location";
-    private final LatLng defaultLocation = new LatLng(54.890905, -96.675493);
-    private static final double DEFAULT_ZOOM = 2.5;
-    private static final double MARKER_ZOOM = 15.0;
+
+
     private String type = "none";
 
     @Override
@@ -91,7 +97,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }else{
                     intent.putExtra("locationIncluded", false);
                 }
-                //setResult(AddEditGearActivity.ADD_EDIT_LOCATION_RESULT_CODE, intent);
+                setResult(ADD_EDIT_LOCATION_RESULT_CODE, intent);
                 finish();
             }
         });
