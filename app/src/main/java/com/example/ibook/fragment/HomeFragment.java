@@ -178,6 +178,8 @@ public class HomeFragment extends Fragment {
                                     Intent intent = new Intent(getActivity(), SearchResultsActivity.class);
                                     intent.putExtra("books", resultList);
                                     intent.putExtra("users", userList);
+                                    System.out.println("Query in 1st activity"+query);
+                                    intent.putExtra("query",query);
                                     searchProgressBar.setVisibility(View.GONE);
                                     startActivity(intent);
                                 }
@@ -191,6 +193,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        datalist = new ArrayList<>();
         db.collection("books")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -202,6 +205,7 @@ public class HomeFragment extends Fragment {
                                 //Toast.makeText(getContext(), String.valueOf(datalist.size()), Toast.LENGTH_SHORT).show();
                             }
                             //adapter.notifyDataSetChanged();
+                            adapter = new BookListAdapter(datalist, getActivity());
                             bookListView.setAdapter(adapter);
                         } else {
                             Toast.makeText(getContext(), "got an error", Toast.LENGTH_SHORT).show();
