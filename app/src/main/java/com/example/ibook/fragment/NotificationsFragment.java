@@ -77,10 +77,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
     private Marker marker;
     public static LatLng markerLoc = null;
     public static String markerText;
-    public static final int ADD_EDIT_LOCATION_REQUEST_CODE = 455;
-    public static final int VIEW_LOCATION_REQUEST_CODE = 456;
-    public static final int ADD_EDIT_LOCATION_RESULT_CODE = 457;
-    public static final int VIEW_LOCATION_RESULT_CODE = 458;
+
     ArrayAdapter adapter;
 
     private String selectedBookISBN;
@@ -185,6 +182,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                                 selectedPosition = position;
                                 //final String requestSenderUsername = notification[0];
                                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
                                 builder.setMessage("Would you like to accept or decline this request?");
                                 builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
@@ -326,7 +324,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                     } else {
                         mapsIntent.putExtra("locationIncluded", false);
                     }
-                    startActivityForResult(mapsIntent, ADD_EDIT_LOCATION_REQUEST_CODE);
+                    startActivityForResult(mapsIntent, MapsActivity.ADD_EDIT_LOCATION_REQUEST_CODE);
                 } else {
                     Toast.makeText(getContext(), "ISBN does not match", Toast.LENGTH_LONG).show();
                 }
@@ -413,17 +411,13 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //Add new gear
-        if (resultCode == ADD_EDIT_LOCATION_RESULT_CODE && requestCode == ADD_EDIT_LOCATION_REQUEST_CODE) {
+        if (resultCode == MapsActivity.ADD_EDIT_LOCATION_RESULT_CODE && requestCode == MapsActivity.ADD_EDIT_LOCATION_REQUEST_CODE) {
             if (data.getBooleanExtra("locationIncluded", false)) {
                 markerLoc = (LatLng) data.getExtras().getParcelable("markerLoc");
                 markerText = data.getStringExtra("markerText");
             }
             //TODO: fix data set
             acceptRequest();
-            //Clear the map so existing marker gets removed
-            //mMap.clear();
-            //addMarker();
-            //addLocation.setText("Edit Location");
         }
     }
 
