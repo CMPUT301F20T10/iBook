@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -419,6 +420,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                 markerText = data.getStringExtra("markerText");
             }
             //TODO: fix data set
+            Log.d("", "test");
             acceptRequest();
             //Clear the map so existing marker gets removed
             //mMap.clear();

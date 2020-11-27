@@ -40,6 +40,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -409,12 +410,16 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d("", requestCode + "");
+        Log.d("", resultCode + "");
         if (resultCode == ADD_EDIT_LOCATION_RESULT_CODE && requestCode == ADD_EDIT_LOCATION_REQUEST_CODE) {
             if (data.getBooleanExtra("locationIncluded", false)) {
                 markerLoc = (LatLng) data.getExtras().getParcelable("markerLoc");
                 markerText = data.getStringExtra("markerText");
                 acceptRequest();
+                Log.d("", "test1");
             }
+            Log.d("", "test");
             //Clear the map so existing marker gets removed
             //mMap.clear();
             //addMarker();
