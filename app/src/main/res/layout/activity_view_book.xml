@@ -284,13 +284,10 @@
                 android:layout_marginBottom="32dp"
                 android:background="#F2F6F9"
                 android:orientation="vertical"
-                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
-
-
+                app:layout_constraintTop_toBottomOf="@+id/mapsConstraintLayout">
 
                 <ListView
                     android:id="@+id/request_list"

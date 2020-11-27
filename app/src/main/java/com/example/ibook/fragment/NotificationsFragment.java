@@ -56,6 +56,7 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
  */
 public class NotificationsFragment extends Fragment implements ZXingScannerView.ResultHandler {
 
+    private static final int ADD_EDIT_LOCATION_REQUEST_CODE = 455;
     public BookRequest bookRequest;
     public String bookID;
     private FirebaseFirestore db;
