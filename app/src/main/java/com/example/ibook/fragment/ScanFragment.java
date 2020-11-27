@@ -3,23 +3,16 @@ package com.example.ibook.fragment;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-
 import com.example.ibook.R;
-import com.example.ibook.activities.PageActivity;
 import com.google.zxing.Result;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
@@ -28,6 +21,9 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 
@@ -41,7 +37,7 @@ public class ScanFragment extends DialogFragment implements ZXingScannerView.Res
     private Button rescanButton;
     private TextView isbnView;
 
-    private String ISBN;
+    private String ISBN = "";
 
     private OnFragmentInteractionListener listener;
 

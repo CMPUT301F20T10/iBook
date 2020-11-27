@@ -17,7 +17,6 @@ import com.example.ibook.R;
 import com.example.ibook.activities.AddBookActivity;
 import com.example.ibook.activities.MainActivity;
 import com.example.ibook.entities.Book;
-import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -160,7 +159,7 @@ public class BookListFragment extends Fragment {
                                 continue;
                             if(documentSnapshot.contains("requestStatus")){
                                 // if the status is not confirmed, ignore it
-                                if(!((String) documentSnapshot.get("requestStatus")).equals("Confirmed")){
+                                if(!((String) documentSnapshot.get("requestStatus")).equals("Borrowed")){
                                     continue;
                                 }
                             }

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -29,6 +31,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -154,7 +157,6 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                 showImagePickerDialog();
             }
         });
-
     }
 
     private void getBookData() {
@@ -223,7 +225,11 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                 .setNeutralButton("Delete Image", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
+                        //imageView.setImageResource(android.R.drawable.ic_input_add);
+                        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), android.R.drawable.ic_menu_gallery);
+                        storeLocally(bitmap);
+                        imageView = EditBookActivity.scaleAndSetImage(bitmap, imageView);
+                        imageAdded = true;
                     }
                 });
         AlertDialog dialog = builder.create();
@@ -291,5 +297,6 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
         imageView.setImageBitmap(bitmap);
         return imageView;
     }
+
 
 }

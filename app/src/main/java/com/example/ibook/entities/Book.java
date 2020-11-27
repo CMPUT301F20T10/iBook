@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class Book implements Serializable, Comparable<Book>{
 
     public enum Status {
-        Available, Requested, Borrowed, Return, Accepted
+        Available, Requested, Borrowed, Return, Accepted, Returning
     }
 
     private String title;
