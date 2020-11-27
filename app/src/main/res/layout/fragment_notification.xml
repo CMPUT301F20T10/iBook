@@ -102,11 +102,11 @@
         tools:layout_conversion_absoluteHeight="24dp"
         tools:layout_conversion_absoluteWidth="90dp" />
 
-    <TextView
+    <EditText
         android:id="@+id/isbn_result"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="15dp"
         android:text=""
         android:textSize="18sp"
         android:visibility="gone"

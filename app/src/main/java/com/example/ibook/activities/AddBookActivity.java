@@ -31,6 +31,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -107,8 +110,9 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 // check full information
                 if (bookName.length() > 0
                         && authorName.length() > 0
-                        && date.length() > 0
-                        && isbn.length() > 0) {
+                        && dateIsValid(date)
+                        && isbnIsValid(isbn)) {
+                    finish();
 
                     bookID = MainActivity.database.getDb().collection("books").document().getId();
                     final Book newBook = new Book(bookName, authorName, date, description, Book.Status.Available, isbn, userID, bookID);
@@ -131,10 +135,11 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                         e.printStackTrace();
                     }
                     //setResult(1, intent);
-                } else {
+                } else if (!(bookName.length() > 0
+                        && authorName.length() > 0)){
                     Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();
                 }
-                finish();
+                //finish();
             }
         });
 
@@ -235,6 +240,30 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    public boolean isbnIsValid(String isbn){
+        if (isbn.matches("[0-9]+") && (isbn.length() == 10 || isbn.length() == 13)) {
+            return true;
+        }
+        else{
+            Toast.makeText(getBaseContext(), "ISBN must be 10 or 13 digit number", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+    }
+    public boolean dateIsValid(String date) {
+
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+        format.setLenient(false);
+        try {
+            format.parse(date);
+            return true;
+        } catch (ParseException e) {
+            Toast.makeText(getBaseContext(), "Date should be in specified format", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
     }
 
     @Override

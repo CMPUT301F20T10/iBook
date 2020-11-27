@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -12,15 +13,21 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
 import com.example.ibook.UserListAdapter;
 import com.example.ibook.entities.Book;
 import com.example.ibook.entities.User;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -43,6 +50,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     // for color change
     private RadioButton book;
     private RadioButton user;
+    private String query;
 
 //    //list view getter
 //    public ListView getListView() {
@@ -64,8 +72,12 @@ public class SearchResultsActivity extends AppCompatActivity {
         backButton = findViewById(R.id.cancelButton);
         noResultText = findViewById(R.id.noResultTextView);
 
+        //get results from home fragment
+        Intent intent = getIntent();
+        query = intent.getStringExtra("query");
         bookList = (ArrayList<Book>) getIntent().getSerializableExtra("books");
         userList = (ArrayList<User>) getIntent().getSerializableExtra("users");
+
         if (bookList.isEmpty()) {
             noResultText.setVisibility(View.VISIBLE);
         }else {
@@ -80,29 +92,29 @@ public class SearchResultsActivity extends AppCompatActivity {
         booksAdapter = new BookListAdapter(bookList, getApplicationContext());
         bookListView.setAdapter(booksAdapter);
 
-        // set toggle buttons
+
         radioGroup = findViewById(R.id.selectState);
         book = findViewById(R.id.search_book);
         user = findViewById(R.id.search_user);
         setUpListListener();
 
-
+        // set toggle buttons
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton radioButton = group.findViewById(checkedId);
                 if (radioButton.getText().toString().equals("Books")) {
+
+                    updateBookResults();
+
                     book.setTextColor(Color.WHITE);
                     user.setTextColor(Color.parseColor("#FF9900"));
-                    if (bookList.isEmpty()) {
-                        noResultText.setVisibility(View.VISIBLE);
-                    } else {
-                        noResultText.setVisibility(View.GONE);
-                    }
+
+
+
                     bookListView.setVisibility(View.VISIBLE);
                     userListView.setVisibility(View.GONE);
-                    booksAdapter = new BookListAdapter(bookList, getApplicationContext());
-                    bookListView.setAdapter(booksAdapter);
+
                     //setUpListListener();
                 }
                 if (radioButton.getText().toString().equals("Users")) {
@@ -161,4 +173,45 @@ public class SearchResultsActivity extends AppCompatActivity {
             });
         }
     }
+    public void updateBookResults(){
+        bookList= new ArrayList<>();
+        MainActivity.database
+                .getDb()
+                .collection("books")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                            Book book = documentSnapshot.toObject(Book.class);
+                            if (book.getAuthors().toLowerCase().contains(query.toLowerCase())
+                                    || book.getTitle().toLowerCase().contains(query.toLowerCase())
+                                    || book.getDescription().toLowerCase().contains(query.toLowerCase())
+                            ) {
+                                if (book.getStatus() != Book.Status.Borrowed
+                                        && book.getStatus() != Book.Status.Accepted) {
+                                    bookList.add(book);
+                                }
+                            }
+                        }
+                        if (bookList.isEmpty()) {
+                            noResultText.setVisibility(View.VISIBLE);
+                        }else {
+                            noResultText.setVisibility(View.GONE);
+                        }
+                        booksAdapter = new BookListAdapter(bookList, getApplicationContext());
+                        bookListView.setAdapter(booksAdapter);
+
+                    }
+                });
+
+        }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateBookResults();
+    }
+
+
 }
