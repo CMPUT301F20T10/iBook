@@ -260,8 +260,16 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
             @Override
             public void onClick(View v) {
                 //BookRequest newRequest = new BookRequest(currentUser.getUserID(),requestReceiver.getUserID(),selectedBook.getBookID(), "Requested");
-                // return a accepted book
-                new ScanFragment().show(getSupportFragmentManager(), "Scan ISBN");
+                // return a accepted book / cancel a return
+                if(selectedBook.getStatus().equals(Book.Status.Returning)){
+                    status = "Borrowed";
+                    selectedBook.setStatus(Book.Status.Borrowed);
+                    db.collection("books").document(bookID).set(selectedBook);
+                    Toast.makeText(getBaseContext(),"return request is cancelled",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    new ScanFragment().show(getSupportFragmentManager(), "Scan ISBN");
+                }
 
             }
         });
@@ -672,7 +680,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
 
     @Override
     public void onOkPressed(String ISBN) {
-        Toast.makeText(getBaseContext(), ISBN, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getBaseContext(), "Assume that ISBN works well", Toast.LENGTH_SHORT).show();
         // TODO: delete the line below
         // just for test, make them equal
         ISBN = isbn;
@@ -752,13 +760,14 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                             .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                                 @Override
                                                 public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                    Book book = documentSnapshot.toObject(Book.class);
-                                                    book.setStatus(Book.Status.Returning);
-                                                    MainActivity.database.getDb().collection("books").document(bookID).set(book);
+                                                    selectedBook = documentSnapshot.toObject(Book.class);
+                                                    selectedBook.setStatus(Book.Status.Returning);
+                                                    status = "Returning";
+                                                    MainActivity.database.getDb().collection("books").document(bookID).set(selectedBook);
                                                     // TODO: Do we need to update the book list in the user list
                                                 }
                                             });
-
+                                    Toast.makeText(getBaseContext(), "raised a return request", Toast.LENGTH_SHORT).show();
                                     BookRequest newRequest = documentSnapshot.toObject(BookRequest.class);
 
 
@@ -771,8 +780,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                             requestReceiver.addToNotificationList(currentUser.getUserName() + " wants to return your book " + selectedBook.getTitle());
                                             docRef.set(requestReceiver);
 
-                                            Toast.makeText(getBaseContext(), "raised a return request", Toast.LENGTH_SHORT).show();
-                                            finish();
+
                                         }
                                     });
 
@@ -780,6 +788,45 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                 }
                             }
                         });
+            }
+            // if it's the owner
+            if(selectedBook.getOwner().equals(userID)) {
+                // if the status is returning
+                if (Book.Status.valueOf(status).equals(Book.Status.Returning)) {
+
+
+                    // if you are the owner, you want to scan the book to end the process
+                    MainActivity.database.getDb().collection("bookRequest")
+                            .whereEqualTo("requestedBookID", bookID)
+                            .whereEqualTo("requestReceiverID", userID)
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    //delete all documents that meet the query
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        document.getReference().delete();
+                                    }
+                                }//onComplete
+                            });
+                    MainActivity.database
+                            .getDb()
+                            .collection("books")
+                            .document(bookID)
+                            .get()
+                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    Book book = documentSnapshot.toObject(Book.class);
+                                    book.setStatus(Book.Status.Available);
+                                    MainActivity.database.getDb().collection("books").document(bookID).set(book);
+                                    // TODO: Do we need to update the book list in the user list
+                                }
+                            });
+
+                } else { // status not returning, notify the owner it's cancelled
+                    Toast.makeText(getBaseContext(), "Holder cancelled the request", Toast.LENGTH_SHORT).show();
+                }
             }
 
         } else {
