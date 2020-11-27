@@ -167,12 +167,17 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 .setPositiveButton("Camera", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                         // second parameter : request code
 
-                        Toast.makeText(getBaseContext(), "There is a bug with camera, please use gallery", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getBaseContext(), "There is a bug with camera, please use gallery", Toast.LENGTH_SHORT).show();
                         // TODO: there is a bug when using camera, maybe because of MediaStore library
                         // startActivityForResult(intent, REQ_CAMERA_IMAGE);
+
+                        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+                            startActivityForResult(cameraIntent, REQ_CAMERA_IMAGE);
+                        }
 
                     }
                 })
