@@ -418,8 +418,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
         Toast.makeText(getContext(),String.valueOf(resultCode)+" "+String.valueOf(requestCode),Toast.LENGTH_SHORT).show();
 
         // todo: the resultCode = 0 here, don't know why, so I ignored it
-        //if (resultCode == ADD_EDIT_LOCATION_RESULT_CODE && requestCode == ADD_EDIT_LOCATION_REQUEST_CODE) {
-        if(requestCode == MapsActivity.ADD_EDIT_LOCATION_REQUEST_CODE){
+        if (resultCode == MapsActivity.ADD_EDIT_LOCATION_RESULT_CODE && requestCode == MapsActivity.ADD_EDIT_LOCATION_REQUEST_CODE) {
             if (data.getBooleanExtra("locationIncluded", false)) {
                 markerLoc = (LatLng) data.getExtras().getParcelable("markerLoc");
                 markerText = data.getStringExtra("markerText");
@@ -491,7 +490,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                         MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
                     }// onComplete
                 });
-    }
+    }//acceptRequest
 
 
     @Override
