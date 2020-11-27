@@ -76,10 +76,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
     private Marker marker;
     public static LatLng markerLoc = null;
     public static String markerText;
-    public static final int ADD_EDIT_LOCATION_REQUEST_CODE = 455;
-    public static final int VIEW_LOCATION_REQUEST_CODE = 456;
-    public static final int ADD_EDIT_LOCATION_RESULT_CODE = 457;
-    public static final int VIEW_LOCATION_RESULT_CODE = 458;
+
     ArrayAdapter adapter;
 
     private String selectedBookISBN;
@@ -185,6 +182,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                                 selectedPosition = position;
                                 //final String requestSenderUsername = notification[0];
                                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
                                 builder.setMessage("Would you like to accept or decline this request?");
                                 builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
