@@ -37,6 +37,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -91,6 +92,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     private Button delete_button;
     private Button request_button;
     private Button return_button;
+    private Button cancelRequestButton;
     private ListView requestList;
 
     private FirebaseFirestore db;
@@ -112,6 +114,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
 
     private RequestAdapter requestAdapter;
     private FloatingActionButton scanButton;
+
 
     //Maps
     private static LatLng markerLoc = null;
@@ -146,7 +149,9 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         delete_button = findViewById(R.id.btn_delete_book);
         return_button = findViewById(R.id.btn_return_book);
         scanButton = findViewById(R.id.scan);
+        cancelRequestButton = findViewById(R.id.btn_cancelRequest_book);
         requestList = findViewById(R.id.request_list);
+
 
         imageChanged = false;
         requests = new ArrayList<BookRequest>();
@@ -179,6 +184,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         setUpReturnButtonListener();
         setUpRequestButtonListener();
         setUpRequestListListener();
+        setUpCancelRequestButtonListener();
 
         // setting up the request list
         MainActivity.database
@@ -197,6 +203,104 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                     }
                 });
     }
+
+    private void setUpCancelRequestButtonListener() {
+        cancelRequestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.database
+                        .getDb()
+                        .collection("bookRequest")
+                        .whereEqualTo("requestSenderID", userID)
+                        .whereEqualTo("requestedBookID", bookID)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                //delete the request from BookRequest Collection
+                                BookRequest deleteRequest = null;
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    deleteRequest = document.toObject(BookRequest.class);
+                                    document.getReference().delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Toast.makeText(ViewBookActivity.this, "Deleted book request successfully!", Toast.LENGTH_SHORT).show();
+                                            //update the book status if no more request on book
+                                            checkForBookStatusUpdate(bookID);
+                                        }
+                                    });
+                                }//for loop
+
+                                //notify the owner that request has been cancelled by user
+                                final BookRequest finalDeleteRequest = deleteRequest;
+                                MainActivity.database.getDb().collection("users").document(deleteRequest.getRequestReceiverID())
+                                        .get()
+                                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                DocumentSnapshot document = (DocumentSnapshot) task.getResult();
+                                                User user = document.toObject(User.class);
+                                                user.addToNotificationList(finalDeleteRequest.getRequestSenderUsername() + " Cancelled request on the book called " + finalDeleteRequest.getRequestedBookTitle());
+                                                MainActivity.database.getDb().collection("users").document(finalDeleteRequest.getRequestReceiverID()).set(user);
+                                            }// onComplete
+                                        });
+                            }//onComplete
+                        });
+
+                //Should be able to request again
+                cancelRequestButton.setVisibility(View.GONE);
+                request_button.setVisibility(View.VISIBLE);
+            }
+        });
+
+    }// setUpCancelRequestButtonListener
+
+    /**
+     * Chceks if last book request was deleted, since then we update the book status to "Available"
+     * @param - bookID
+     */
+    public void checkForBookStatusUpdate(final String bookID){
+        Toast.makeText(this, "Coming to check for book status update for: " + bookID, Toast.LENGTH_SHORT).show();
+
+        MainActivity.database.getDb()
+                .collection("bookRequest")
+                .whereEqualTo("requestedBookID", bookID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        //if no other request on the book, change status to available
+                        Toast.makeText(ViewBookActivity.this, "Empty? " + task.getResult().isEmpty(), Toast.LENGTH_SHORT).show();
+                        if (task.getResult().isEmpty()) {
+                            MainActivity.database.getDb().collection("books").document(bookID)
+                                    .get()
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(ViewBookActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    })
+                                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                            Toast.makeText(ViewBookActivity.this, "Successfully made it to book doc", Toast.LENGTH_SHORT).show();
+                                            DocumentSnapshot document = (DocumentSnapshot) task.getResult();
+                                            Book book = document.toObject(Book.class);
+                                            //Set status Available since only request was declined
+                                            book.setStatus(Book.Status.Available);
+
+                                            MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Toast.makeText(ViewBookActivity.this, "Updated book status to Available Successfully", Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                        }//onComplete
+                                    });// addOnCompleteListener
+                        }//if
+                    }//onComplete
+                });//addOnCompleteListener
+    }//checkForBookStatusUpdate
 
     private void setUpRequestListListener() {
         requestList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -281,7 +385,9 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
 
                 Toast.makeText(getBaseContext(), "This function is coming soon!", Toast.LENGTH_SHORT).show();
                 request_button.setBackgroundColor(Color.parseColor("#626363"));
-                request_button.setClickable(false);
+                request_button.setVisibility(View.GONE);
+                cancelRequestButton.setVisibility(View.VISIBLE);
+
             }//onClick
         });
     }
@@ -304,7 +410,8 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
 
             }
         });
-    }
+    }//setupReturnButtonListener
+
 
     private void setUpScanButtonListener() {
         scanButton.setOnClickListener(new View.OnClickListener() {
@@ -563,7 +670,9 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                     @Override
                                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                        ownerTextView.setText(documentSnapshot.toObject(User.class).getUserName());
+                                        User user = documentSnapshot.toObject(User.class);
+                                        ownerTextView.setText(user.getUserName());
+                                       // ownerTextView.setText(documentSnapshot.toObject(User.class).getUserName());
                                     }
                                 });
                     }
@@ -594,7 +703,8 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 return_button.setVisibility(View.GONE);
                 scanButton.setVisibility(View.VISIBLE);
             }
-        } else {
+        }// outer if
+        else {
             isRelated = false;
             MainActivity.database
                     .getDb()
@@ -616,6 +726,8 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                         request_button.setVisibility(View.GONE);
                                         requestList.setVisibility(View.GONE);
                                         return_button.setVisibility(View.GONE);
+                                        cancelRequestButton.setVisibility(View.VISIBLE);
+
                                         Toast.makeText(getBaseContext(), "Canceling requests to be done", Toast.LENGTH_SHORT).show();
                                     } else if (((String) documentSnapshot.get("requestStatus")).equals("Accepted")) {
 
@@ -627,13 +739,16 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                         requestList.setVisibility(View.GONE);
                                         return_button.setVisibility(View.GONE);
                                         scanButton.setVisibility(View.VISIBLE);
+                                        cancelRequestButton.setVisibility(View.GONE);
 
                                     } else if (((String) documentSnapshot.get("requestStatus")).equals("Borrowed")) {
                                         // may want to return the book
+                                        return_button.setVisibility(View.VISIBLE);
                                         edit_button.setVisibility(View.GONE);
                                         delete_button.setVisibility(View.GONE);
                                         request_button.setVisibility(View.GONE);
                                         requestList.setVisibility(View.GONE);
+                                        cancelRequestButton.setVisibility(View.GONE);
                                     }
                                     isRelated = true;
                                     break;
@@ -649,6 +764,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                     delete_button.setVisibility(View.GONE);
                                     requestList.setVisibility(View.GONE);
                                     return_button.setVisibility(View.GONE);
+                                    cancelRequestButton.setVisibility(View.GONE);
                                 } else {
                                     // nothing can do
                                     edit_button.setVisibility(View.GONE);
@@ -656,6 +772,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                     request_button.setVisibility(View.GONE);
                                     requestList.setVisibility(View.GONE);
                                     return_button.setVisibility(View.GONE);
+                                    cancelRequestButton.setVisibility(View.GONE);
                                 }
                             }
                         }
@@ -848,7 +965,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                     Book book = documentSnapshot.toObject(Book.class);
                                     book.setStatus(Book.Status.Available);
                                     MainActivity.database.getDb().collection("books").document(bookID).set(book);
-                                    // TODO: Do we need to update the book list in the user list
+                                    // TODO: Do we need to update the book list in the user list: No
                                 }
                             });
 
