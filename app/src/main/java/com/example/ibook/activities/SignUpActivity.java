@@ -9,15 +9,23 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.ibook.R;
+import com.example.ibook.RequestAdapter;
+import com.example.ibook.entities.BookRequest;
 import com.example.ibook.entities.Database;
 import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
 
 /**
  * Activity for signing users up for the app
@@ -70,11 +78,12 @@ public class SignUpActivity extends AppCompatActivity {
     String confirmPassword = ed_confirmPassword.getText().toString();
 
     // verifying the user's input
-    if (username.length() > 0
-        && phoneNumber.length() > 0
+    System.out.println(username);
+    if (phoneIsValid(phoneNumber)
         && email.length() > 0
         && password.length() > 0
         && confirmPassword.length() > 0) {
+
       if (password.length() >= 6) {
         if (password.equals(confirmPassword)) {
           // if not valid, the func will return
@@ -142,5 +151,39 @@ public class SignUpActivity extends AppCompatActivity {
     //Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
     finish();
   }// cancel_signup
+  public void usernameIsUnique(String username){
+    final ArrayList<User> userList = new ArrayList<>();
+    FirebaseFirestore.getInstance()
+            .collection("users")
+            .whereEqualTo("userName", username)
+            .get()
+            .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+              @Override
+              public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                  userList.add(document.toObject(User.class));
+                  if (!userList.isEmpty()){
+                    Toast.makeText(getBaseContext(), "Username exists", Toast.LENGTH_SHORT).show();
+                  }
+                  else{
+
+                  }
+
+                }
+              }
+            });
+
+  }
+  public boolean phoneIsValid(String phoneNumber){
+    if (phoneNumber.matches("[0-9]+") && phoneNumber.length() == 10){
+      return true;
+    }
+    else{
+      Toast.makeText(getBaseContext(), "Phone number is not valid", Toast.LENGTH_SHORT).show();
+      return false;
+    }
+  }
+
+
 
 } //Class - SignUpActivity
