@@ -1,5 +1,7 @@
 package com.example.ibook.entities;
 
+import com.google.firebase.firestore.GeoPoint;
+
 import java.io.Serializable;
 
 public class Book implements Serializable, Comparable<Book>{
@@ -16,7 +18,8 @@ public class Book implements Serializable, Comparable<Book>{
     private String isbn;
     private String owner;
     private String bookID;
-
+    private GeoPoint meetingLocation;
+    private String meetingText;
 
 
     //Need to add picture data somehow
@@ -25,16 +28,6 @@ public class Book implements Serializable, Comparable<Book>{
     }
 
     //Constructor
-    public Book(String title, String authors, String date,String description, String isbn, String ownerID) {
-        this.title = title;
-        this.authors = authors;
-        this.date = date;
-        this.status = Status.Available;    // Attribute status denotes the status of the book, and thus we don't actually need
-        this.isbn = isbn;
-        this.owner = ownerID;
-        this.description = description;
-    }
-
     public Book(String title, String author, String date, String description, Status status, String isbn, String ownerID, String bookID) {
         this.title = title;
         this.authors = author;
@@ -44,6 +37,8 @@ public class Book implements Serializable, Comparable<Book>{
         this.isbn = isbn;
         this.owner = ownerID;
         this.bookID = bookID;
+        this.meetingLocation = null;
+        this.meetingText = "Meeting Location";
     }
 
     //Getters
@@ -125,4 +120,16 @@ public class Book implements Serializable, Comparable<Book>{
         return this.title.toLowerCase().compareTo(o.title.toLowerCase());
     }
 
+    public void setMeetingLocation(Double latitude, Double longitude) {
+        meetingLocation = new GeoPoint(latitude,longitude);
+    }
+    public GeoPoint getMeetingLocation() {
+        return this.meetingLocation;
+    }
+    public void setMeetingText(String text) {
+        this.meetingText = text;
+    }
+    public String getMeetingText(){
+        return meetingText;
+    }
 }

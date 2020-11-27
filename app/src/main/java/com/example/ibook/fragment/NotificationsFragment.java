@@ -327,7 +327,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                     } else {
                         mapsIntent.putExtra("locationIncluded", false);
                     }
-                    startActivityForResult(mapsIntent, ADD_EDIT_LOCATION_REQUEST_CODE);
+                    startActivityForResult(mapsIntent, MapsActivity.ADD_EDIT_LOCATION_REQUEST_CODE);
                     setVisible(false); // end scanning part
                 } else {
                     Toast.makeText(getContext(), "ISBN does not match", Toast.LENGTH_LONG).show();
@@ -419,17 +419,11 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
 
         // todo: the resultCode = 0 here, don't know why, so I ignored it
         //if (resultCode == ADD_EDIT_LOCATION_RESULT_CODE && requestCode == ADD_EDIT_LOCATION_REQUEST_CODE) {
-        if(requestCode == ADD_EDIT_LOCATION_REQUEST_CODE){
-            //if (data.getBooleanExtra("locationIncluded", false)) {
-            //    markerLoc = (LatLng) data.getExtras().getParcelable("markerLoc");
-            //    markerText = data.getStringExtra("markerText");
-            //}
-            //TODO: fix data set
-            //acceptRequest();
-            //Clear the map so existing marker gets removed
-            //mMap.clear();
-            //addMarker();
-            //addLocation.setText("Edit Location");
+        if(requestCode == MapsActivity.ADD_EDIT_LOCATION_REQUEST_CODE){
+            if (data.getBooleanExtra("locationIncluded", false)) {
+                markerLoc = (LatLng) data.getExtras().getParcelable("markerLoc");
+                markerText = data.getStringExtra("markerText");
+            }
         }
         acceptRequest();
     }
@@ -492,6 +486,8 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                         DocumentSnapshot document = (DocumentSnapshot) task.getResult();
                         Book book = document.toObject(Book.class);
                         book.setStatus(Book.Status.Accepted);
+                        book.setMeetingLocation(markerLoc.latitude, markerLoc.longitude);
+                        book.setMeetingText(markerText);
                         MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
                     }// onComplete
                 });

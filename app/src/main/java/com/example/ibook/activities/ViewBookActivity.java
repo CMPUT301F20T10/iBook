@@ -115,7 +115,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
 
     //Maps
     private static LatLng markerLoc = null;
-    private static String markerText;
+    private static String markerText = "Meeting Location";
     private static boolean editMapsLocation = false;
     private GoogleMap mMap;
     private final LatLng defaultLocation = new LatLng(53.54685611047399, -113.49431332200767);
@@ -149,6 +149,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         requestList = findViewById(R.id.request_list);
 
         imageChanged = false;
+        markerLoc = null;
         requests = new ArrayList<BookRequest>();
         requestAdapter = new RequestAdapter(requests, getApplicationContext());
         requestList.setAdapter(requestAdapter);
@@ -279,7 +280,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                     }
                 });
 
-                Toast.makeText(getBaseContext(), "This function is coming soon!", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getBaseContext(), "This function is coming soon!", Toast.LENGTH_SHORT).show();
                 request_button.setBackgroundColor(Color.parseColor("#626363"));
                 request_button.setClickable(false);
             }//onClick
@@ -418,9 +419,13 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
             if (data.getBooleanExtra("locationIncluded", false)) {
                 markerLoc = (LatLng) data.getExtras().getParcelable("markerLoc");
                 markerText = data.getStringExtra("markerText");
-                acceptRequest();
+                Log.i("Maps", "Returned from saved location");
+                //If its not the owner then the borrower can edit the location to return it
+                if(selectedBook.getOwner().equals(userID)){
+                    acceptRequest();
+                }
+                setUpMaps();
             }
-            setUpMaps();
         }
         if (resultCode == 4 && requestCode == 3) {
             SystemClock.sleep(500);
@@ -516,6 +521,8 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         DocumentSnapshot document = (DocumentSnapshot) task.getResult();
                         Book book = document.toObject(Book.class);
                         book.setStatus(Book.Status.Accepted);
+                        book.setMeetingLocation(markerLoc.latitude, markerLoc.longitude);
+                        book.setMeetingText(markerText);
                         MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
                     }// onComplete
                 });
@@ -550,6 +557,17 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                             MainActivity.database.downloadImage(imageView, selectedBook.getBookID(), true);
                         }
                         imageChanged = false;
+                        if(selectedBook.getMeetingLocation() != null) {
+                            Log.i("Maps", "Getting Location");
+                            Log.i("Maps", "Getting Marker"+ selectedBook.getMeetingLocation().getLatitude());
+                            markerLoc = new LatLng(selectedBook.getMeetingLocation().getLatitude(), selectedBook.getMeetingLocation().getLongitude());
+                            markerText = selectedBook.getMeetingText();
+                            if(mMap != null) {
+                                addMarker();
+                            }
+                        }else{
+                            markerLoc = null;
+                        }
                     }
                 })
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -636,6 +654,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                         requestList.setVisibility(View.GONE);
                                     }
                                     isRelated = true;
+                                    setUpMaps();
                                     break;
                                 } else {
                                     Toast.makeText(getBaseContext(), "wrong request format", Toast.LENGTH_SHORT).show();
@@ -869,6 +888,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
      * Once the book is confirmed as borrowed then the borrower can edit the location to eventually return the book.
      */
     private void setUpMaps() {
+        Log.i("Maps", "IsRelated: " + isRelated);
         if(userID.equals(owner) || isRelated) {
             //Set up the google maps fragment
             boolean abledToSetMapsUp = false;
@@ -884,6 +904,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
             if (userID.equals(owner)) {
                 //The owner has accepted a request for the book so can still edit the location.
                 if (bookStatus.equals(Book.Status.Accepted)) {
+                    Log.i("Maps", "Owner and Accepted");
                     editViewButton.setText("Edit");
                     mapsConstraintLayout.setVisibility(View.VISIBLE);
                     editMapsLocation = true;
@@ -891,6 +912,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 }
                 //Once the book is borrowed the owner can no longer edit the location
                 else if (bookStatus.equals(Book.Status.Borrowed)) {
+                    Log.i("Maps", "Owner and Borrowed");
                     editViewButton.setText("View");
                     mapsConstraintLayout.setVisibility(View.VISIBLE);
                     abledToSetMapsUp = true;
@@ -899,12 +921,14 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
             else if (isRelated){
                 //The borrower can edit the location once the book is in his hands.
                 //This is useful when trying to return the book as he can set the location to return it to.
-                if (bookStatus.equals(Book.Status.Borrowed)) {
+                if (bookStatus.equals(Book.Status.Borrowed)||bookStatus.equals(Book.Status.Returning)) {
+                    Log.i("Maps", "Borrower and Borrowed");
                     editViewButton.setText("Edit");
                     mapsConstraintLayout.setVisibility(View.VISIBLE);
                     editMapsLocation = true;
                     abledToSetMapsUp = true;
                 }else  if (bookStatus.equals(Book.Status.Accepted)){
+                    Log.i("Maps", "Borrower and Accepted");
                     editViewButton.setText("View");
                     mapsConstraintLayout.setVisibility(View.VISIBLE);
                     abledToSetMapsUp = true;
@@ -939,8 +963,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         }
         //Draw the map
         if(mMap!=null) {
-
-            mMap.clear();
             addMarker();
         }
     }
@@ -960,6 +982,8 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
      */
     private void addMarker() {
         if(markerLoc!=null) {
+            mMap.clear();
+            Log.i("Maps", "Adding Marker "+ markerLoc.latitude);
             mMap.addMarker(new MarkerOptions().position(markerLoc).title(markerText));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerLoc,(float) MARKER_ZOOM));
             //marker.showInfoWindow();
