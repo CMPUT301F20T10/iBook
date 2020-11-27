@@ -141,6 +141,10 @@ public class User implements Serializable {
         notificationList.add(message);
     }
 
+    public void removeFromNotificationList(int position){
+        this.notificationList.remove(position);
+    }// removeFromNotificationList
+
     public void addToBookList(Book book) {
         bookList.add(book);
     }
