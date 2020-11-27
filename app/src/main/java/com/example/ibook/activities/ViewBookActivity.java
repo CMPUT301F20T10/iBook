@@ -888,17 +888,20 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         .getDb()
                         .collection("bookRequest")
                         .whereEqualTo("requestSenderID", userID)
+                        .whereEqualTo("requestedBookID", bookID)
                         .get()
                         .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                 for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                    if (!((String) documentSnapshot.get("requestedBookID")).equals(bookID)) {
-                                        continue; // continue if not this book
-                                    }
+//                                    if (!((String) documentSnapshot.get("requestedBookID")).equals(bookID)) {
+//                                        continue; // continue if not this book
+                                    //update the request status in bookRequest
+                                    BookRequest bookReq = documentSnapshot.toObject(BookRequest.class);
+                                    bookReq.setRequestStatus("Returning");
+                                    MainActivity.database.getDb().collection("bookRequest").document(bookReq.getBookRequestID()).set(bookReq);
 
                                     // change the book status to returning!
-
                                     MainActivity.database
                                             .getDb()
                                             .collection("books")
@@ -911,14 +914,12 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                                     selectedBook.setStatus(Book.Status.Returning);
                                                     status = "Returning";
                                                     MainActivity.database.getDb().collection("books").document(bookID).set(selectedBook);
-                                                    // TODO: Do we need to update the book list in the user list
                                                 }
                                             });
                                     Toast.makeText(getBaseContext(), "raised a return request", Toast.LENGTH_SHORT).show();
-                                    BookRequest newRequest = documentSnapshot.toObject(BookRequest.class);
+//
 
-
-                                    final DocumentReference docRef = db.collection("users").document(newRequest.getRequestReceiverID());
+                                    final DocumentReference docRef = db.collection("users").document(bookReq.getRequestReceiverID());
 
                                     docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                         @Override
@@ -926,12 +927,8 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                             requestReceiver = documentSnapshot.toObject(User.class);
                                             requestReceiver.addToNotificationList(currentUser.getUserName() + " wants to return your book " + selectedBook.getTitle());
                                             docRef.set(requestReceiver);
-
-
                                         }
                                     });
-
-
                                 }
                             }
                         });
@@ -940,7 +937,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
             if(selectedBook.getOwner().equals(userID)) {
                 // if the status is returning
                 if (Book.Status.valueOf(status).equals(Book.Status.Returning)) {
-
 
                     // if you are the owner, you want to scan the book to end the process
                     MainActivity.database.getDb().collection("bookRequest")
@@ -967,7 +963,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                     Book book = documentSnapshot.toObject(Book.class);
                                     book.setStatus(Book.Status.Available);
                                     MainActivity.database.getDb().collection("books").document(bookID).set(book);
-                                    // TODO: Do we need to update the book list in the user list: No
+
                                 }
                             });
 

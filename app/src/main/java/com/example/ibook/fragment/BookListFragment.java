@@ -350,6 +350,7 @@ public class BookListFragment extends Fragment {
                 isButtonVisible(false, false);
                 getAcceptedBookList();
                 stateText.setText("");
+                checkToggle();
 
             }
         });
@@ -461,7 +462,10 @@ public class BookListFragment extends Fragment {
     public void onResume() {
         super.onResume();
         // load booklist
+        checkToggle();
+    }// onResume
 
+    private void checkToggle(){
         if(isOnToggle == 0){
             getOwnBookList();
         }
@@ -474,5 +478,5 @@ public class BookListFragment extends Fragment {
         if(isOnToggle == 3){
             getAcceptedBookList();
         }
-    }
+    }// checkToggle
 }

@@ -85,6 +85,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
     private String requestedBookID;
     private String bookRequestID;
     private BookRequest bookReq;
+    private String radioButtonText;
 
     //scan the isbn
     private ZXingScannerView scannerView;
@@ -94,6 +95,8 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
     private EditText isbnView;
     private TextView textView;
     private String scanISBN;
+
+
 
     @Nullable
     @Override
@@ -113,6 +116,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
         title = root.findViewById(R.id.header_notifications);
         scanISBN = "";
 
+
         requestsList = new ArrayList<>();
         responseList = new ArrayList<>();
         radioGroup = root.findViewById(R.id.selectState);
@@ -127,7 +131,8 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton radioButton = group.findViewById(checkedId);
-                if (radioButton.getText().toString().equals("Responses")) {
+                radioButtonText = radioButton.getText().toString();
+                if (radioButtonText.equals("Responses")) {
                     //Go to user collection and get his notification/response list
                     MainActivity.database.getDb().collection("users").document(MainActivity.database.getCurrentUserUID())
                             .get()
@@ -140,11 +145,13 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                                     list = currentUser.getNotificationList();
                                     Collections.reverse(list);// reverse list to put the data in right order
                                     adapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, list);
+                                    listView.setAdapter(adapter);Collections.reverse(list);// reverse list to put the data in right order
+                                    adapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, list);
                                     listView.setAdapter(adapter);
                                 }//onComplete
                             });// onCompleteListener
                 }// if - "Responses" toggle
-                if (radioButton.getText().toString().equals("Requests")) {
+                if (radioButtonText.equals("Requests")) {
                     adapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, requestsList);
                     listView.setAdapter(adapter);
                 }// if "Requests" toggle
@@ -174,7 +181,14 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                                //get the person who sent the request
+                                // check which toggle user is in, to make the appropriate onClick action
+                                if(radioButtonText.equals("Responses")){
+                                    deleteResponse(position);
+                                    return;
+
+                                }// if
+
+                                else {
                                 requestSenderID = bookRequestArrayList.get(position).getRequestSenderID();
                                 requestedBookID = bookRequestArrayList.get(position).getRequestedBookID();
                                 bookRequestID = bookRequestArrayList.get(position).getBookRequestID();
@@ -295,9 +309,12 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                                 AlertDialog alert = builder.create();
                                 alert.show();
                             }
-                        });
-                    }//onComplete - BookRequest
-                }); // onCompleteListener -- BookRequest
+                        }
+
+                    });
+                    }
+                });
+
 
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
@@ -364,6 +381,38 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
 
         return root;
     }
+
+    private void deleteResponse(final int position) {
+
+
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
+        builder1.setMessage("Do you confirm to delete this response?");
+        builder1.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                MainActivity.database.getDb().collection("users").document(currentUserID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        User currentUser = documentSnapshot.toObject(User.class);
+                        currentUser.removeFromNotificationList(position);
+                        Collections.reverse(currentUser.getNotificationList());
+                        adapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, currentUser.getNotificationList());
+                        listView.setAdapter(adapter);
+
+                        //update the user collection
+                        MainActivity.database.getDb().collection("users").document(currentUserID).set(currentUser);
+                    }// onSuccess
+                });
+            }//onClick on Accept button in dialog
+        });
+        builder1.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                //don't delete
+                return;
+            }//onClick
+        });
+        AlertDialog alert = builder1.create();
+        alert.show();
+    }//deleteResponse
 
     private void getPermission() {
         Dexter.withActivity(getActivity()).withPermission(Manifest.permission.CAMERA).withListener(new PermissionListener() {
