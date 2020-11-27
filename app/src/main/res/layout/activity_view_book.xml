@@ -284,13 +284,11 @@
                 android:layout_marginBottom="32dp"
                 android:background="#F2F6F9"
                 android:orientation="vertical"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
-
-
+                app:layout_constraintTop_toBottomOf="@+id/mapsConstraintLayout">
 
                 <ListView
                     android:id="@+id/request_list"
@@ -344,6 +342,19 @@
                     android:text="Delete"
                     android:textColor="#FFF"
                     tools:text="Delete" />
+
+                <Button
+                    android:id="@+id/btn_cancelRequest_book"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginLeft="32dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginRight="32dp"
+                    android:background="@color/blue"
+                    android:text=" Cancel Request"
+                    android:textColor="#FFF" />
             </LinearLayout>
 
 
