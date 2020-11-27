@@ -691,6 +691,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 // if owner & book available/requested, edit allowed
                 request_button.setVisibility(View.GONE);
                 return_button.setVisibility(View.GONE);
+                cancelRequestButton.setVisibility(View.GONE);
             }
             // else if() //if owner & book accepted, nothing allowed
             // todo: later can show some information to let the owner know it's accepted
@@ -702,6 +703,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 requestList.setVisibility(View.GONE);
                 return_button.setVisibility(View.GONE);
                 scanButton.setVisibility(View.VISIBLE);
+                cancelRequestButton.setVisibility(View.GONE);
             }
         }// outer if
         else {
@@ -728,7 +730,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                         return_button.setVisibility(View.GONE);
                                         cancelRequestButton.setVisibility(View.VISIBLE);
 
-                                        Toast.makeText(getBaseContext(), "Canceling requests to be done", Toast.LENGTH_SHORT).show();
+                                       // Toast.makeText(getBaseContext(), "Canceling requests to be done", Toast.LENGTH_SHORT).show();
                                     } else if (((String) documentSnapshot.get("requestStatus")).equals("Accepted")) {
 
                                         // todo: launch an activity with scanning to confirm it
