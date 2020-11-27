@@ -41,6 +41,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -243,7 +244,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         requestReceiver = documentSnapshot.toObject(User.class);
 
 
-                        // three requestStatus: Requested, Accepted, Confirmed
+                        // three requestStatus: Requested, Accepted, Borrowed
                         String bookRequestID = MainActivity.database.getDb().collection("bookRequest").document().getId();
 
                         BookRequest newRequest = new BookRequest(currentUser.getUserID(), requestReceiver.getUserID(), selectedBook.getBookID(), currentUser.getUserName(), selectedBook.getTitle(), bookRequestID, "Requested");
@@ -290,45 +291,17 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
             @Override
             public void onClick(View v) {
                 //BookRequest newRequest = new BookRequest(currentUser.getUserID(),requestReceiver.getUserID(),selectedBook.getBookID(), "Requested");
-                //db.collection("bookRequest").document().set(newRequest);
+                // return a accepted book / cancel a return
+                if(selectedBook.getStatus().equals(Book.Status.Returning)){
+                    status = "Borrowed";
+                    selectedBook.setStatus(Book.Status.Borrowed);
+                    db.collection("books").document(bookID).set(selectedBook);
+                    Toast.makeText(getBaseContext(),"return request is cancelled",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    new ScanFragment().show(getSupportFragmentManager(), "Scan ISBN");
+                }
 
-                MainActivity.database
-                        .getDb()
-                        .collection("bookRequest")
-                        .whereEqualTo("requestSenderID", userID)
-                        .get()
-                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                    if (!((String) documentSnapshot.get("requestedBookID")).equals(bookID)) {
-                                        continue; // continue if not this book
-                                    }
-                                    BookRequest newRequest = documentSnapshot.toObject(BookRequest.class);
-                                    // todo: so far, no need to change request status
-
-                                    final DocumentReference docRef = db.collection("users").document(newRequest.getRequestReceiverID());
-
-                                    docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                            requestReceiver = documentSnapshot.toObject(User.class);
-                                            requestReceiver.addToNotificationList(currentUser.getUserName() + " wants to return your book " + selectedBook.getTitle());
-                                            docRef.set(requestReceiver);
-
-                                            Toast.makeText(getBaseContext(), "raised a return request", Toast.LENGTH_SHORT).show();
-                                            finish();
-                                        }
-                                    });
-
-
-                                }
-                            }
-                        });
-
-
-                // Q: finish the activity or not?
-                //finish();
             }
         });
     }
@@ -338,9 +311,12 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
             @Override
             public void onClick(View v) {
                 new ScanFragment().show(getSupportFragmentManager(), "Scan ISBN");
+
             }
         });
     }
+
+    //private void //ivan
 
     private void setUpBackButtonListener() {
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -652,7 +628,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                         return_button.setVisibility(View.GONE);
                                         scanButton.setVisibility(View.VISIBLE);
 
-                                    } else if (((String) documentSnapshot.get("requestStatus")).equals("Confirmed")) {
+                                    } else if (((String) documentSnapshot.get("requestStatus")).equals("Borrowed")) {
                                         // may want to return the book
                                         edit_button.setVisibility(View.GONE);
                                         delete_button.setVisibility(View.GONE);
@@ -732,6 +708,10 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
 
     @Override
     public void onOkPressed(String ISBN) {
+        Toast.makeText(getBaseContext(), "Assume that ISBN works well", Toast.LENGTH_SHORT).show();
+        // TODO: delete the line below
+        // just for test, make them equal
+        ISBN = isbn;
 
         if (ISBN.equals(isbn)) {
             // if the book is requested.
@@ -764,15 +744,117 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                             }
                         });
 
+                // also update data to request collection
+                MainActivity.database.getDb().collection("bookRequest")
+                        .whereEqualTo("requestedBookID", bookID)
+                        .whereEqualTo("requestSenderID", userID)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    String requestID = (String)document.getId();
+                                    BookRequest bookReq = document.toObject(BookRequest.class);
+                                    bookReq.setRequestStatus("Borrowed");
+                                    MainActivity.database.getDb().collection("bookRequest").document(requestID).set(bookReq);
+                                }
+                            }
+                        });
+
             }
             // TODO: How you guys want to do that?
             // if the book is borrowed -> returned ??
             if (Book.Status.valueOf(status).equals(Book.Status.Borrowed)) {
+                MainActivity.database
+                        .getDb()
+                        .collection("bookRequest")
+                        .whereEqualTo("requestSenderID", userID)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                    if (!((String) documentSnapshot.get("requestedBookID")).equals(bookID)) {
+                                        continue; // continue if not this book
+                                    }
 
+                                    // change the book status to returning!
+
+                                    MainActivity.database
+                                            .getDb()
+                                            .collection("books")
+                                            .document(bookID)
+                                            .get()
+                                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                    selectedBook = documentSnapshot.toObject(Book.class);
+                                                    selectedBook.setStatus(Book.Status.Returning);
+                                                    status = "Returning";
+                                                    MainActivity.database.getDb().collection("books").document(bookID).set(selectedBook);
+                                                    // TODO: Do we need to update the book list in the user list
+                                                }
+                                            });
+                                    Toast.makeText(getBaseContext(), "raised a return request", Toast.LENGTH_SHORT).show();
+                                    BookRequest newRequest = documentSnapshot.toObject(BookRequest.class);
+
+
+                                    final DocumentReference docRef = db.collection("users").document(newRequest.getRequestReceiverID());
+
+                                    docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            requestReceiver = documentSnapshot.toObject(User.class);
+                                            requestReceiver.addToNotificationList(currentUser.getUserName() + " wants to return your book " + selectedBook.getTitle());
+                                            docRef.set(requestReceiver);
+
+
+                                        }
+                                    });
+
+
+                                }
+                            }
+                        });
             }
-            // if the book is returned -> available ??
-            if (Book.Status.valueOf(status).equals(Book.Status.Borrowed)) {
+            // if it's the owner
+            if(selectedBook.getOwner().equals(userID)) {
+                // if the status is returning
+                if (Book.Status.valueOf(status).equals(Book.Status.Returning)) {
 
+
+                    // if you are the owner, you want to scan the book to end the process
+                    MainActivity.database.getDb().collection("bookRequest")
+                            .whereEqualTo("requestedBookID", bookID)
+                            .whereEqualTo("requestReceiverID", userID)
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    //delete all documents that meet the query
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        document.getReference().delete();
+                                    }
+                                }//onComplete
+                            });
+                    MainActivity.database
+                            .getDb()
+                            .collection("books")
+                            .document(bookID)
+                            .get()
+                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    Book book = documentSnapshot.toObject(Book.class);
+                                    book.setStatus(Book.Status.Available);
+                                    MainActivity.database.getDb().collection("books").document(bookID).set(book);
+                                    // TODO: Do we need to update the book list in the user list
+                                }
+                            });
+
+                } else { // status not returning, notify the owner it's cancelled
+                    Toast.makeText(getBaseContext(), "Holder cancelled the request", Toast.LENGTH_SHORT).show();
+                }
             }
 
         } else {
