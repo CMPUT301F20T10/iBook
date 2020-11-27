@@ -189,7 +189,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 .setNeutralButton("Delete Image", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        imageView.setImageResource(android.R.color.transparent);
+                        imageView.setImageResource(android.R.drawable.ic_input_add);
                         imageAdded = false;
                     }
                 });
