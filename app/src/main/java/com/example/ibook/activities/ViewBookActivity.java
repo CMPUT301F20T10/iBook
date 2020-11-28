@@ -602,7 +602,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
 
     private void acceptRequest() {
         final Book.Status bookStatus = Book.Status.valueOf(status);
-        if(!bookStatus.equals(Book.Status.Accepted) && selectedBook.getOwner().equals(userID)) {
+        if(selectedBook.getOwner().equals(userID)) {
             //get the request Sender information from database, since we need to notify that person
             MainActivity.database
                     .getDb()
@@ -666,23 +666,23 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                             }//for loop
                         }//onComplete
                     });
+
+
+            //update the book Status to be accepted
+            MainActivity.database.getDb().collection("books").document(bookID)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            DocumentSnapshot document = (DocumentSnapshot) task.getResult();
+                            Book book = document.toObject(Book.class);
+                            book.setStatus(Book.Status.Accepted);
+                            book.setMeetingLocation(markerLoc.latitude, markerLoc.longitude);
+                            book.setMeetingText(markerText);
+                            MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
+                        }// onComplete
+                    });
         }
-
-        //update the book Status to be accepted
-        MainActivity.database.getDb().collection("books").document(bookID)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        DocumentSnapshot document = (DocumentSnapshot) task.getResult();
-                        Book book = document.toObject(Book.class);
-                        book.setStatus(Book.Status.Accepted);
-                        book.setMeetingLocation(markerLoc.latitude, markerLoc.longitude);
-                        book.setMeetingText(markerText);
-                        MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
-                    }// onComplete
-                });
-
     }
 
     /**
