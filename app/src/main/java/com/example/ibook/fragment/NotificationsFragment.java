@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +58,7 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
  */
 public class NotificationsFragment extends Fragment implements ZXingScannerView.ResultHandler {
 
+    private static final int ADD_EDIT_LOCATION_REQUEST_CODE = 455;
     public BookRequest bookRequest;
     public String bookID;
     private FirebaseFirestore db;
