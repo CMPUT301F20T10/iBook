@@ -54,6 +54,7 @@ import com.google.protobuf.Timestamp;
 import com.google.rpc.context.AttributeContext;
 
 import java.io.FileInputStream;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -241,13 +242,17 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                     @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        requestReceiver = documentSnapshot.toObject(User.class);
+                        //get current datetime
+                        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd h:mm a");
+                        Date date = new Date();
+                        String dateTime = dateFormat.format(date);
 
+                        requestReceiver = documentSnapshot.toObject(User.class);
 
                         // three requestStatus: Requested, Accepted, Borrowed
                         String bookRequestID = MainActivity.database.getDb().collection("bookRequest").document().getId();
 
-                        BookRequest newRequest = new BookRequest(currentUser.getUserID(), requestReceiver.getUserID(), selectedBook.getBookID(), currentUser.getUserName(), selectedBook.getTitle(), bookRequestID, "Requested");
+                        BookRequest newRequest = new BookRequest(currentUser.getUserID(), requestReceiver.getUserID(), selectedBook.getBookID(), currentUser.getUserName(), selectedBook.getTitle(), bookRequestID, "Requested",dateTime);
                         db.collection("bookRequest").document(bookRequestID).set(newRequest);
 
 

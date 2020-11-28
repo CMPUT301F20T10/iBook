@@ -19,6 +19,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.ibook.NotificationAdapter;
 import com.example.ibook.R;
 import com.example.ibook.activities.MainActivity;
 import com.example.ibook.activities.MapsActivity;
@@ -76,8 +77,8 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
     private Marker marker;
     public static LatLng markerLoc = null;
     public static String markerText;
-
-    ArrayAdapter adapter;
+    ArrayAdapter arrayAdapter;
+    NotificationAdapter adapter;
 
     private String selectedBookISBN;
     private int selectedPosition;
@@ -94,7 +95,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
     private EditText isbnView;
     private TextView textView;
     private String scanISBN;
-
+    final ArrayList<BookRequest> bookRequestArrayList = new ArrayList<BookRequest>();
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -118,7 +119,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
         radioGroup = root.findViewById(R.id.selectState);
         final DocumentReference docRef = db.collection("users").document(MainActivity.database.getCurrentUserUID());
 
-        adapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, requestsList);
+        adapter = new NotificationAdapter(bookRequestArrayList,getContext());
         listView.setAdapter(adapter);
         currentUserID = MainActivity.database.getCurrentUserUID();
 
@@ -139,13 +140,13 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                                     ArrayList<String> list = new ArrayList<String>();
                                     list = currentUser.getNotificationList();
                                     Collections.reverse(list);// reverse list to put the data in right order
-                                    adapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, list);
-                                    listView.setAdapter(adapter);
+                                    arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.responses_list_content, R.id.textView, list);
+                                    listView.setAdapter(arrayAdapter);
                                 }//onComplete
                             });// onCompleteListener
                 }// if - "Responses" toggle
                 if (radioButton.getText().toString().equals("Requests")) {
-                    adapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, requestsList);
+                    adapter = new NotificationAdapter(bookRequestArrayList,getContext());
                     listView.setAdapter(adapter);
                 }// if "Requests" toggle
             }//onCheckedChanged
@@ -160,12 +161,12 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         //Arraylist to hold the BookRequest objects
-                        final ArrayList<BookRequest> bookRequestArrayList = new ArrayList<BookRequest>();
+
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             bookRequest = document.toObject(BookRequest.class);
                             bookRequestArrayList.add(bookRequest);
                             //adding the notification or message to requestList
-                            requestsList.add(bookRequest.getRequestSenderUsername() + " wants to borrow your book called " + bookRequest.getRequestedBookTitle());
+                            //requestsList.add(bookRequest.getRequestSenderUsername() + " wants to borrow your book called " + bookRequest.getRequestedBookTitle());
                         }// for loop
                         //update the listView
                         adapter.notifyDataSetChanged();

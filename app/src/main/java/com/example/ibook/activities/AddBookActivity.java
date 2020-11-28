@@ -172,7 +172,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
 
                         Toast.makeText(getBaseContext(), "There is a bug with camera, please use gallery", Toast.LENGTH_SHORT).show();
                         // TODO: there is a bug when using camera, maybe because of MediaStore library
-                        // startActivityForResult(intent, REQ_CAMERA_IMAGE);
+                        startActivityForResult(intent, REQ_CAMERA_IMAGE);
 
                     }
                 })

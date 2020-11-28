@@ -2,6 +2,7 @@ package com.example.ibook.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
@@ -14,6 +15,7 @@ import com.example.ibook.entities.BookRequest;
 import com.example.ibook.entities.Database;
 import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -78,8 +80,9 @@ public class SignUpActivity extends AppCompatActivity {
     String confirmPassword = ed_confirmPassword.getText().toString();
 
     // verifying the user's input
-    System.out.println(username);
-    if (phoneIsValid(phoneNumber)
+
+    if (username.length() > 0
+            && phoneNumber.length() > 0
         && email.length() > 0
         && password.length() > 0
         && confirmPassword.length() > 0) {
@@ -100,6 +103,10 @@ public class SignUpActivity extends AppCompatActivity {
         Toast.makeText(getBaseContext(), "Improper password", Toast.LENGTH_SHORT).show();
         return;
       }
+      if(!phoneIsValid(phoneNumber)){
+        Toast.makeText(getBaseContext(), "Phone number is not valid", Toast.LENGTH_SHORT).show();
+        return;
+      }
 
       // Toast.makeText(getBaseContext(), "Confirm -> iBook Home Page", Toast.LENGTH_SHORT).show();
     } else {
@@ -107,39 +114,51 @@ public class SignUpActivity extends AppCompatActivity {
       return;
     }
 
-    // make the progressbar visible
-    ed_progressBar.setVisibility(View.VISIBLE);
-
-    //register the user
-    uAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-      @Override
-      public void onComplete(@NonNull Task<AuthResult> task) {
-        if(task.isSuccessful()){
-          MainActivity.database = new Database();
-          String currentUserID = MainActivity.database.getCurrentUserUID();
-          MainActivity.user = new User(username, password, email, phoneNumber,currentUserID);
-          MainActivity.database.addUser(MainActivity.user);
 
 
+    FirebaseFirestore.getInstance()
+            .collection("users")
+            .whereEqualTo("userName", username)
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+              //check if username already exists
+              @Override
+              public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (!task.getResult().isEmpty()) {
+                  Toast.makeText(getBaseContext(), "Username exists", Toast.LENGTH_SHORT).show();
+                } else {
+                  // make the progressbar visible
+                  ed_progressBar.setVisibility(View.VISIBLE);
+                  //register the user
+                  uAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                      if (task.isSuccessful()) {
+                        MainActivity.database = new Database();
+                        String currentUserID = MainActivity.database.getCurrentUserUID();
+                        MainActivity.user = new User(username, password, email, phoneNumber, currentUserID);
+                        MainActivity.database.addUser(MainActivity.user);
+                        // store user info to database
 
-          // store user info to database
+                        Toast.makeText(SignUpActivity.this, "Created user successfully", Toast.LENGTH_SHORT).show();
 
-          Toast.makeText(SignUpActivity.this, "Created user successfully", Toast.LENGTH_SHORT).show();
+                        // go to iBook homepage
+                        Intent intent = new Intent(getApplicationContext(), PageActivity.class);
+                        startActivity(intent);
+                      } else {
+                        // when it goes unsuccessful,
+                        // We show the reason, and restart the sign up activity to let user sign up again.
+                        Toast.makeText(SignUpActivity.this, "Unsuccessful" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        Intent intent = getIntent();
+                        finish();
+                        startActivity(intent);
+                      }
+                    }
+                  });
+                }
+              }
+            });
 
-          // go to iBook homepage
-          Intent intent = new Intent(getApplicationContext(),PageActivity.class);
-          startActivity(intent);
-        }
-        else{
-          // when it goes unsuccessful,
-          // We show the reason, and restart the sign up activity to let user sign up again.
-          Toast.makeText(SignUpActivity.this, "Unsuccessful" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-          Intent intent = getIntent();
-          finish();
-          startActivity(intent);
-        }
-      }
-    });
   }// confirm_signup
 
   /**
@@ -151,37 +170,9 @@ public class SignUpActivity extends AppCompatActivity {
     //Toast.makeText(getBaseContext(), "Cancel", Toast.LENGTH_SHORT).show();
     finish();
   }// cancel_signup
-  public void usernameIsUnique(String username){
-    final ArrayList<User> userList = new ArrayList<>();
-    FirebaseFirestore.getInstance()
-            .collection("users")
-            .whereEqualTo("userName", username)
-            .get()
-            .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-              @Override
-              public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                  userList.add(document.toObject(User.class));
-                  if (!userList.isEmpty()){
-                    Toast.makeText(getBaseContext(), "Username exists", Toast.LENGTH_SHORT).show();
-                  }
-                  else{
 
-                  }
-
-                }
-              }
-            });
-
-  }
   public boolean phoneIsValid(String phoneNumber){
-    if (phoneNumber.matches("[0-9]+") && phoneNumber.length() == 10){
-      return true;
-    }
-    else{
-      Toast.makeText(getBaseContext(), "Phone number is not valid", Toast.LENGTH_SHORT).show();
-      return false;
-    }
+    return phoneNumber.matches("[0-9]+") && phoneNumber.length() == 10;
   }
 
 
