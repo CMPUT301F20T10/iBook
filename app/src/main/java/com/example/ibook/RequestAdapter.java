@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.ibook.entities.Book;
@@ -18,8 +19,7 @@ public class RequestAdapter extends BaseAdapter {
     private ArrayList<BookRequest> requests;
     private Context context;
     private TextView message;
-    // TODO: Get image view
-
+    private ImageView imageView;
 
     public RequestAdapter(ArrayList<BookRequest> requests, Context context) {
         this.requests = requests;
@@ -77,7 +77,7 @@ public class RequestAdapter extends BaseAdapter {
         message = convertView.findViewById(R.id.request_content);
 
         //Set the values for the xml attributes
-        message.setText(request.getRequestSenderUsername() + " requests this book");
+        message.setText(request.getRequestSenderUsername());
 
         //Set the image if there is one
         return convertView;

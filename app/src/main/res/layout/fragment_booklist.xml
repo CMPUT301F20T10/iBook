@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -233,8 +232,7 @@
         android:layout_marginRight="8dp"
         android:text="Request"
         app:layout_constraintBaseline_toBaselineOf="@id/filter_request_button"
-        app:layout_constraintEnd_toStartOf="@+id/filter_request_button"
-        tools:layout_editor_absoluteY="453dp" />
+        app:layout_constraintEnd_toStartOf="@+id/filter_request_button" />
 
     <TextView
         android:id="@+id/acceptedTextView"
@@ -244,8 +242,7 @@
         android:layout_marginRight="8dp"
         android:text="Accepted"
         app:layout_constraintBaseline_toBaselineOf="@id/filter_accepted_button"
-        app:layout_constraintEnd_toStartOf="@+id/filter_accepted_button"
-        tools:layout_editor_absoluteY="408dp" />
+        app:layout_constraintEnd_toStartOf="@+id/filter_accepted_button" />
 
     <TextView
         android:id="@+id/borrowTextView"
@@ -255,8 +252,7 @@
         android:layout_marginRight="8dp"
         android:text="Borrowed"
         app:layout_constraintBaseline_toBaselineOf="@id/filter_borrowed_button"
-        app:layout_constraintEnd_toStartOf="@+id/filter_borrowed_button"
-        tools:layout_editor_absoluteY="368dp" />
+        app:layout_constraintEnd_toStartOf="@+id/filter_borrowed_button" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

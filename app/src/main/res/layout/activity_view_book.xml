@@ -136,7 +136,7 @@
                     android:text="Photo"
                     android:textSize="18sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/ownerTextView" />
+                    app:layout_constraintTop_toBottomOf="@+id/borrowerTextView" />
 
                 <TextView
                     android:id="@+id/descriptionView"
@@ -176,6 +176,19 @@
                     app:layout_constraintTop_toBottomOf="@+id/descriptionView2" />
 
                 <TextView
+                    android:id="@+id/descriptionView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginLeft="32dp"
+                    android:layout_marginTop="24dp"
+                    android:text="Borrower"
+                    android:textSize="18sp"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/ownerTextView" />
+
+                <TextView
                     android:id="@+id/ownerTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -188,6 +201,21 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/descriptionView3" />
 
+
+                <TextView
+                    android:id="@+id/borrowerTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginLeft="32dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Borrower"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/descriptionView5" />
+
                 <TextView
                     android:id="@+id/dateView"
                     android:layout_width="wrap_content"
@@ -195,11 +223,11 @@
                     android:layout_marginStart="32dp"
                     android:layout_marginLeft="32dp"
                     android:layout_marginTop="32dp"
-                    android:text="@string/dateText"
+                    android:text="Publish Date"
                     android:textSize="18sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:text="@string/dateText" />
+                    tools:text="Publish Date" />
 
                 <TextView
                     android:id="@+id/ViewDate"
@@ -289,17 +317,39 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/mapsConstraintLayout">
 
-                <ListView
-                    android:id="@+id/request_list"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginStart="32dp"
-                    android:layout_marginLeft="32dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="32dp"
-                    android:layout_marginRight="32dp"
-                    android:layout_marginBottom="16dp"
-                    android:scrollbars="none" />
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginRight="16dp"
+                    android:background="#FFF"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/requestListTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="32dp"
+                        android:layout_marginLeft="32dp"
+                        android:layout_marginTop="8dp"
+                        android:text="Request list"
+                        android:textSize="18sp" />
+
+                    <ListView
+                        android:id="@+id/request_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="32dp"
+                        android:layout_marginLeft="32dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="32dp"
+                        android:layout_marginRight="32dp"
+                        android:layout_marginBottom="16dp"
+                        android:scrollbars="none" />
+
+                </LinearLayout>
 
                 <Button
                     android:id="@+id/btn_request_book"
