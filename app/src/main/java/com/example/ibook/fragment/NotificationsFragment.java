@@ -51,6 +51,7 @@ import java.util.Collections;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 /**
@@ -127,7 +128,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
         radioGroup = root.findViewById(R.id.selectState);
         final DocumentReference docRef = db.collection("users").document(MainActivity.database.getCurrentUserUID());
 
-        adapter = new NotificationAdapter(bookRequestArrayList,getContext());
+        adapter = new NotificationAdapter(bookRequestArrayList, getContext());
         listView.setAdapter(adapter);
         currentUserID = MainActivity.database.getCurrentUserUID();
 
@@ -150,14 +151,16 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                                     list = currentUser.getNotificationList();
 
                                     Collections.reverse(list);// reverse list to put the data in right order
-                                    arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.responses_list_content, R.id.textView, list);
+                                    arrayAdapter = new ArrayAdapter<>(getContext(),
+                                            R.layout.notification_list_content,
+                                            R.id.userNameTextView, list);
                                     listView.setAdapter(arrayAdapter);
 
                                 }//onComplete
                             });// onCompleteListener
                 }// if - "Responses" toggle
                 if (radioButtonText.equals("Requests")) {
-                    adapter = new NotificationAdapter(bookRequestArrayList,getContext());
+                    adapter = new NotificationAdapter(bookRequestArrayList, getContext());
                     listView.setAdapter(adapter);
                 }// if "Requests" toggle
             }//onCheckedChanged
@@ -187,7 +190,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                                 // check which toggle user is in, to make the appropriate onClick action
-                                if(radioButtonText.equals("Responses")){
+                                if (radioButtonText.equals("Responses")) {
                                     deleteResponse(position);
                                     return;
 
@@ -319,7 +322,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                         });
                     }
                 });
-
 
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
