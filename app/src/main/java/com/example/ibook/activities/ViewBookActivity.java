@@ -10,8 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
-import android.view.DragEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -29,12 +27,9 @@ import com.example.ibook.entities.User;
 import com.example.ibook.fragment.ScanFragment;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -42,32 +37,20 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
-
-import com.google.firebase.database.ServerValue;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firestore.v1.DocumentTransform;
-import com.google.protobuf.Timestamp;
-import com.google.rpc.context.AttributeContext;
 
 import java.io.FileInputStream;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-
-
-import io.grpc.Server;
 
 public class ViewBookActivity extends AppCompatActivity implements ScanFragment.OnFragmentInteractionListener, OnMapReadyCallback {
 
@@ -93,6 +76,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     private Button request_button;
     private Button return_button;
     private Button cancelRequestButton;
+    private Button cancelReturnButton;
     private ListView requestList;
 
     private FirebaseFirestore db;
@@ -150,6 +134,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         return_button = findViewById(R.id.btn_return_book);
         scanButton = findViewById(R.id.scan);
         cancelRequestButton = findViewById(R.id.btn_cancelRequest_book);
+        cancelReturnButton = findViewById(R.id.btn_cancelReturn_book);
         requestList = findViewById(R.id.request_list);
 
 
@@ -185,6 +170,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         setUpRequestButtonListener();
         setUpRequestListListener();
         setUpCancelRequestButtonListener();
+        setUpCancelReturnButtonListener();
 
         // setting up the request list
         MainActivity.database
@@ -254,6 +240,49 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         });
 
     }// setUpCancelRequestButtonListener
+
+    private void setUpCancelReturnButtonListener() {
+
+        cancelReturnButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { //ivan
+                if(selectedBook.getStatus().equals(Book.Status.Returning)){
+                    status = "Borrowed";
+                    selectedBook.setStatus(Book.Status.Borrowed);
+                    db.collection("books").document(bookID).set(selectedBook);
+                    Toast.makeText(getBaseContext(),"return request is cancelled",Toast.LENGTH_SHORT).show();
+                }else{
+                    return;
+                }
+                MainActivity.database
+                        .getDb()
+                        .collection("bookRequest")
+                        .whereEqualTo("requestSenderID", userID)
+                        .whereEqualTo("requestedBookID", bookID)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                    //delete the request from BookRequest Collection
+                                    BookRequest bookReq = documentSnapshot.toObject(BookRequest.class);
+                                    bookReq.setRequestStatus("Borrowed");
+                                    MainActivity.database.getDb().collection("bookRequest").document(bookReq.getBookRequestID()).set(bookReq);
+                                }//onComplete
+                            }
+
+
+                        });
+
+                //Should be able to request again
+                cancelReturnButton.setVisibility(View.GONE);
+                return_button.setVisibility(View.VISIBLE);
+            }
+        });
+
+    }// setUpCancelRequestButtonListener
+
+
 
     /**
      * Chceks if last book request was deleted, since then we update the book status to "Available"
@@ -407,7 +436,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 else {
                     new ScanFragment().show(getSupportFragmentManager(), "Scan ISBN");
                 }
-
             }
         });
     }//setupReturnButtonListener
@@ -423,7 +451,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         });
     }
 
-    //private void //ivan
 
     private void setUpBackButtonListener() {
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -692,10 +719,11 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 request_button.setVisibility(View.GONE);
                 return_button.setVisibility(View.GONE);
                 cancelRequestButton.setVisibility(View.GONE);
+                cancelReturnButton.setVisibility(View.GONE);
             }
             // else if() //if owner & book accepted, nothing allowed
             // todo: later can show some information to let the owner know it's accepted
-            else {
+            else if(bookStatus.equals(Book.Status.Returning)){
                 // if owner & book accepted/borrowed, nothing allowed
                 edit_button.setVisibility(View.GONE);
                 delete_button.setVisibility(View.GONE);
@@ -704,6 +732,18 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 return_button.setVisibility(View.GONE);
                 scanButton.setVisibility(View.VISIBLE);
                 cancelRequestButton.setVisibility(View.GONE);
+                cancelReturnButton.setVisibility(View.GONE);
+            }
+            else {
+                // if owner & book accepted/borrowed, nothing allowed
+                edit_button.setVisibility(View.GONE);
+                delete_button.setVisibility(View.GONE);
+                request_button.setVisibility(View.GONE);
+                requestList.setVisibility(View.GONE);
+                return_button.setVisibility(View.GONE);
+                scanButton.setVisibility(View.GONE);
+                cancelRequestButton.setVisibility(View.GONE);
+                cancelReturnButton.setVisibility(View.GONE);
             }
         }// outer if
         else {
@@ -729,6 +769,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                         requestList.setVisibility(View.GONE);
                                         return_button.setVisibility(View.GONE);
                                         cancelRequestButton.setVisibility(View.VISIBLE);
+                                        cancelReturnButton.setVisibility(View.GONE);
 
                                        // Toast.makeText(getBaseContext(), "Canceling requests to be done", Toast.LENGTH_SHORT).show();
                                     } else if (((String) documentSnapshot.get("requestStatus")).equals("Accepted")) {
@@ -742,6 +783,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                         return_button.setVisibility(View.GONE);
                                         scanButton.setVisibility(View.VISIBLE);
                                         cancelRequestButton.setVisibility(View.GONE);
+                                        cancelReturnButton.setVisibility(View.GONE);
 
                                     } else if (((String) documentSnapshot.get("requestStatus")).equals("Borrowed")) {
                                         // may want to return the book
@@ -751,6 +793,16 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                         request_button.setVisibility(View.GONE);
                                         requestList.setVisibility(View.GONE);
                                         cancelRequestButton.setVisibility(View.GONE);
+                                        cancelReturnButton.setVisibility(View.GONE);
+                                    } else if (((String) documentSnapshot.get("requestStatus")).equals("Returning")) {
+                                        // may want to return the book
+                                        return_button.setVisibility(View.GONE);
+                                        edit_button.setVisibility(View.GONE);
+                                        delete_button.setVisibility(View.GONE);
+                                        request_button.setVisibility(View.GONE);
+                                        requestList.setVisibility(View.GONE);
+                                        cancelRequestButton.setVisibility(View.GONE);
+                                        cancelReturnButton.setVisibility(View.VISIBLE);
                                     }
                                     isRelated = true;
                                     break;
@@ -767,6 +819,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                     requestList.setVisibility(View.GONE);
                                     return_button.setVisibility(View.GONE);
                                     cancelRequestButton.setVisibility(View.GONE);
+                                    cancelReturnButton.setVisibility(View.GONE);
                                 } else {
                                     // nothing can do
                                     edit_button.setVisibility(View.GONE);
@@ -775,6 +828,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                     requestList.setVisibility(View.GONE);
                                     return_button.setVisibility(View.GONE);
                                     cancelRequestButton.setVisibility(View.GONE);
+                                    cancelReturnButton.setVisibility(View.GONE);
                                 }
                             }
                         }
@@ -827,11 +881,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
 
     @Override
     public void onOkPressed(String ISBN) {
-        Toast.makeText(getBaseContext(), "Assume that ISBN works well", Toast.LENGTH_SHORT).show();
-        // TODO: delete the line below
-        // just for test, make them equal
-        ISBN = isbn;
-
         if (ISBN.equals(isbn)) {
             // if the book is requested.
             if (Book.Status.valueOf(status).equals(Book.Status.Requested)) {
@@ -894,9 +943,8 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                             @Override
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                 for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-//                                    if (!((String) documentSnapshot.get("requestedBookID")).equals(bookID)) {
-//                                        continue; // continue if not this book
-                                    //update the request status in bookRequest
+
+                                    // update request
                                     BookRequest bookReq = documentSnapshot.toObject(BookRequest.class);
                                     bookReq.setRequestStatus("Returning");
                                     MainActivity.database.getDb().collection("bookRequest").document(bookReq.getBookRequestID()).set(bookReq);
