@@ -996,7 +996,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                 }
                             }
                         });
-                return;
+                finish();
             }
             // TODO: How you guys want to do that?
             // if the book is borrowed -> returned ??
@@ -1048,7 +1048,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                 }
                             }
                         });
-                return;
+                finish();
             }
             // if it's the owner
             if (selectedBook.getOwner().equals(userID)) {
@@ -1087,6 +1087,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 } else { // status not returning, notify the owner it's cancelled
                     Toast.makeText(getBaseContext(), "Holder cancelled the request", Toast.LENGTH_SHORT).show();
                 }
+                finish();
             }
 
         } else {
