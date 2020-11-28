@@ -25,24 +25,46 @@
             android:name="com.google.android.gms.vision.DEPENDENCIES"
             android:value="barcode" />
 
-        <activity android:name=".activities.ResetPasswordActivity" />
-        <activity android:name=".activities.EditProfile" />
-        <activity android:name=".activities.AddBookActivity" />
-        <activity android:name=".activities.ViewBookActivity" />
-        <activity android:name=".activities.SignUpActivity" />
-        <activity android:name=".activities.EditBookActivity" />
-        <activity android:name=".activities.SearchResultsActivity" />
-        <activity android:name=".activities.ViewProfileActivity" />
-        <activity android:name=".activities.MainActivity">
+        <activity
+            android:name=".activities.ResetPasswordActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.EditProfile"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.AddBookActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.ViewBookActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.SignUpActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.EditBookActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.SearchResultsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.ViewProfileActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.PageActivity" />
+        <activity
+            android:name=".activities.PageActivity"
+            android:screenOrientation="portrait" />
         <!--Maps-->
-        <activity android:name=".activities.MapsActivity" />
+        <activity
+            android:name=".activities.MapsActivity"
+            android:screenOrientation="portrait" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/maps_api_key" />
