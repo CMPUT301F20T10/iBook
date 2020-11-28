@@ -44,7 +44,13 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.FileInputStream;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+
 import java.util.ArrayList;
+import java.util.Date;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -224,6 +230,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                         .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                             @Override
                                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
                                                 DocumentSnapshot document = (DocumentSnapshot) task.getResult();
                                                 User user = document.toObject(User.class);
                                                 user.addToNotificationList(finalDeleteRequest.getRequestSenderUsername() + " Cancelled request on the book called " + finalDeleteRequest.getRequestedBookTitle());
@@ -374,13 +381,17 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                     @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        requestReceiver = documentSnapshot.toObject(User.class);
+                        //get current datetime
+                        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd h:mm a");
+                        Date date = new Date();
+                        String dateTime = dateFormat.format(date);
 
+                        requestReceiver = documentSnapshot.toObject(User.class);
 
                         // three requestStatus: Requested, Accepted, Borrowed
                         String bookRequestID = MainActivity.database.getDb().collection("bookRequest").document().getId();
 
-                        BookRequest newRequest = new BookRequest(currentUser.getUserID(), requestReceiver.getUserID(), selectedBook.getBookID(), currentUser.getUserName(), selectedBook.getTitle(), bookRequestID, "Requested");
+                        BookRequest newRequest = new BookRequest(currentUser.getUserID(), requestReceiver.getUserID(), selectedBook.getBookID(), currentUser.getUserName(), selectedBook.getTitle(), bookRequestID, "Requested",dateTime);
                         db.collection("bookRequest").document(bookRequestID).set(newRequest);
 
 
