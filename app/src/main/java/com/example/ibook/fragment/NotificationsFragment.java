@@ -488,7 +488,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
     //TODO: fix data set
     private void acceptRequest() {
 
-        // ISBN for test: 123651565616
 
         Toast.makeText(getContext(), "got location!", Toast.LENGTH_SHORT).show();
         bookReq.setRequestStatus("Accepted");

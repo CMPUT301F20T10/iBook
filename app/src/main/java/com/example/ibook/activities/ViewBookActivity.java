@@ -882,7 +882,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     @Override
     public void onOkPressed(String ISBN) {
         if (ISBN.equals(isbn)) {
-            // if the book is requested.
+            // if the book is requested. (for owner)
             if (Book.Status.valueOf(status).equals(Book.Status.Requested)) {
                 Intent mapsIntent = new Intent(getApplicationContext(), MapsActivity.class);
                 mapsIntent.putExtra(MapsActivity.MAP_TYPE, MapsActivity.ADD_EDIT_LOCATION);
@@ -894,6 +894,8 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                     mapsIntent.putExtra("locationIncluded", false);
                 }
                 startActivityForResult(mapsIntent, MapsActivity.ADD_EDIT_LOCATION_REQUEST_CODE);
+
+                return;
             }
             //if the book is accepted -> borrowed
             if (Book.Status.valueOf(status).equals(Book.Status.Accepted)) {
@@ -928,7 +930,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                 }
                             }
                         });
-
+                return;
             }
             // TODO: How you guys want to do that?
             // if the book is borrowed -> returned ??
@@ -980,6 +982,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                 }
                             }
                         });
+                return;
             }
             // if it's the owner
             if(selectedBook.getOwner().equals(userID)) {
