@@ -85,7 +85,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
     private String requestedBookID;
     private String bookRequestID;
     private BookRequest bookReq;
-    private String radioButtonText;
+    private String radioButtonText = "Requests";
 
     //scan the isbn
     private ZXingScannerView scannerView;
@@ -344,7 +344,9 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                     } else {
                         mapsIntent.putExtra("locationIncluded", false);
                     }
-                    //startActivityForResult(mapsIntent, ADD_EDIT_LOCATION_REQUEST_CODE);
+                    startActivityForResult(mapsIntent, 455);
+                    // todo : requestCode cannot be used here.. manually changed it to 455
+
                     setVisible(false); // end scanning part
                 } else {
                     Toast.makeText(getContext(), "ISBN does not match", Toast.LENGTH_LONG).show();
@@ -464,7 +466,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //Add new gear
-        Toast.makeText(getContext(),String.valueOf(resultCode)+" "+String.valueOf(requestCode),Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getContext(),String.valueOf(resultCode)+" "+String.valueOf(requestCode),Toast.LENGTH_SHORT).show();
 
         // todo: the resultCode = 0 here, don't know why, so I ignored it
         //if (resultCode == ADD_EDIT_LOCATION_RESULT_CODE && requestCode == ADD_EDIT_LOCATION_REQUEST_CODE) {
@@ -486,7 +488,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
     //TODO: fix data set
     private void acceptRequest() {
 
-        // ISBN for test: 123651565616
 
         Toast.makeText(getContext(), "got location!", Toast.LENGTH_SHORT).show();
         bookReq.setRequestStatus("Accepted");
@@ -531,6 +532,27 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                         }//for loop
                     }//onComplete
                 });
+
+        // change the book request status to accepted
+        /*
+        MainActivity.database.getDb().collection("bookRequest")
+                .whereEqualTo("requestedBookID", requestedBookID)
+                .whereEqualTo("requestSenderID", requestSenderID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        //delete all documents that meet the query
+                        BookRequest deleteRequest = null;
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            BookRequest bookReq = document.toObject(BookRequest.class);
+                            bookReq.setRequestStatus("Accepted");
+                            MainActivity.database.getDb().collection("bookRequest").document(bookReq.getBookRequestID()).set(bookReq);
+                        }
+                    }//onComplete
+                });
+        */
+
 
         //update the book Status to be accepted
         MainActivity.database.getDb().collection("books").document(requestedBookID)

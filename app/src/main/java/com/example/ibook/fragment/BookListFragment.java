@@ -157,11 +157,10 @@ public class BookListFragment extends Fragment {
                             // only for ignoring old data
                             if(!documentSnapshot.contains("requestStatus"))
                                 continue;
-                            if(documentSnapshot.contains("requestStatus")){
-                                // if the status is not confirmed, ignore it
-                                if(!((String) documentSnapshot.get("requestStatus")).equals("Borrowed")){
-                                    continue;
-                                }
+                            String bookStatus = (String) documentSnapshot.get("requestStatus");
+
+                            if(!bookStatus.equals("Borrowed") && !bookStatus.equals("Returning")){
+                                continue;
                             }
                             String bookID = (String) documentSnapshot.get("requestedBookID");
                             MainActivity.database
@@ -190,6 +189,7 @@ public class BookListFragment extends Fragment {
                 .getDb()
                 .collection("bookRequest")
                 .whereEqualTo("requestSenderID", userID)
+                .whereEqualTo("requestStatus", "Accepted")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -198,13 +198,9 @@ public class BookListFragment extends Fragment {
                             // only for ignoring old data
                             if(!documentSnapshot.contains("requestStatus"))
                                 continue;
-                            if(documentSnapshot.contains("requestStatus")){
-                                // if the status is not accepted, ignore it
-                                if(!((String) documentSnapshot.get("requestStatus")).equals("Accepted")){
-                                    continue;
-                                }
-                            }
+
                             String bookID = (String) documentSnapshot.get("requestedBookID");
+                            Toast.makeText(getContext(),bookID,Toast.LENGTH_SHORT).show();
                             MainActivity.database
                                     .getDb()
                                     .collection("books")
@@ -215,6 +211,7 @@ public class BookListFragment extends Fragment {
                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                                             datalist.add(documentSnapshot.toObject(Book.class));
                                             adapter.notifyDataSetChanged();
+
                                         }
                                     });
                         }
@@ -329,6 +326,7 @@ public class BookListFragment extends Fragment {
                     filtered_book.add(book);
                 }
             }
+
         }
         adapter = new BookListAdapter(filtered_book, getActivity());
         bookListView.setAdapter(adapter);
@@ -348,7 +346,6 @@ public class BookListFragment extends Fragment {
                 isOnToggle = 3;
 
                 isButtonVisible(false, false);
-                getAcceptedBookList();
                 stateText.setText("");
                 checkToggle();
 
