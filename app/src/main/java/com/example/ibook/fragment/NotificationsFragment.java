@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +50,6 @@ import java.util.Collections;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 /**
@@ -476,6 +474,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                 markerText = data.getStringExtra("markerText");
             }
         }
+        Toast.makeText(getContext(), "runing?!", Toast.LENGTH_SHORT).show();
         acceptRequest();
     }
 
@@ -526,26 +525,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                         }//for loop
                     }//onComplete
                 });
-
-        // change the book request status to accepted
-        /*
-        MainActivity.database.getDb().collection("bookRequest")
-                .whereEqualTo("requestedBookID", requestedBookID)
-                .whereEqualTo("requestSenderID", requestSenderID)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        //delete all documents that meet the query
-                        BookRequest deleteRequest = null;
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            BookRequest bookReq = document.toObject(BookRequest.class);
-                            bookReq.setRequestStatus("Accepted");
-                            MainActivity.database.getDb().collection("bookRequest").document(bookReq.getBookRequestID()).set(bookReq);
-                        }
-                    }//onComplete
-                });
-        */
 
 
         //update the book Status to be accepted
