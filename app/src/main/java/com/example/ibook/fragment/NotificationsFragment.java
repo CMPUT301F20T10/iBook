@@ -465,6 +465,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
             if (data.getBooleanExtra("locationIncluded", false)) {
                 markerLoc = (LatLng) data.getExtras().getParcelable("markerLoc");
                 markerText = data.getStringExtra("markerText");
+
             }
         }
         acceptRequest();
