@@ -181,7 +181,6 @@ public class BookListFragment extends Fragment {
     }
 
     private void getAcceptedBookList() {
-        //TODO:implement
         datalist.clear();
         adapter.notifyDataSetChanged();
         String userID = MainActivity.user.getUserID();
