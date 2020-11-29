@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +50,6 @@ import java.util.Collections;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 /**
@@ -61,14 +59,9 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
 
     private static final int ADD_EDIT_LOCATION_REQUEST_CODE = 455;
     public BookRequest bookRequest;
-    public String bookID;
     private FirebaseFirestore db;
-    private ArrayList<String> notificationList;
     private ListView listView;
-    private ArrayList<String> requestsList;
-    private ArrayList<String> responseList;
     private RadioGroup radioGroup;
-    private DocumentReference userDoc;
     private String currentUserID;
     private String currentUsername;
 
@@ -123,8 +116,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
         scanISBN = "";
 
 
-        requestsList = new ArrayList<>();
-        responseList = new ArrayList<>();
         radioGroup = root.findViewById(R.id.selectState);
         final DocumentReference docRef = db.collection("users").document(MainActivity.database.getCurrentUserUID());
 
@@ -179,8 +170,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             bookRequest = document.toObject(BookRequest.class);
                             bookRequestArrayList.add(bookRequest);
-                            //adding the notification or message to requestList
-                            //requestsList.add(bookRequest.getRequestSenderUsername() + " wants to borrow your book called " + bookRequest.getRequestedBookTitle());
                         }// for loop
                         //update the listView
                         adapter.notifyDataSetChanged();
@@ -193,7 +182,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                                 if (radioButtonText.equals("Responses")) {
                                     deleteResponse(position);
                                     return;
-
                                 }// if
 
                                 else {
@@ -309,7 +297,10 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
 
 
                                             //delete the request from the listview when a request is declined
-                                            requestsList.remove(position);
+                                            Toast.makeText(getContext(), "Position" + position, Toast.LENGTH_SHORT).show();
+                                            System.out.println(position);
+                                            System.out.println(bookRequestArrayList.size());
+                                            bookRequestArrayList.remove(position);
                                             adapter.notifyDataSetChanged();
                                         }// onClick
                                     });//Accept
@@ -401,7 +392,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         User currentUser = documentSnapshot.toObject(User.class);
                         currentUser.removeFromNotificationList(position);
-                        Collections.reverse(currentUser.getNotificationList());
+                        //Collections.reverse(currentUser.getNotificationList());
                         arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, currentUser.getNotificationList());
                         listView.setAdapter(arrayAdapter);
 
@@ -506,7 +497,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                     }//onComplete -- RequestSender
                 });
         //delete the request from the listview when that request is accepted
-        //requestsList.remove(selectedPosition);
+        bookRequestArrayList.remove(selectedPosition);
         adapter.notifyDataSetChanged();
         //remove other bookRequests on the same book in the bookRequest collection
         MainActivity.database.getDb().collection("bookRequest")
@@ -520,33 +511,10 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                         BookRequest deleteRequest = null;
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             deleteRequest = document.toObject(BookRequest.class);
-                            //int index = bookRequestArrayList.indexOf(deleteRequest);
-                            //requestsList.remove(index);
-                            // adapter.notifyDataSetChanged();
                             document.getReference().delete();
                         }//for loop
                     }//onComplete
                 });
-
-        // change the book request status to accepted
-        /*
-        MainActivity.database.getDb().collection("bookRequest")
-                .whereEqualTo("requestedBookID", requestedBookID)
-                .whereEqualTo("requestSenderID", requestSenderID)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        //delete all documents that meet the query
-                        BookRequest deleteRequest = null;
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            BookRequest bookReq = document.toObject(BookRequest.class);
-                            bookReq.setRequestStatus("Accepted");
-                            MainActivity.database.getDb().collection("bookRequest").document(bookReq.getBookRequestID()).set(bookReq);
-                        }
-                    }//onComplete
-                });
-        */
 
 
         //update the book Status to be accepted
