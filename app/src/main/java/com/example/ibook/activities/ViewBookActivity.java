@@ -187,24 +187,24 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         setUpCancelReturnButtonListener();
 
         // setting up the request list
-        if(Book.Status.valueOf(status).equals(Book.Status.Requested)) {
-            MainActivity.database
-                    .getDb()
-                    .collection("bookRequest")
-                    .whereEqualTo("requestedBookID", bookID)
-                    .get()
-                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                        @Override
-                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                            for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                                requests.add(document.toObject(BookRequest.class));
-                            }
-                            requestAdapter = new RequestAdapter(requests, getApplicationContext());
-                            requestList.setAdapter(requestAdapter);
-                            setListViewHeightBasedOnChildren(requestList);
+        //if(Book.Status.valueOf(status).equals(Book.Status.Requested)) {
+
+        MainActivity.database
+                .getDb()
+                .collection("bookRequest")
+                .whereEqualTo("requestedBookID", bookID)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            requests.add(document.toObject(BookRequest.class));
                         }
-                    });
-        }
+                        requestAdapter = new RequestAdapter(requests, getApplicationContext());
+                        requestList.setAdapter(requestAdapter);
+                        setListViewHeightBasedOnChildren(requestList);
+                    }
+                });
 
 
     }
@@ -1101,7 +1101,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                 }
                             });
 
-                } else if (Book.Status.valueOf(status).equals(Book.Status.Borrowed)){ // status not returning, notify the owner it's cancelled
+                } else if (Book.Status.valueOf(status).equals(Book.Status.Borrowed)) { // status not returning, notify the owner it's cancelled
                     Toast.makeText(getBaseContext(), "Holder cancelled the request", Toast.LENGTH_SHORT).show();
                 }
                 finish();
