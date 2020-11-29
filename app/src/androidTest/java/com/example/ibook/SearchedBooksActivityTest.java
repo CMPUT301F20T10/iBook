@@ -3,13 +3,15 @@ package com.example.ibook;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
 import com.example.ibook.activities.EditProfile;
 import com.example.ibook.activities.MainActivity;
 import com.example.ibook.activities.PageActivity;
-import com.example.ibook.activities.SearchedBooksActivity;
+import com.example.ibook.activities.SearchResultsActivity;
+import com.example.ibook.activities.SearchResultsActivity;
 import com.robotium.solo.Solo;
 
 import org.junit.After;
@@ -49,11 +51,11 @@ public class SearchedBooksActivityTest {
             solo.enterText(0,"harper");
             solo.sendKey(Solo.ENTER);
             solo.waitForActivity("Searched activity",2000);
-            solo.assertCurrentActivity("Should be searched results activity", SearchedBooksActivity.class);
+            solo.assertCurrentActivity("Should be searched results activity", SearchResultsActivity.class);
             //get activity to access its methods
-            SearchedBooksActivity activity = (SearchedBooksActivity)solo.getCurrentActivity();
-            ListView listView = activity.getListView();
-            int items = listView.getAdapter().getCount();
+            SearchResultsActivity activity = (SearchResultsActivity) solo.getCurrentActivity();
+            RecyclerView listView = activity.getListView();
+            int items = listView.getAdapter().getItemCount();
             // number of items in the listview should be 3, 3 books have keyword 'harper'
             assertEquals(3, items);
             //search for keyword harper on screen

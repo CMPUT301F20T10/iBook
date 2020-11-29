@@ -89,7 +89,7 @@ public class ViewBookActivityTest {
         // Test whether the data in the view page is consistent with the data
         // in the corresponding position of the list.
         assertEquals(bookClicked.getTitle(), actualTitle);
-        assertEquals(bookClicked.getAuthor(), actualAuthor);
+        assertEquals(bookClicked.getAuthors(), actualAuthor);
         assertEquals(bookClicked.getDate(), actualDate);
         assertEquals(bookClicked.getIsbn(), actualISBN);
 
@@ -187,12 +187,12 @@ public class ViewBookActivityTest {
         solo.clickOnView(solo.getView(R.id.navigation_booklist));
 
         // create the new book
-        Book newBook = new Book("A new Book", "Tester", "2020-11-06", "a random sequence");
+        Book newBook = new Book("A new Book", "Tester", "2020-11-06","Description", Book.Status.Available,"1234567890","2","1");
 
         // add a new book to test
-        solo.clickOnView((Button) solo.getView(R.id.button_add));
+        solo.clickOnView((Button) solo.getView(R.id.completeButton));
         solo.enterText((EditText) solo.getView(R.id.titleEditor), newBook.getTitle());
-        solo.enterText((EditText) solo.getView(R.id.authorEditor), newBook.getAuthor());
+        solo.enterText((EditText) solo.getView(R.id.authorEditor), newBook.getAuthors());
         solo.enterText((EditText) solo.getView(R.id.dateEditor), newBook.getDate());
         solo.enterText((EditText) solo.getView(R.id.isbnEditor), newBook.getIsbn());
         solo.clickOnButton("Complete");
@@ -204,7 +204,7 @@ public class ViewBookActivityTest {
         String actualDate =  ((TextView) solo.getView(R.id.ViewDate)).getText().toString();
         String actualISBN = ((TextView) solo.getView(R.id.ViewISBN)).getText().toString();
         assertEquals(newBook.getTitle(), actualTitle);
-        assertEquals(newBook.getAuthor(), actualAuthor);
+        assertEquals(newBook.getAuthors(), actualAuthor);
         assertEquals(newBook.getDate(), actualDate);
         assertEquals(newBook.getIsbn(), actualISBN);
         solo.clickOnButton("Delete");
@@ -217,7 +217,7 @@ public class ViewBookActivityTest {
         actualISBN = ((TextView) solo.getView(R.id.ViewISBN)).getText().toString();
         // check if we deleted the right one
         assertEquals(false, newBook.getTitle() == actualTitle);
-        assertEquals(false, newBook.getAuthor() == actualAuthor);
+        assertEquals(false, newBook.getAuthors() == actualAuthor);
         assertEquals(false, newBook.getDate() == actualDate);
         assertEquals(false, newBook.getIsbn() == actualISBN);
     }

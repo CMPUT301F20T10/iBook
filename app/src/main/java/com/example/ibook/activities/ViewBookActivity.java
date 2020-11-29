@@ -703,7 +703,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         }
                     });
         }
-    }
+
 
     /**
      * This method will retrieve the data from the database,
