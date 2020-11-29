@@ -461,14 +461,36 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
             title.setVisibility(View.VISIBLE);
         }
     }
+    void saveMapsLocation() {
+        //Save the meeting location
+        MainActivity.database.getDb().collection("books").document(requestedBookID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        DocumentSnapshot document = (DocumentSnapshot) task.getResult();
+                        Book book = document.toObject(Book.class);
+                        //Toast.makeText(getContext(),book.getTitle(),Toast.LENGTH_SHORT).show();
+
+                        book.setMeetingLocation(markerLoc.latitude, markerLoc.longitude);
+                        book.setMeetingText(markerText);
+                        MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
+                    }// onComplete
+                });
+
+
+
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == MapsActivity.ADD_EDIT_LOCATION_RESULT_CODE && requestCode == MapsActivity.ADD_EDIT_LOCATION_REQUEST_CODE) {
             if (data.getBooleanExtra("locationIncluded", false)) {
+                //Toast.makeText(getContext(),"saving loc",Toast.LENGTH_SHORT).show();
                 markerLoc = (LatLng) data.getExtras().getParcelable("markerLoc");
                 markerText = data.getStringExtra("markerText");
+                saveMapsLocation();
 
             }
         }else{
