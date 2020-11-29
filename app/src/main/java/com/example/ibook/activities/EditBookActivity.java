@@ -1,12 +1,12 @@
 package com.example.ibook.activities;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -14,46 +14,47 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ibook.R;
 import com.example.ibook.entities.Book;
 import com.example.ibook.fragment.ScanFragment;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * The add book activity class holds the activity when user choose to add a new book in the
+ * application. User need to input the required information, including title, isbn and author.
+ * User can also use camera to scan the isbn, and upload the photo to the book.
+ */
 public class EditBookActivity extends AppCompatActivity implements ScanFragment.OnFragmentInteractionListener {
-
+    // the edit book surface
     private EditText bookNameEditText;
     private EditText authorEditText;
-    private EditText dateEditText;
+    private TextView dateEditText;
     private EditText isbnEditText;
     private EditText descriptionEditText;
     private Button cancelButton;
     private Button completeButton;
     private Button scanButton;
     private ImageView imageView;
+
     private FirebaseFirestore db;
     private boolean imageAdded;
     private String userID;
@@ -64,7 +65,12 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
     private final int REQ_CAMERA_IMAGE = 1;
     private final int REQ_GALLERY_IMAGE = 2;
 
+    private Calendar calendar = Calendar.getInstance();
 
+
+    /**
+     * The function to initialize the view
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +89,7 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
         completeButton = findViewById(R.id.completeButton);
         scanButton = findViewById(R.id.scanButton);
         imageView = findViewById(R.id.imageView);
-
+        setDate();
 
         Intent intent = getIntent();
         bookID = intent.getStringExtra("BOOK_ID");
@@ -93,7 +99,57 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
         userID = uAuth.getCurrentUser().getUid();
 
         getBookData();
+        setUpCancelButtonListener();
+        setUpCompleteButtonListener();
+        setUpImageViewListener();
+        setUpScanButtonListener();
 
+    }
+
+    /**
+     * The function to set up the listener of the cancel button
+     */
+    private void setUpCancelButtonListener() {
+        // go back when clicking cancel
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+    /**
+     * The function to set up the listener of the scan button
+     */
+    private void setUpScanButtonListener() {
+        // when the scan button clicked, open fragment to scan ISBN
+        scanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new ScanFragment().show(getSupportFragmentManager(), "Scan ISBN");
+            }
+        });
+    }
+
+    /**
+     * The function to set up the listener of the image view
+     */
+    private void setUpImageViewListener() {
+        // when the image view clicked, choose a image or delete the image
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showImagePickerDialog();
+            }
+        });
+    }
+
+    /**
+     * The function to set up the listener of the complete button, it will update the information of
+     * the book
+     */
+    private void setUpCompleteButtonListener() {
         completeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,7 +164,7 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                 if (bookName.length() > 0
                         && authorName.length() > 0
                         && date.length() > 0
-                        && isbn.length() > 0) {
+                        && isbnIsValid(isbn)) {
 //                    TODO:add more value
 
                     Book currentBook = new Book(bookName, authorName, date, description, originalBook.getStatus(), isbn, userID, originalBook.getBookID());
@@ -116,11 +172,11 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                     // update book if there's a change
                     if ((!currentBook.equals(originalBook)) || imageAdded) {
                         updateBook(currentBook);
-                        if(imageAdded) {
-                            try{
+                        if (imageAdded) {
+                            try {
                                 MainActivity.database.uploadImage(openFileInput(MainActivity.database.tempFileName), currentBook.getBookID());
                                 intent.putExtra("CHANGED_IMAGE", MainActivity.database.tempFileName);
-                            }catch (Exception e){
+                            } catch (Exception e) {
                                 Toast.makeText(getBaseContext(), "Image upload failed please try again", Toast.LENGTH_LONG).show();
                                 e.printStackTrace();
                             }
@@ -129,36 +185,20 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                     setResult(4, intent);
 
                     finish();
-                } else {
+                } else if (!(bookName.length() > 0
+                        && authorName.length() > 0
+                        && date.length() > 0)) {
                     Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();
                 }
 
             }
         });
-
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        scanButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new ScanFragment().show(getSupportFragmentManager(), "Scan ISBN");
-            }
-        });
-
-        // choose a image
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showImagePickerDialog();
-            }
-        });
     }
 
+
+    /**
+     * The function to get the data of the current book, and display the data in the application
+     */
     private void getBookData() {
         db.collection("books").document(bookID)
                 .get()
@@ -171,7 +211,7 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                         dateEditText.setText(originalBook.getDate());
                         isbnEditText.setText(originalBook.getIsbn());
 
-                        if(originalBook.getDescription()!= null) {
+                        if (originalBook.getDescription() != null) {
                             descriptionEditText.setText(originalBook.getDescription());
                         }
                         MainActivity.database.downloadImage(imageView, originalBook.getBookID(), true);
@@ -181,12 +221,21 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
 
     }
 
-    // update book info
+    /**
+     * The function to update book info
+     *
+     * @param book the new object to update
+     */
     private void updateBook(final Book book) {
         db.collection("books").document(book.getBookID()).set(book);
     }
 
 
+    /**
+     * get and display the isbn in the application
+     *
+     * @param ISBN the isbn got from the isbn scan fragment
+     */
     @Override
     public void onOkPressed(String ISBN) {
         isbnEditText.setText(ISBN);
@@ -196,7 +245,7 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
     /**
      * This method will show a dialog and prompts the user to select an image from gallery/camera
      * It invokes the API of MediaStore to finish the taking picture action.
-     * */
+     */
     private void showImagePickerDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle("Upload Image")
@@ -244,7 +293,7 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
      * This method processes the image after the user finishes taking picture/selecting image
      * , based on the method used to upload the picture (camera/gallery).
      * It calls onSuccessChangePhoto to store the changed image into the database.
-     * */
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -275,6 +324,11 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
         }
     }
 
+    /**
+     * The function to store the image in the firebase
+     *
+     * @param bitmap the image object
+     */
     private void storeLocally(Bitmap bitmap) {
         try {//Pass the image through a temporary link on local storage
             //Large bitmaps will crash the app.
@@ -285,12 +339,21 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
             // remember close file output
             baos.close();
             fo.close();
-            Log.i("image" , "Stored locally "+ MainActivity.database.tempFileName);
-        }catch (Exception e){
+            Log.i("image", "Stored locally " + MainActivity.database.tempFileName);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * The function to scale the set the image in the surface, user can see the image in the
+     * image view if the image exist.
+     *
+     * @param bitmap    the image object
+     * @param imageView the image view in the surface
+     *
+     * @return
+     */
     public static ImageView scaleAndSetImage(Bitmap bitmap, ImageView imageView) {
         //bitmap = Bitmap.createScaledBitmap(bitmap, imageView.getWidth(), imageView.getHeight(), true);
         imageView.setDrawingCacheEnabled(true);
@@ -300,6 +363,60 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
         imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         imageView.setImageBitmap(bitmap);
         return imageView;
+    }
+
+    /**
+     * The function to validate the isbn, the isbn should be a 10 or 13 number value
+     *
+     * @param isbn the isbn to validate
+     *
+     * @return the validation result of the given isbn code
+     */
+    public boolean isbnIsValid(String isbn) {
+        if (isbn.matches("[0-9]+") && (isbn.length() == 10 || isbn.length() == 13)) {
+            return true;
+        } else {
+            Toast.makeText(getBaseContext(), "ISBN must be 10 or 13 digit number", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+    }
+
+    /**
+     * The function to set up the date picker dialog to validate date input
+     */
+    public void setDate() {
+        final DatePickerDialog.OnDateSetListener pickDate = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, month);
+                calendar.set(Calendar.DAY_OF_MONTH, day);
+                formatDate();
+            }
+        };
+        dateEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(EditBookActivity.this, pickDate, calendar
+                        .get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
+    }
+
+    /**
+     * The function to format the date got from the date picker.
+     * <p>
+     * Format the date to the "yyyy-MM-dd" format
+     */
+    public void formatDate() {
+        String dateFormat = "yyyy-MM-dd"; //In which you need put here
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat, Locale.CANADA);
+
+        dateEditText.setText(simpleDateFormat.format(calendar.getTime()));
+
     }
 
 
