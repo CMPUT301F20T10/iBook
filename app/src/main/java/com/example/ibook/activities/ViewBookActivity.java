@@ -187,6 +187,8 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         setUpCancelReturnButtonListener();
 
         // setting up the request list
+        //if(Book.Status.valueOf(status).equals(Book.Status.Requested)) {
+
         MainActivity.database
                 .getDb()
                 .collection("bookRequest")
@@ -203,6 +205,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         setListViewHeightBasedOnChildren(requestList);
                     }
                 });
+
 
     }
 
@@ -262,7 +265,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
 
         cancelReturnButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { //ivan
+            public void onClick(View v) {
                 if (selectedBook.getStatus().equals(Book.Status.Returning)) {
                     status = "Borrowed";
                     selectedBook.setStatus(Book.Status.Borrowed);
@@ -574,12 +577,10 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 markerText = data.getStringExtra("markerText");
                 Log.i("Maps", "Returned from saved location");
                 //If its not the owner then the borrower can edit the location to save it
-                if (selectedBook.getOwner().equals(userID)) {
-                    acceptRequest();
-                } else {
-                    //Let the borrower edit the location when trying to return
-                    saveMapsLocation();
-                }
+                //TODO: Send new notification to other person when editing the location
+                //acceptRequest(); **CRASHES THE APP**
+                //Let the borrower edit the location when trying to return
+                saveMapsLocation();
                 setUpMaps();
             }
         }
@@ -670,7 +671,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                             }//for loop
                         }//onComplete
                     });
-
+        }
 
             //update the book Status to be accepted
             MainActivity.database.getDb().collection("books").document(bookID)
@@ -685,6 +686,21 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                             book.setMeetingText(markerText);
                             MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
                         }// onComplete
+                    });
+            // ivan
+            // update the request Status to be accepted
+            db.collection("bookRequest")
+                    .whereEqualTo("requestedBookID", selectedBook.getBookID())
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                BookRequest bookReq = documentSnapshot.toObject(BookRequest.class);
+                                bookReq.setRequestStatus("Accepted");
+                                MainActivity.database.getDb().collection("bookRequest").document(bookReq.getBookRequestID()).set(bookReq);
+                            }
+                        }
                     });
         }
     }
@@ -715,17 +731,31 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         } else {
                             descriptionTextView.setText("Nothing here...");
                         }
+
+
+                        // from owner view, if the book is borrowed, show borrower's name
                         if (selectedBook.getStatus().equals(Book.Status.Borrowed)) {
-                            MainActivity.database.getDb().collection("users").document(requestSenderID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    borrowerView.setText(documentSnapshot.toObject(User.class).getUserName());
-                                }
-                            });
+                            MainActivity.database
+                                    .getDb()
+                                    .collection("bookRequest")
+                                    .whereEqualTo("requestStatus", "Borrowed")
+                                    .whereEqualTo("requestReceiverID", userID)
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                                String requestSenderName = (String) documentSnapshot.get("requestSenderUsername");
+                                                borrowerView.setText(requestSenderName);
+                                            }
+                                        }
+                                    });
                         }
+
                         if (!imageChanged) {
                             MainActivity.database.downloadImage(imageView, selectedBook.getBookID(), true);
                         }
+
                         imageChanged = false;
                         if (selectedBook.getMeetingLocation() != null) {
                             Log.i("Maps", "Getting Location");
@@ -951,7 +981,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                     mapsIntent.putExtra("locationIncluded", false);
                 }
                 startActivityForResult(mapsIntent, MapsActivity.ADD_EDIT_LOCATION_REQUEST_CODE);
-
                 return;
             }
             //if the book is accepted -> borrowed
@@ -1084,7 +1113,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                 }
                             });
 
-                } else { // status not returning, notify the owner it's cancelled
+                } else if (Book.Status.valueOf(status).equals(Book.Status.Borrowed)) { // status not returning, notify the owner it's cancelled
                     Toast.makeText(getBaseContext(), "Holder cancelled the request", Toast.LENGTH_SHORT).show();
                 }
                 finish();
@@ -1125,7 +1154,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                     abledToSetMapsUp = true;
                 }
                 //Once the book is borrowed the owner can no longer edit the location
-                else if (bookStatus.equals(Book.Status.Borrowed)) {
+                else if (bookStatus.equals(Book.Status.Borrowed) || bookStatus.equals(Book.Status.Returning)) {
                     Log.i("Maps", "Owner and Borrowed");
                     editViewButton.setText("View");
                     mapsConstraintLayout.setVisibility(View.VISIBLE);
@@ -1135,13 +1164,13 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
             } else if (isRelated) {
                 //The borrower can edit the location once the book is in his hands.
                 //This is useful when trying to return the book as he can set the location to return it to.
-                if (bookStatus.equals(Book.Status.Borrowed) || bookStatus.equals(Book.Status.Returning)) {
+                if (bookStatus.equals(Book.Status.Returning)) {
                     Log.i("Maps", "Borrower and Borrowed");
                     editViewButton.setText("Edit");
                     mapsConstraintLayout.setVisibility(View.VISIBLE);
                     editMapsLocation = true;
                     abledToSetMapsUp = true;
-                } else if (bookStatus.equals(Book.Status.Accepted)) {
+                } else if (bookStatus.equals(Book.Status.Accepted) || bookStatus.equals(Book.Status.Borrowed)) {
                     Log.i("Maps", "Borrower and Accepted");
                     editViewButton.setText("View");
                     mapsConstraintLayout.setVisibility(View.VISIBLE);
@@ -1183,7 +1212,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     }
 
     void saveMapsLocation() {
-        //update the book Status to be accepted
+        //Save the meeting location
         MainActivity.database.getDb().collection("books").document(bookID)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -1196,6 +1225,9 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
                     }// onComplete
                 });
+
+
+
     }
 
 

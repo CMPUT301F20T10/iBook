@@ -128,7 +128,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="10dp"
-            android:text="Password: (The field must be at least 5 characters)"
+            android:text="Password: (The field must be at least 6 characters)"
             android:textStyle="bold"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -136,6 +136,7 @@
             app:layout_constraintTop_toBottomOf="@id/ed_phoneNumber_signup">
 
         </TextView>
+
 
         <EditText
             android:id="@+id/ed_password_signup"

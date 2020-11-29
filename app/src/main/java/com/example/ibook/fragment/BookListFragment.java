@@ -143,7 +143,8 @@ public class BookListFragment extends Fragment {
 
     private void getBorrowBookList() {
         datalist.clear();
-        adapter.notifyDataSetChanged();
+        adapter = new BookListAdapter(datalist, getActivity());
+        bookListView.setAdapter(adapter);
         String userID = MainActivity.user.getUserID();
         MainActivity.database
                 .getDb()
@@ -181,9 +182,9 @@ public class BookListFragment extends Fragment {
     }
 
     private void getAcceptedBookList() {
-        //TODO:implement
         datalist.clear();
-        adapter.notifyDataSetChanged();
+        adapter = new BookListAdapter(datalist, getActivity());
+        bookListView.setAdapter(adapter);
         String userID = MainActivity.user.getUserID();
         MainActivity.database
                 .getDb()
@@ -221,7 +222,8 @@ public class BookListFragment extends Fragment {
 
     private void getRequestBookList() {
         datalist.clear();
-        adapter.notifyDataSetChanged();
+        adapter = new BookListAdapter(datalist, getActivity());
+        bookListView.setAdapter(adapter);
         String userID = MainActivity.user.getUserID();
         MainActivity.database
                 .getDb()
@@ -381,7 +383,7 @@ public class BookListFragment extends Fragment {
                 isOnToggle = 2;
 
                 isButtonVisible(false, false);
-                getRequestBookList();
+                checkToggle();
                 stateText.setText("");
             }
         });
@@ -398,7 +400,7 @@ public class BookListFragment extends Fragment {
                 isOnToggle = 1;
 
                 isButtonVisible(false, false);
-                getBorrowBookList();
+                checkToggle();
                 stateText.setText("");
             }
         });
