@@ -1,6 +1,7 @@
 package com.example.ibook.activities;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,8 +15,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ibook.R;
@@ -35,8 +38,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
@@ -47,7 +53,7 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
 
     private EditText bookNameEditText;
     private EditText authorEditText;
-    private EditText dateEditText;
+    private TextView dateEditText;
     private EditText isbnEditText;
     private EditText descriptionEditText;
     private Button cancelButton;
@@ -63,6 +69,9 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
 
     private final int REQ_CAMERA_IMAGE = 1;
     private final int REQ_GALLERY_IMAGE = 2;
+
+    private Calendar calendar = Calendar.getInstance();
+
 
 
     @Override
@@ -83,7 +92,7 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
         completeButton = findViewById(R.id.completeButton);
         scanButton = findViewById(R.id.scanButton);
         imageView = findViewById(R.id.imageView);
-
+        setDate();
 
         Intent intent = getIntent();
         bookID = intent.getStringExtra("BOOK_ID");
@@ -108,7 +117,7 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                 if (bookName.length() > 0
                         && authorName.length() > 0
                         && date.length() > 0
-                        && isbn.length() > 0) {
+                        && isbnIsValid(isbn)) {
 //                    TODO:add more value
 
                     Book currentBook = new Book(bookName, authorName, date, description, originalBook.getStatus(), isbn, userID, originalBook.getBookID());
@@ -129,7 +138,9 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                     setResult(4, intent);
 
                     finish();
-                } else {
+                } else if (!(bookName.length() > 0
+                        && authorName.length() > 0
+                        && date.length() > 0)){
                     Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();
                 }
 
@@ -300,6 +311,47 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
         imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         imageView.setImageBitmap(bitmap);
         return imageView;
+    }
+
+    public boolean isbnIsValid(String isbn){
+        if (isbn.matches("[0-9]+") && (isbn.length() == 10 || isbn.length() == 13)) {
+            return true;
+        }
+        else{
+            Toast.makeText(getBaseContext(), "ISBN must be 10 or 13 digit number", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+    }
+
+    //date picker dialog to validate date input
+    public boolean setDate() {
+        final DatePickerDialog.OnDateSetListener pickDate = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, month);
+                calendar.set(Calendar.DAY_OF_MONTH, day);
+                formatDate();
+            }
+        };
+        dateEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(EditBookActivity.this, pickDate, calendar
+                        .get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+        return true;
+
+    }
+    public void formatDate() {
+        String dateFormat = "yyyy-MM-dd"; //In which you need put here
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat, Locale.CANADA);
+
+        dateEditText.setText(simpleDateFormat.format(calendar.getTime()));
+
     }
 
 
