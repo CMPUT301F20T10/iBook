@@ -189,6 +189,8 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         setUpCancelReturnButtonListener();
 
         // setting up the request list
+        //if(Book.Status.valueOf(status).equals(Book.Status.Requested)) {
+
         MainActivity.database
                 .getDb()
                 .collection("bookRequest")
@@ -205,6 +207,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         setListViewHeightBasedOnChildren(requestList);
                     }
                 });
+
 
     }
 
@@ -717,17 +720,31 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         } else {
                             descriptionTextView.setText("Nothing here...");
                         }
+
+
+                        // from owner view, if the book is borrowed, show borrower's name
                         if (selectedBook.getStatus().equals(Book.Status.Borrowed)) {
-                            MainActivity.database.getDb().collection("users").document(requestSenderID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    borrowerView.setText(documentSnapshot.toObject(User.class).getUserName());
-                                }
-                            });
+                            MainActivity.database
+                                    .getDb()
+                                    .collection("bookRequest")
+                                    .whereEqualTo("requestStatus", "Borrowed")
+                                    .whereEqualTo("requestReceiverID", userID)
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                                String requestSenderName = (String) documentSnapshot.get("requestSenderUsername");
+                                                borrowerView.setText(requestSenderName);
+                                            }
+                                        }
+                                    });
                         }
+
                         if (!imageChanged) {
                             MainActivity.database.downloadImage(imageView, selectedBook.getBookID(), true);
                         }
+
                         imageChanged = false;
                         if (selectedBook.getMeetingLocation() != null) {
                             Log.i("Maps", "Getting Location");
@@ -962,7 +979,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                     mapsIntent.putExtra("locationIncluded", false);
                 }
                 startActivityForResult(mapsIntent, MapsActivity.ADD_EDIT_LOCATION_REQUEST_CODE);
-
                 return;
             }
             //if the book is accepted -> borrowed
@@ -1095,7 +1111,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                 }
                             });
 
-                } else { // status not returning, notify the owner it's cancelled
+                } else if (Book.Status.valueOf(status).equals(Book.Status.Borrowed)) { // status not returning, notify the owner it's cancelled
                     Toast.makeText(getBaseContext(), "Holder cancelled the request", Toast.LENGTH_SHORT).show();
                 }
                 finish();
