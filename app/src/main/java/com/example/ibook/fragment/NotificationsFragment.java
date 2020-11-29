@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,7 +51,6 @@ import java.util.Collections;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 /**
@@ -151,8 +149,8 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
 
                                     Collections.reverse(list);// reverse list to put the data in right order
                                     arrayAdapter = new ArrayAdapter<>(getContext(),
-                                            R.layout.notification_list_content,
-                                            R.id.userNameTextView, list);
+                                            R.layout.responses_list_content,
+                                            R.id.textView, list);
                                     listView.setAdapter(arrayAdapter);
 
                                 }//onComplete
@@ -400,8 +398,12 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         User currentUser = documentSnapshot.toObject(User.class);
                         currentUser.removeFromNotificationList(position);
+
+                        Collections.reverse(currentUser.getNotificationList());
+                        arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.responses_list_content, R.id.textView, currentUser.getNotificationList());
+
                         //Collections.reverse(currentUser.getNotificationList());
-                        arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, currentUser.getNotificationList());
+
                         listView.setAdapter(arrayAdapter);
 
                         //update the user collection
@@ -465,15 +467,40 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
             title.setVisibility(View.VISIBLE);
         }
     }
+    void saveMapsLocation() {
+        //Save the meeting location
+        MainActivity.database.getDb().collection("books").document(requestedBookID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        DocumentSnapshot document = (DocumentSnapshot) task.getResult();
+                        Book book = document.toObject(Book.class);
+                        //Toast.makeText(getContext(),book.getTitle(),Toast.LENGTH_SHORT).show();
+
+                        book.setMeetingLocation(markerLoc.latitude, markerLoc.longitude);
+                        book.setMeetingText(markerText);
+                        MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
+                    }// onComplete
+                });
+
+
+
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == MapsActivity.ADD_EDIT_LOCATION_RESULT_CODE && requestCode == MapsActivity.ADD_EDIT_LOCATION_REQUEST_CODE) {
             if (data.getBooleanExtra("locationIncluded", false)) {
+                //Toast.makeText(getContext(),"saving loc",Toast.LENGTH_SHORT).show();
                 markerLoc = (LatLng) data.getExtras().getParcelable("markerLoc");
                 markerText = data.getStringExtra("markerText");
+                saveMapsLocation();
+
             }
+        }else{
+            return;
         }
         acceptRequest();
     }
@@ -523,26 +550,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                     }//onComplete
                 });
 
-        // change the book request status to accepted
-        /*
-        MainActivity.database.getDb().collection("bookRequest")
-                .whereEqualTo("requestedBookID", requestedBookID)
-                .whereEqualTo("requestSenderID", requestSenderID)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        //delete all documents that meet the query
-                        BookRequest deleteRequest = null;
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            BookRequest bookReq = document.toObject(BookRequest.class);
-                            bookReq.setRequestStatus("Accepted");
-                            MainActivity.database.getDb().collection("bookRequest").document(bookReq.getBookRequestID()).set(bookReq);
-                        }
-                    }//onComplete
-                });
-        */
-
 
         //update the book Status to be accepted
         MainActivity.database.getDb().collection("books").document(requestedBookID)
@@ -553,11 +560,11 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                         DocumentSnapshot document = (DocumentSnapshot) task.getResult();
                         Book book = document.toObject(Book.class);
                         book.setStatus(Book.Status.Accepted);
-                        book.setMeetingLocation(markerLoc.latitude, markerLoc.longitude);
-                        book.setMeetingText(markerText);
                         MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
                     }// onComplete
                 });
+
+
     }//acceptRequest
 
 
