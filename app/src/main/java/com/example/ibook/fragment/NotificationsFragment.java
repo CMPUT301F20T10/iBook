@@ -472,6 +472,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
             if (data.getBooleanExtra("locationIncluded", false)) {
                 markerLoc = (LatLng) data.getExtras().getParcelable("markerLoc");
                 markerText = data.getStringExtra("markerText");
+
             }
         }
         acceptRequest();
@@ -503,7 +504,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                     }//onComplete -- RequestSender
                 });
         //delete the request from the listview when that request is accepted
-        requestsList.remove(selectedPosition);
+        //requestsList.remove(selectedPosition);
         adapter.notifyDataSetChanged();
         //remove other bookRequests on the same book in the bookRequest collection
         MainActivity.database.getDb().collection("bookRequest")
