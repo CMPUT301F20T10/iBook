@@ -88,6 +88,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     private Button cancelRequestButton;
     private Button cancelReturnButton;
     private ListView requestList;
+    private TextView requestTitle;
 
     private FirebaseFirestore db;
     FirebaseAuth uAuth;
@@ -148,6 +149,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         requestList = findViewById(R.id.request_list);
         borrowerTitleText = findViewById(R.id.descriptionView5);
         borrowerView = findViewById(R.id.borrowerTextView);
+        requestTitle = findViewById(R.id.requestListTitle);
 
 
         imageChanged = false;
@@ -782,6 +784,8 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 delete_button.setVisibility(View.GONE);
                 request_button.setVisibility(View.GONE);
                 requestList.setVisibility(View.GONE);
+                requestTitle.setVisibility(View.GONE);
+
                 return_button.setVisibility(View.GONE);
                 scanButton.setVisibility(View.VISIBLE);
                 cancelRequestButton.setVisibility(View.GONE);
@@ -792,6 +796,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 delete_button.setVisibility(View.GONE);
                 request_button.setVisibility(View.GONE);
                 requestList.setVisibility(View.GONE);
+                requestTitle.setVisibility(View.GONE);
                 return_button.setVisibility(View.GONE);
                 scanButton.setVisibility(View.GONE);
                 cancelRequestButton.setVisibility(View.GONE);
@@ -823,6 +828,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                         delete_button.setVisibility(View.GONE);
                                         request_button.setVisibility(View.GONE);
                                         requestList.setVisibility(View.GONE);
+                                        requestTitle.setVisibility(View.GONE);
                                         return_button.setVisibility(View.GONE);
                                         cancelRequestButton.setVisibility(View.VISIBLE);
                                         cancelReturnButton.setVisibility(View.GONE);
@@ -836,6 +842,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                         delete_button.setVisibility(View.GONE);
                                         request_button.setVisibility(View.GONE);
                                         requestList.setVisibility(View.GONE);
+                                        requestTitle.setVisibility(View.GONE);
                                         return_button.setVisibility(View.GONE);
                                         scanButton.setVisibility(View.VISIBLE);
                                         cancelRequestButton.setVisibility(View.GONE);
@@ -848,6 +855,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                         delete_button.setVisibility(View.GONE);
                                         request_button.setVisibility(View.GONE);
                                         requestList.setVisibility(View.GONE);
+                                        requestTitle.setVisibility(View.GONE);
                                         cancelRequestButton.setVisibility(View.GONE);
                                         cancelReturnButton.setVisibility(View.GONE);
                                     } else if (((String) documentSnapshot.get("requestStatus")).equals("Returning")) {
@@ -857,6 +865,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                         delete_button.setVisibility(View.GONE);
                                         request_button.setVisibility(View.GONE);
                                         requestList.setVisibility(View.GONE);
+                                        requestTitle.setVisibility(View.GONE);
                                         cancelRequestButton.setVisibility(View.GONE);
                                         cancelReturnButton.setVisibility(View.VISIBLE);
                                     }
@@ -874,6 +883,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                     edit_button.setVisibility(View.GONE);
                                     delete_button.setVisibility(View.GONE);
                                     requestList.setVisibility(View.GONE);
+                                    requestTitle.setVisibility(View.GONE);
                                     return_button.setVisibility(View.GONE);
                                     cancelRequestButton.setVisibility(View.GONE);
                                     cancelReturnButton.setVisibility(View.GONE);
@@ -883,6 +893,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                     delete_button.setVisibility(View.GONE);
                                     request_button.setVisibility(View.GONE);
                                     requestList.setVisibility(View.GONE);
+                                    requestTitle.setVisibility(View.GONE);
                                     return_button.setVisibility(View.GONE);
                                     cancelRequestButton.setVisibility(View.GONE);
                                     cancelReturnButton.setVisibility(View.GONE);
