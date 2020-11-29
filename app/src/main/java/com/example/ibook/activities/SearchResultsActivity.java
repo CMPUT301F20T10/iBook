@@ -52,10 +52,10 @@ public class SearchResultsActivity extends AppCompatActivity {
     private RadioButton user;
     private String query;
 
-//    //list view getter
-//    public ListView getListView() {
-//        return listView;
-//    }
+    //list view getter
+    public RecyclerView getListView() {
+        return bookListView;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

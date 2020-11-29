@@ -1,6 +1,7 @@
 package com.example.ibook.activities;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,8 +14,10 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ibook.R;
@@ -35,7 +38,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
@@ -50,7 +55,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
     //    private User user;
     private EditText bookNameEditText;
     private EditText authorEditText;
-    private EditText dateEditText;
+    private TextView dateEditText;
     private EditText isbnEditText;
     private EditText descriptionEditText;
     private Button cancelButton;
@@ -63,6 +68,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
     private final int REQ_GALLERY_IMAGE = 2;
     private boolean imageAdded;
     public static String bookID;
+    private Calendar calendar = Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +102,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 finish();
             }
         });
+        setDate();
 
         // complete editing
         completeButton.setOnClickListener(new View.OnClickListener() {
@@ -110,7 +117,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 // check full information
                 if (bookName.length() > 0
                         && authorName.length() > 0
-                        && dateIsValid(date)
+                        && date.length() > 0
                         && isbnIsValid(isbn)) {
                     finish();
 
@@ -136,7 +143,8 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                     }
                     //setResult(1, intent);
                 } else if (!(bookName.length() > 0
-                        && authorName.length() > 0)){
+                        && authorName.length() > 0
+                        && date.length() > 0)){
                     Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();
                 }
                 //finish();
@@ -256,18 +264,33 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
         }
 
     }
-    public boolean dateIsValid(String date) {
+    //date picker dialog to validate date input
+    public boolean setDate() {
+        final DatePickerDialog.OnDateSetListener pickDate = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, month);
+                calendar.set(Calendar.DAY_OF_MONTH, day);
+                formatDate();
+            }
+        };
+        dateEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(AddBookActivity.this, pickDate, calendar
+                        .get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+        return true;
 
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+    }
+    public void formatDate() {
+        String dateFormat = "yyyy-MM-dd"; //In which you need put here
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat, Locale.CANADA);
 
-        format.setLenient(false);
-        try {
-            format.parse(date);
-            return true;
-        } catch (ParseException e) {
-            Toast.makeText(getBaseContext(), "Date should be in specified format", Toast.LENGTH_SHORT).show();
-            return false;
-        }
+        dateEditText.setText(simpleDateFormat.format(calendar.getTime()));
 
     }
 
