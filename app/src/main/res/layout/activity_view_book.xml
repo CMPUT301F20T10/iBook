@@ -419,8 +419,6 @@
                     android:text=" Cancel Return"
                     android:textColor="#FFF" />
             </LinearLayout>
-
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
@@ -436,6 +434,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_baseline_camera_alt_24" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

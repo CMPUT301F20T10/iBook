@@ -265,7 +265,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
 
         cancelReturnButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { //ivan
+            public void onClick(View v) {
                 if (selectedBook.getStatus().equals(Book.Status.Returning)) {
                     status = "Borrowed";
                     selectedBook.setStatus(Book.Status.Borrowed);
@@ -688,6 +688,21 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                             book.setMeetingText(markerText);
                             MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
                         }// onComplete
+                    });
+            // ivan
+            // update the request Status to be accepted
+            db.collection("bookRequest")
+                    .whereEqualTo("requestedBookID", selectedBook.getBookID())
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                BookRequest bookReq = documentSnapshot.toObject(BookRequest.class);
+                                bookReq.setRequestStatus("Accepted");
+                                MainActivity.database.getDb().collection("bookRequest").document(bookReq.getBookRequestID()).set(bookReq);
+                            }
+                        }
                     });
         }
     }
@@ -1212,6 +1227,9 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
                     }// onComplete
                 });
+
+
+
     }
 
 

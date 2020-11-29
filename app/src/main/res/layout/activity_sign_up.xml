@@ -137,6 +137,7 @@
 
         </TextView>
 
+
         <EditText
             android:id="@+id/ed_password_signup"
             android:layout_width="match_parent"
