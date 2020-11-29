@@ -35,7 +35,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 
 /**
- *
+ * The add book activity class holds the activity when user choose to add a new book in the
+ * application. User need to input the required information, including title, isbn and author.
+ * User can also use camera to scan the isbn, and upload the photo to the book.
  */
 public class AddBookActivity extends AppCompatActivity implements ScanFragment.OnFragmentInteractionListener {
     // the surface of the add book
@@ -56,6 +58,9 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
     public static String bookID;
     private Calendar calendar = Calendar.getInstance();
 
+    /**
+     * The function to initialize the view
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -144,12 +149,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 final String description = descriptionEditText.getText().toString();
 
                 // check full information
-                if (bookName.length() > 0
-                        && authorName.length() > 0
-                        && date.length() > 0
-                        && isbnIsValid(isbn)) {
-                    finish();
-
+                if (bookName.length() > 0 && authorName.length() > 0 && date.length() > 0 && isbnIsValid(isbn)) {
                     bookID = MainActivity.database.getDb().collection("books").document().getId();
                     final Book newBook = new Book(bookName, authorName, date, description, Book.Status.Available, isbn, userID, bookID);
                     MainActivity.database.getDb().collection("books").document(bookID).set(newBook);
@@ -171,6 +171,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                         e.printStackTrace();
                     }
                     //setResult(1, intent);
+                    finish();
                 } else if (!(bookName.length() > 0
                         && authorName.length() > 0
                         && date.length() > 0)) {
