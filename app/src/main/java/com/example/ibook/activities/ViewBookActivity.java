@@ -118,6 +118,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     private final LatLng defaultLocation = new LatLng(53.54685611047399, -113.49431332200767);
     private static final double DEFAULT_ZOOM = 5.0;
     private static final double MARKER_ZOOM = 15.0;
+    private boolean changingLoc = false;
 
 
     @Override
@@ -175,8 +176,10 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
 
         getBookData();
         checkCases();
-        setUpMaps();
 
+
+
+        setUpMaps();
         setUpEditButtonListener();
         setUpBackButtonListener();
         setUpScanButtonListener();
@@ -582,7 +585,13 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 //Let the borrower edit the location when trying to return
                 saveMapsLocation();
                 setUpMaps();
-                acceptRequest(); //**CRASHES THE APP**
+                // if the owner changes the location, no need to accept again
+                if(changingLoc){
+                    changingLoc = false;
+                }
+                else{
+                    acceptRequest();
+                }
             }
         }
         if (resultCode == 4 && requestCode == 3) {
@@ -729,6 +738,13 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         } else {
                             descriptionTextView.setText("Nothing here...");
                         }
+
+                        //get book location
+                        // todo: added getting markerLoc, but seems it's later than displaying map info
+                        double lat = selectedBook.getMeetingLocation().getLatitude();
+                        double lng = selectedBook.getMeetingLocation().getLongitude();
+                        markerLoc = new LatLng(lat, lng);
+                        //Toast.makeText(getBaseContext(),String.valueOf(lat),Toast.LENGTH_SHORT).show();
 
 
                         // from owner view, if the book is borrowed, show borrower's name
@@ -1192,6 +1208,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                             mapsIntent.putExtra("locationIncluded", false);
                         }
                         if (editMapsLocation) { //Start the activity so that the person can edit the location
+                            changingLoc = true;
                             mapsIntent.putExtra(MapsActivity.MAP_TYPE, MapsActivity.ADD_EDIT_LOCATION);
                             startActivityForResult(mapsIntent, MapsActivity.ADD_EDIT_LOCATION_REQUEST_CODE);
                         } else { //Start the maps activity in view only mode
@@ -1202,15 +1219,22 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 });
 
             }
+            //double lat = selectedBook.getMeetingLocation().getLatitude();
+            //double lng = selectedBook.getMeetingLocation().getLongitude();
+            //markerLoc = new LatLng(lat, lng);
+
         }
         //Draw the map
         if (mMap != null) {
             addMarker();
+        }else {
+            //Toast.makeText(getBaseContext(),"mMap fails",Toast.LENGTH_SHORT).show();
         }
     }
 
     void saveMapsLocation() {
         //Save the meeting location
+
         MainActivity.database.getDb().collection("books").document(bookID)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -1223,6 +1247,8 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
                     }// onComplete
                 });
+
+
 
 
 
