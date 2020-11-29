@@ -742,13 +742,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                             descriptionTextView.setText("Nothing here...");
                         }
 
-                        //get book location
-                        // todo: added getting markerLoc, but seems it's later than displaying map info
-                        double lat = selectedBook.getMeetingLocation().getLatitude();
-                        double lng = selectedBook.getMeetingLocation().getLongitude();
-                        markerLoc = new LatLng(lat, lng);
-                        //Toast.makeText(getBaseContext(),String.valueOf(lat),Toast.LENGTH_SHORT).show();
-
 
                         // from owner view, if the book is borrowed, show borrower's name
                         if (selectedBook.getStatus().equals(Book.Status.Borrowed)) {
