@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.ibook.BookListAdapter;
 import com.example.ibook.R;
@@ -201,7 +200,6 @@ public class BookListFragment extends Fragment {
                                 continue;
 
                             String bookID = (String) documentSnapshot.get("requestedBookID");
-                            Toast.makeText(getContext(),bookID,Toast.LENGTH_SHORT).show();
                             MainActivity.database
                                     .getDb()
                                     .collection("books")
@@ -409,7 +407,6 @@ public class BookListFragment extends Fragment {
         filterAllButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "Filter All", Toast.LENGTH_SHORT).show();
                 filterStatus = "All";
                 closeMenu();
                 updateBookList();
@@ -419,7 +416,6 @@ public class BookListFragment extends Fragment {
         filterBorrowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "filter Borrowed", Toast.LENGTH_SHORT).show();
                 filterStatus = "Borrowed";
                 closeMenu();
                 updateBookList();
@@ -429,7 +425,6 @@ public class BookListFragment extends Fragment {
         filterRequestButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "filter Requested", Toast.LENGTH_SHORT).show();
                 filterStatus = "Requested";
                 closeMenu();
                 updateBookList();
@@ -439,7 +434,6 @@ public class BookListFragment extends Fragment {
         filterAcceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "filter Accepted", Toast.LENGTH_SHORT).show();
                 filterStatus = "Accepted";
                 closeMenu();
                 updateBookList();
@@ -449,7 +443,6 @@ public class BookListFragment extends Fragment {
         filterAvailableButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "Filter Available", Toast.LENGTH_SHORT).show();
                 filterStatus = "Available";
                 closeMenu();
                 updateBookList();
