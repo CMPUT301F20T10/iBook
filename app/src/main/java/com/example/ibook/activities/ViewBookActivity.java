@@ -687,7 +687,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                             MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
                         }// onComplete
                     });
-            // ivan
             // update the request Status to be accepted
             db.collection("bookRequest")
                     .whereEqualTo("requestedBookID", selectedBook.getBookID())
@@ -703,7 +702,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         }
                     });
         }
-    }
 
     /**
      * This method will retrieve the data from the database,

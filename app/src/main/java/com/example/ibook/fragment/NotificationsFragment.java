@@ -467,6 +467,8 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                 markerText = data.getStringExtra("markerText");
 
             }
+        }else{
+            return;
         }
         acceptRequest();
     }
@@ -526,11 +528,11 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                         DocumentSnapshot document = (DocumentSnapshot) task.getResult();
                         Book book = document.toObject(Book.class);
                         book.setStatus(Book.Status.Accepted);
-                        book.setMeetingLocation(markerLoc.latitude, markerLoc.longitude);
-                        book.setMeetingText(markerText);
                         MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
                     }// onComplete
                 });
+
+
     }//acceptRequest
 
 
