@@ -12,13 +12,19 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.ibook.R;
+import com.example.ibook.entities.Database;
+import com.example.ibook.entities.User;
 import com.example.ibook.fragment.UserFragment;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +51,7 @@ public class EditProfile extends AppCompatActivity {
         setContentView(R.layout.activity_edit_profile);
 
         Intent intent = getIntent();
-        String username = intent.getStringExtra("username");
+        final String username = intent.getStringExtra("username");
         String email = intent.getStringExtra("email");
         String phone = intent.getStringExtra("phone");
 
@@ -77,33 +83,55 @@ public class EditProfile extends AppCompatActivity {
                     Toast.makeText(EditProfile.this, "Cannot be left empty", Toast.LENGTH_SHORT).show();
                     return;
                 }// if
-                String email = emailEditText.getText().toString();
-                MainActivity.database.getuAuth().getCurrentUser().updateEmail(email)
-                        .addOnFailureListener(new OnFailureListener() {
+                if(!phoneIsValid(phoneEditText.getText().toString())){
+                    Toast.makeText(getBaseContext(), "Phone number is not valid", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                FirebaseFirestore.getInstance()
+                        .collection("users")
+                        .whereEqualTo("userName", usernameEditText.getText().toString()).whereNotEqualTo("userName",username)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            //check if username already exists
                             @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(EditProfile.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                            }//onFailure
-                        })
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                // DocumentReference documentReference = db.collection("users").document(userID);
-                                MainActivity.user.setEmail(emailEditText.getText().toString());
-                                MainActivity.user.setUserName(usernameEditText.getText().toString());
-                                MainActivity.user.setPhoneNumber(phoneEditText.getText().toString());
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (!task.getResult().isEmpty()) {
+                                    Toast.makeText(getBaseContext(), "Username exists", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    String email = emailEditText.getText().toString();
+                                    MainActivity.database.getuAuth().getCurrentUser().updateEmail(email)
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(EditProfile.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                }//onFailure
+                                            })
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    // DocumentReference documentReference = db.collection("users").document(userID);
+                                                    MainActivity.user.setEmail(emailEditText.getText().toString());
+                                                    MainActivity.user.setUserName(usernameEditText.getText().toString());
+                                                    MainActivity.user.setPhoneNumber(phoneEditText.getText().toString());
 
-                                MainActivity.database.getUserDocumentReference().set(MainActivity.user).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Toast.makeText(EditProfile.this, "Database successfully updated", Toast.LENGTH_SHORT).show();
-                                        finish();
-                                    }
-                                }); //update the database
-                            }// onClick
+                                                    MainActivity.database.getUserDocumentReference().set(MainActivity.user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            Toast.makeText(EditProfile.this, "Database successfully updated", Toast.LENGTH_SHORT).show();
+                                                            finish();
+                                                        }
+                                                    }); //update the database
+                                                }// onClick
+                                            });
+                                }
+                            }
                         });
+
             }//onClick
         });
     }//onCreate
+    public boolean phoneIsValid(String phoneNumber){
+        return phoneNumber.matches("[0-9]+") && phoneNumber.length() == 10;
+    }
 
 }// Class - EditProfile
