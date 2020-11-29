@@ -185,7 +185,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                                 if(radioButtonText.equals("Responses")){
                                     deleteResponse(position);
                                     return;
-
                                 }// if
 
                                 else {
