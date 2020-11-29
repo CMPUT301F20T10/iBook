@@ -23,6 +23,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PointOfInterest;
 
+/**
+ * The Maps Activity uses the goole maps api to draw the map in the view and let a user select a location.
+ * For simplicity there is no search functionality and the users current location is not used.
+ * The user can simply move around, zoom in and out and long click or click to set a marker depending if
+ * he/she is in edit or view mode.
+ */
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     public static final String MAP_TYPE = "MAP_TYPE";
@@ -113,6 +119,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
+    /**
+     * Sets up the connection with google maps and gets the map ready.
+     * @param googleMap
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -127,6 +137,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
+    /**
+     * Adds a marker on the clicked maps location and zooms in on the marker.
+     */
     private void addMarker() {
         mMap.clear();
         if(markerLoc!=null) {
@@ -143,28 +156,39 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    /**
+     * When the user long clicks it updates the map location
+     */
     private void setMapLongClick(){
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
                 markerLoc = latLng;
                 markerText = "Meeting Location";
+                mapInfo.setText("Move the marker around by long clicking it and dragging it.");
                 addMarker();
             }
         });
     }
+
+    /**
+     * When the user clicks on a point of interes the marker gets updated to that location.
+     */
     private void setPoiClick() {
         mMap.setOnPoiClickListener(new GoogleMap.OnPoiClickListener() {
             @Override
             public void onPoiClick(PointOfInterest pointOfInterest) {
                 markerLoc = pointOfInterest.latLng;
                 markerText = pointOfInterest.name;
+                mapInfo.setText("Move the marker around by long clicking it and dragging it.");
                 addMarker();
             }
         });
     }
 
-
+    /**
+     * Allows the user to drag the map to move it around.
+     */
     private void setOnDrag() {
         mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
             @Override
@@ -190,7 +214,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 }
 
 
-/*Resources
+/*References
 
 Android Notes for Professionals. Chapter 23. License(CC BY-SA).
 
@@ -206,4 +230,14 @@ https://stackoverflow.com/questions/16134682/how-to-send-a-latlng-instance-to-ne
 
 Juuse, Rene. "Google maps error: Marker's position is not updated after drag". Stack Overflow. Stack Exchange Inc. Feb 20,2015. License(CC BY-SA).
 https://stackoverflow.com/questions/14829195/google-maps-error-markers-position-is-not-updated-after-drag
+
+madhu527. "Android Google Maps: disable dragging in MapFragment". Stack Overflow. Stack Exchange Inc. Dec 23, 2014. License(CC BY-SA).
+https://stackoverflow.com/questions/16979550/android-google-maps-disable-dragging-in-mapfragment
+
+Mamo, Alex. "How to convert GeoPoint in Firestore to LatLng". Stack Overflow. Stack Exchange Inc. Dec 16, 2018. License(CC BY-SA).
+https://stackoverflow.com/questions/53799346/how-to-convert-geopoint-in-firestore-to-latlng
+
+Scarygami. "How to save GeoPoint in Firebase Cloud Firestore?". Stack Overflow. Stack Exchange Inc. Oct 06, 2017. License(CC BY-SA).
+https://stackoverflow.com/questions/46603691/how-to-save-geopoint-in-firebase-cloud-firestore
+
  */
