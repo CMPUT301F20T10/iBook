@@ -183,3 +183,30 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
     }
 
 }
+
+
+/*References
+Android Notes for Professionals. Chapter 04. License(CC BY-SA).
+
+user370305. "Android FileInputStream read() txt file to String". Stack Overflow. Stack Exchange Inc. Feb 01, 2012. License(CC BY-SA).
+https://stackoverflow.com/questions/9095610/android-fileinputstream-read-txt-file-to-string
+
+Vasudevan, Nithya. "ANDROID: CUSTOM LISTVIEW WITH IMAGE AND TEXT USING ARRAYADAPTER". The Open Tutorials. Sept 08, 2012.
+http://theopentutorials.com/tutorials/android/listview/android-custom-listview-with-image-and-text-using-arrayadapter/
+
+Nayak, Chandra Sekhar. "E/RecyclerView: No adapter attached; skipping layout". Chansek. Jan 09, 2019.
+http://www.chansek.com/RecyclerView-no-adapter-attached-skipping-layout/
+
+DongYun, Kam. "How to use a RecyclerView with loading URL image and using Glide". Kam DongYun. Jun 01, 2017.
+https://ledron.github.io/RecyclerView/
+
+Chandravanshi, Arun. "Android RecyclerView OnItemClickListener Example". C1CTech.
+https://c1ctech.com/android-recyclerview-onitemclicklistener-example/
+
+Mughal, Juned. "Add OnItemClickListener to RecyclerView in android to Get Clicked Item". Android-Examples. Aug 18, 2016.
+https://www.android-examples.com/add-onitemclicklistener-to-recyclerview-in-android/
+
+Nandagopal T. "Calling startActivity() from outside of an Activity?". Stack Overflow. Stack Exchange Inc. Dec 30, 2014. License(CC BY-SA).
+https://stackoverflow.com/questions/3689581/calling-startactivity-from-outside-of-an-activity
+
+ */
