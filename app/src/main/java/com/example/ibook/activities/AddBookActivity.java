@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -22,28 +21,15 @@ import android.widget.Toast;
 
 import com.example.ibook.R;
 import com.example.ibook.entities.Book;
-import com.example.ibook.entities.User;
 import com.example.ibook.fragment.ScanFragment;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -52,7 +38,7 @@ import androidx.appcompat.app.AppCompatActivity;
  *
  */
 public class AddBookActivity extends AppCompatActivity implements ScanFragment.OnFragmentInteractionListener {
-    //    private User user;
+    // the surface of the add book
     private EditText bookNameEditText;
     private EditText authorEditText;
     private TextView dateEditText;
@@ -62,8 +48,8 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
     private Button completeButton;
     private Button scanButton;
     private ImageView imageView;
+
     private String userID;
-    private ArrayList<Book> books;
     private final int REQ_CAMERA_IMAGE = 1;
     private final int REQ_GALLERY_IMAGE = 2;
     private boolean imageAdded;
@@ -78,6 +64,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
         requestWindowFeature(Window.FEATURE_NO_TITLE); //will hide the title
         getSupportActionBar().hide(); // hide the title bar
 
+        // set up the content of the surface
         setContentView(R.layout.activity_add_or_edit_book_screen);
         bookNameEditText = findViewById(R.id.titleEditor);
         authorEditText = findViewById(R.id.authorEditor);
@@ -90,11 +77,21 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
         imageView = findViewById(R.id.imageView);
         imageAdded = false;
 
-        books = new ArrayList<>();
-
         Intent intent = getIntent();
         userID = intent.getStringExtra("USER_ID");
 
+        setDate();
+        setUpCancelButtonListener();
+        setUpCompleteButtonListener();
+        setUpImageViewListener();
+        setUpScanButtonListener();
+
+    }
+
+    /**
+     * The function to set up the listener of the cancel button
+     */
+    private void setUpCancelButtonListener() {
         // go back when clicking cancel
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,12 +99,44 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 finish();
             }
         });
-        setDate();
+    }
 
+    /**
+     * The function to set up the listener of the scan button
+     */
+    private void setUpScanButtonListener() {
+        // when the scan button clicked, open fragment to scan ISBN
+        scanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new ScanFragment().show(getSupportFragmentManager(), "Scan ISBN");
+            }
+        });
+    }
+
+    /**
+     * The function to set up the listener of the image view
+     */
+    private void setUpImageViewListener() {
+        // when the image view clicked, choose a image or delete the image
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showImagePickerDialog();
+            }
+        });
+    }
+
+    /**
+     * The function to set up the listener of the complete button, it will update the information of
+     * the book
+     */
+    private void setUpCompleteButtonListener() {
         // complete editing
         completeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // get the information from the editor
                 final String bookName = bookNameEditText.getText().toString();
                 final String authorName = authorEditText.getText().toString();
                 final String date = dateEditText.getText().toString();
@@ -144,31 +173,18 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                     //setResult(1, intent);
                 } else if (!(bookName.length() > 0
                         && authorName.length() > 0
-                        && date.length() > 0)){
+                        && date.length() > 0)) {
                     Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();
                 }
                 //finish();
             }
         });
-
-        // choose a image
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showImagePickerDialog();
-            }
-        });
-
-        // scan ISBN
-        scanButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new ScanFragment().show(getSupportFragmentManager(), "Scan ISBN");
-            }
-        });
     }
 
-    // let user choose to use camera or gallery
+    /**
+     * the function to show the dialog and let user choose to use camera or gallery to upload the
+     * photo
+     */
     private void showImagePickerDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle("Upload Image")
@@ -210,6 +226,13 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
         dialog.show();
     }
 
+    /**
+     * The function deal with the result when the user uploads the image
+     *
+     * @param requestCode the request when create the activity
+     * @param resultCode  the result code get from the activity when it finish
+     * @param data        the intent got from the activity
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -222,7 +245,6 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 imageView = EditBookActivity.scaleAndSetImage(bitmap, imageView);
                 imageAdded = true;
             }
-
         } else if (requestCode == REQ_GALLERY_IMAGE) {
             if (resultCode == RESULT_OK) {
                 // get image data
@@ -240,6 +262,11 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
         }
     }
 
+    /**
+     * The function to upload the image to the database
+     *
+     * @param bitmap the image user choose to upload
+     */
     private void storeLocally(Bitmap bitmap) {
         try {//Pass the image through a temporary link on local storage
             //Large bitmaps will crash the app.
@@ -254,18 +281,28 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
             e.printStackTrace();
         }
     }
-    public boolean isbnIsValid(String isbn){
+
+    /**
+     * The function to check whether the isbn code is correct or not
+     *
+     * @param isbn the isbn code user input
+     *
+     * @return the validation result of the isbn code
+     */
+    public boolean isbnIsValid(String isbn) {
         if (isbn.matches("[0-9]+") && (isbn.length() == 10 || isbn.length() == 13)) {
             return true;
-        }
-        else{
+        } else {
             Toast.makeText(getBaseContext(), "ISBN must be 10 or 13 digit number", Toast.LENGTH_SHORT).show();
             return false;
         }
 
     }
-    //date picker dialog to validate date input
-    public boolean setDate() {
+
+    /**
+     * The function to set up the date picker dialog to validate date input
+     */
+    public void setDate() {
         final DatePickerDialog.OnDateSetListener pickDate = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
@@ -275,6 +312,7 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 formatDate();
             }
         };
+        // open the date picker when user clicked the input area
         dateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -283,9 +321,14 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                         calendar.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
-        return true;
 
     }
+
+    /**
+     * The function to format the date got from the date picker.
+     * <p>
+     * Format the date to the "yyyy-MM-dd" format
+     */
     public void formatDate() {
         String dateFormat = "yyyy-MM-dd"; //In which you need put here
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat, Locale.CANADA);
@@ -294,6 +337,11 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
 
     }
 
+    /**
+     * The function to get the isbn from the isbn scanning fragment
+     *
+     * @param ISBN the isbn code got from scanning
+     */
     @Override
     public void onOkPressed(String ISBN) {
         isbnEditText.setText(ISBN);

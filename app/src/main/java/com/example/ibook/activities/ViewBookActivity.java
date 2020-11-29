@@ -675,35 +675,35 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                     });
         }
 
-            //update the book Status to be accepted
-            MainActivity.database.getDb().collection("books").document(bookID)
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            DocumentSnapshot document = (DocumentSnapshot) task.getResult();
-                            Book book = document.toObject(Book.class);
-                            book.setStatus(Book.Status.Accepted);
-                            book.setMeetingLocation(markerLoc.latitude, markerLoc.longitude);
-                            book.setMeetingText(markerText);
-                            MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
-                        }// onComplete
-                    });
-            // update the request Status to be accepted
-            db.collection("bookRequest")
-                    .whereEqualTo("requestedBookID", selectedBook.getBookID())
-                    .get()
-                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                        @Override
-                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                                BookRequest bookReq = documentSnapshot.toObject(BookRequest.class);
-                                bookReq.setRequestStatus("Accepted");
-                                MainActivity.database.getDb().collection("bookRequest").document(bookReq.getBookRequestID()).set(bookReq);
-                            }
+        //update the book Status to be accepted
+        MainActivity.database.getDb().collection("books").document(bookID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        DocumentSnapshot document = (DocumentSnapshot) task.getResult();
+                        Book book = document.toObject(Book.class);
+                        book.setStatus(Book.Status.Accepted);
+                        book.setMeetingLocation(markerLoc.latitude, markerLoc.longitude);
+                        book.setMeetingText(markerText);
+                        MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
+                    }// onComplete
+                });
+        // update the request Status to be accepted
+        db.collection("bookRequest")
+                .whereEqualTo("requestedBookID", selectedBook.getBookID())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            BookRequest bookReq = documentSnapshot.toObject(BookRequest.class);
+                            bookReq.setRequestStatus("Accepted");
+                            MainActivity.database.getDb().collection("bookRequest").document(bookReq.getBookRequestID()).set(bookReq);
                         }
-                    });
-        }
+                    }
+                });
+    }
 
     /**
      * This method will retrieve the data from the database,
@@ -1036,7 +1036,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         });
                 finish();
             }
-            // TODO: How you guys want to do that?
             // if the book is borrowed -> returned ??
             if (Book.Status.valueOf(status).equals(Book.Status.Borrowed)) {
                 MainActivity.database
@@ -1234,7 +1233,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
                     }// onComplete
                 });
-
 
 
     }
