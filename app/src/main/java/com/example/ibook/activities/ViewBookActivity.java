@@ -783,7 +783,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     private void checkCases() {
         final Book.Status bookStatus = Book.Status.valueOf(status);
         // owner
-        requestList.setVisibility(View.GONE);
         if (userID.equals(owner)) {
             if (bookStatus.equals(Book.Status.Available) || bookStatus.equals(Book.Status.Requested)) {
                 // if owner & book available/requested, edit allowed
