@@ -28,7 +28,7 @@
         android:text="Status: Available"
         android:textColor="#1E9F01"
         app:layout_constraintStart_toEndOf="@+id/listImageView"
-        app:layout_constraintTop_toBottomOf="@+id/listBookDescription" />
+        app:layout_constraintTop_toBottomOf="@+id/listBookOwner" />
 
     <TextView
         android:id="@+id/listBookDate"
@@ -41,13 +41,13 @@
         app:layout_constraintTop_toBottomOf="@+id/listBookAuthors" />
 
     <TextView
-        android:id="@+id/listBookDescription"
+        android:id="@+id/listBookOwner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:background="#00FFFFFF"
-        android:text="Description: xxxxxxxxxxxx..."
+        android:text="Owner:"
         app:layout_constraintStart_toEndOf="@+id/listImageView"
         app:layout_constraintTop_toBottomOf="@+id/listBookDate" />
 

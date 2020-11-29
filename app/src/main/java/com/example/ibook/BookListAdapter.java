@@ -2,6 +2,8 @@ package com.example.ibook;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,9 @@ import android.widget.TextView;
 import com.example.ibook.activities.MainActivity;
 import com.example.ibook.activities.ViewBookActivity;
 import com.example.ibook.entities.Book;
+import com.example.ibook.entities.User;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 
@@ -94,7 +99,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
         TextView title;
         TextView authors;
         TextView date;
-        TextView description;
+        TextView ownerName;
         TextView status;
         ImageView imageView;
 
@@ -109,7 +114,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
             title = convertView.findViewById(R.id.listBookTitle);
             authors = convertView.findViewById(R.id.listBookAuthors);
             date = convertView.findViewById(R.id.listBookDate);
-            description = convertView.findViewById(R.id.listBookDescription);
+            ownerName = convertView.findViewById(R.id.listBookOwner);
             status = convertView.findViewById(R.id.listBookStatus);
             imageView = convertView.findViewById(R.id.listImageView);
         }
@@ -124,19 +129,31 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
         void setData(final Book book) {
             //Set the values for the xml attributes
             title.setText(book.getTitle());
-            authors.setText(book.getAuthors());
-            date.setText(book.getDate());
+            authors.setText("Author: " + book.getAuthors());
+            date.setText("Date: " + book.getDate());
 
             //Set part of the description up to ~30 characters
-            String bookDescription = book.getDescription();
-            if (bookDescription.length() > 30) {
-                description.setText(bookDescription.substring(0, 30) + "...");
-            } else {
-                description.setText(bookDescription + "...");
-            }
+            MainActivity.database
+                    .getDb()
+                    .collection("users")
+                    .document(book.getOwner())
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            Log.d("", book.getOwner());
+                            if (documentSnapshot != null) {
+                                User user = documentSnapshot.toObject(User.class);
+                                ownerName.setText("Owner: "+user.getUserName());
+                            }
+                        }
+                    });
             if (book.isAvailable()) {
                 status.setText("Status: Available");
                 status.setTextColor(0xFF1E9F01);
+            } else if (book.getStatus().equals(Book.Status.Requested)) {
+                status.setText("Status: " + book.getStatus());
+                status.setTextColor(Color.parseColor("#FF9900"));
             } else {
                 status.setText("Status: " + book.getStatus());
                 status.setTextColor(0xFFFF0000);

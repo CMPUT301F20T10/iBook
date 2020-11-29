@@ -49,7 +49,6 @@ import java.io.FileInputStream;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -67,6 +66,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     private String bookID;
     private String ownerID;
     private String isbn;
+    private String borrower;
     private final int REQ_CAMERA_IMAGE = 1;
     private final int REQ_GALLERY_IMAGE = 2;
 
@@ -77,6 +77,8 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     private TextView descriptionTextView;
     private TextView ownerTextView;
     private ImageView imageView;
+    private TextView borrowerTitleText;
+    private TextView borrowerView;
 
     private TextView edit_button;
     private Button backButton;
@@ -144,6 +146,8 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         cancelRequestButton = findViewById(R.id.btn_cancelRequest_book);
         cancelReturnButton = findViewById(R.id.btn_cancelReturn_book);
         requestList = findViewById(R.id.request_list);
+        borrowerTitleText = findViewById(R.id.descriptionView5);
+        borrowerView = findViewById(R.id.borrowerTextView);
 
 
         imageChanged = false;
@@ -570,9 +574,9 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 markerText = data.getStringExtra("markerText");
                 Log.i("Maps", "Returned from saved location");
                 //If its not the owner then the borrower can edit the location to save it
-                if(selectedBook.getOwner().equals(userID)) {
+                if (selectedBook.getOwner().equals(userID)) {
                     acceptRequest();
-                }else{
+                } else {
                     //Let the borrower edit the location when trying to return
                     saveMapsLocation();
                 }
@@ -602,7 +606,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
 
     private void acceptRequest() {
         final Book.Status bookStatus = Book.Status.valueOf(status);
-        if(selectedBook.getOwner().equals(userID)) {
+        if (selectedBook.getOwner().equals(userID)) {
             //get the request Sender information from database, since we need to notify that person
             MainActivity.database
                     .getDb()
@@ -641,11 +645,11 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         }//onComplete -- RequestSender
                     });
 
-        //delete the request from the listview when that request is accepted
-        requests.remove(requestPosition);
-        requestAdapter = new RequestAdapter(requests, getApplicationContext());
-        requestList.setAdapter(requestAdapter);
-        setListViewHeightBasedOnChildren(requestList);
+            //delete the request from the listview when that request is accepted
+            requests.remove(requestPosition);
+            requestAdapter = new RequestAdapter(requests, getApplicationContext());
+            requestList.setAdapter(requestAdapter);
+            setListViewHeightBasedOnChildren(requestList);
 
             //remove other bookRequests on the same book in the bookRequest collection
             MainActivity.database.getDb().collection("bookRequest")
@@ -706,22 +710,32 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         isbnTextView.setText(selectedBook.getIsbn());
                         isbn = selectedBook.getIsbn();
                         ownerID = selectedBook.getOwner();
-                        if (selectedBook.getDescription() != null) {
+                        if (!selectedBook.getDescription().equals("")) {
                             descriptionTextView.setText(selectedBook.getDescription());
+                        } else {
+                            descriptionTextView.setText("Nothing here...");
+                        }
+                        if (selectedBook.getStatus().equals(Book.Status.Borrowed)) {
+                            MainActivity.database.getDb().collection("users").document(requestSenderID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    borrowerView.setText(documentSnapshot.toObject(User.class).getUserName());
+                                }
+                            });
                         }
                         if (!imageChanged) {
                             MainActivity.database.downloadImage(imageView, selectedBook.getBookID(), true);
                         }
                         imageChanged = false;
-                        if(selectedBook.getMeetingLocation() != null) {
+                        if (selectedBook.getMeetingLocation() != null) {
                             Log.i("Maps", "Getting Location");
-                            Log.i("Maps", "Getting Marker"+ selectedBook.getMeetingLocation().getLatitude());
+                            Log.i("Maps", "Getting Marker" + selectedBook.getMeetingLocation().getLatitude());
                             markerLoc = new LatLng(selectedBook.getMeetingLocation().getLatitude(), selectedBook.getMeetingLocation().getLongitude());
                             markerText = selectedBook.getMeetingText();
-                            if(mMap != null) {
+                            if (mMap != null) {
                                 addMarker();
                             }
-                        }else{
+                        } else {
                             markerLoc = null;
                         }
                     }
@@ -739,7 +753,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                                         User user = documentSnapshot.toObject(User.class);
                                         ownerTextView.setText(user.getUserName());
-                                        // ownerTextView.setText(documentSnapshot.toObject(User.class).getUserName());
                                     }
                                 });
                     }
@@ -783,6 +796,10 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 scanButton.setVisibility(View.GONE);
                 cancelRequestButton.setVisibility(View.GONE);
                 cancelReturnButton.setVisibility(View.GONE);
+            }
+            if (bookStatus.equals(Book.Status.Borrowed)) {
+                borrowerView.setVisibility(View.VISIBLE);
+                borrowerTitleText.setVisibility(View.VISIBLE);
             }
         }// outer if
         else {
@@ -949,8 +966,12 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
                                 Book book = documentSnapshot.toObject(Book.class);
                                 book.setStatus(Book.Status.Borrowed);
-                                MainActivity.database.getDb().collection("books").document(bookID).set(book);
-                                // TODO: Do we need to update the book list in the user list
+                                MainActivity.database.getDb().collection("books").document(bookID).set(book).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        finish();
+                                    }
+                                });
                             }
                         });
 
@@ -966,11 +987,16 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                     String requestID = (String) document.getId();
                                     BookRequest bookReq = document.toObject(BookRequest.class);
                                     bookReq.setRequestStatus("Borrowed");
-                                    MainActivity.database.getDb().collection("bookRequest").document(requestID).set(bookReq);
+                                    MainActivity.database.getDb().collection("bookRequest").document(requestID).set(bookReq).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            finish();
+                                        }
+                                    });
                                 }
                             }
                         });
-                return;
+                finish();
             }
             // TODO: How you guys want to do that?
             // if the book is borrowed -> returned ??
@@ -1022,7 +1048,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                 }
                             }
                         });
-                return;
+                finish();
             }
             // if it's the owner
             if (selectedBook.getOwner().equals(userID)) {
@@ -1061,6 +1087,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 } else { // status not returning, notify the owner it's cancelled
                     Toast.makeText(getBaseContext(), "Holder cancelled the request", Toast.LENGTH_SHORT).show();
                 }
+                finish();
             }
 
         } else {
@@ -1076,7 +1103,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
      */
     private void setUpMaps() {
         Log.i("Maps", "IsRelated: " + isRelated);
-        if(userID.equals(owner) || isRelated) {
+        if (userID.equals(owner) || isRelated) {
             //Set up the google maps fragment
             boolean abledToSetMapsUp = false;
             Button editViewButton = findViewById(R.id.EditViewMapsButton);
@@ -1108,13 +1135,13 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
             } else if (isRelated) {
                 //The borrower can edit the location once the book is in his hands.
                 //This is useful when trying to return the book as he can set the location to return it to.
-                if (bookStatus.equals(Book.Status.Borrowed)||bookStatus.equals(Book.Status.Returning)) {
+                if (bookStatus.equals(Book.Status.Borrowed) || bookStatus.equals(Book.Status.Returning)) {
                     Log.i("Maps", "Borrower and Borrowed");
                     editViewButton.setText("Edit");
                     mapsConstraintLayout.setVisibility(View.VISIBLE);
                     editMapsLocation = true;
                     abledToSetMapsUp = true;
-                }else  if (bookStatus.equals(Book.Status.Accepted)){
+                } else if (bookStatus.equals(Book.Status.Accepted)) {
                     Log.i("Maps", "Borrower and Accepted");
                     editViewButton.setText("View");
                     mapsConstraintLayout.setVisibility(View.VISIBLE);
@@ -1150,10 +1177,11 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
             }
         }
         //Draw the map
-        if(mMap!=null) {
+        if (mMap != null) {
             addMarker();
         }
     }
+
     void saveMapsLocation() {
         //update the book Status to be accepted
         MainActivity.database.getDb().collection("books").document(bookID)
@@ -1171,7 +1199,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     }
 
 
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -1184,9 +1211,9 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
      * Add the google maps marker and zoom in on the location.
      */
     private void addMarker() {
-        if(markerLoc!=null) {
+        if (markerLoc != null) {
             mMap.clear();
-            Log.i("Maps", "Adding Marker "+ markerLoc.latitude);
+            Log.i("Maps", "Adding Marker " + markerLoc.latitude);
             mMap.addMarker(new MarkerOptions().position(markerLoc).title(markerText));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerLoc, (float) MARKER_ZOOM));
             //marker.showInfoWindow();
