@@ -118,12 +118,13 @@
             android:layout_marginLeft="32dp"
             android:layout_marginEnd="32dp"
             android:layout_marginRight="32dp"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="10dp"
             android:background="@color/blue"
             android:paddingHorizontal="5.0dp"
-            android:text="SAve"
+            android:text="Save"
             android:textColor="#FFF"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/changeProfileLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
