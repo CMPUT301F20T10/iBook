@@ -578,10 +578,11 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 Log.i("Maps", "Returned from saved location");
                 //If its not the owner then the borrower can edit the location to save it
                 //TODO: Send new notification to other person when editing the location
-                //acceptRequest(); **CRASHES THE APP**
+
                 //Let the borrower edit the location when trying to return
                 saveMapsLocation();
                 setUpMaps();
+                acceptRequest(); //**CRASHES THE APP**
             }
         }
         if (resultCode == 4 && requestCode == 3) {
@@ -671,8 +672,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                             }//for loop
                         }//onComplete
                     });
-        }
-
             //update the book Status to be accepted
             MainActivity.database.getDb().collection("books").document(bookID)
                     .get()
@@ -702,6 +701,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         }
                     });
         }
+    }
 
     /**
      * This method will retrieve the data from the database,
@@ -1025,8 +1025,8 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         });
                 finish();
             }
-            // TODO: How you guys want to do that?
-            // if the book is borrowed -> returned ??
+
+            // the holder wants to return a book (borrowed -> returning)
             if (Book.Status.valueOf(status).equals(Book.Status.Borrowed)) {
                 MainActivity.database
                         .getDb()
