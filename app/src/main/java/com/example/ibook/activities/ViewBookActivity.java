@@ -187,7 +187,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         setUpCancelReturnButtonListener();
 
         // setting up the request list
-        if(Book.Status.valueOf(status).equals(Book.Status.Requested) && userID.equals(owner)) { // todo: not sure if statement (2nd one) works
+        if(Book.Status.valueOf(status).equals(Book.Status.Requested)) {
             MainActivity.database
                     .getDb()
                     .collection("bookRequest")
