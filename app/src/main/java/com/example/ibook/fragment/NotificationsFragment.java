@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -102,6 +103,11 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.activity_page,container,false);
+        BottomNavigationView rootView =  (BottomNavigationView) v.findViewById(R.id.nav_view);
+        rootView.getOrCreateBadge(R.id.navigation_notifications).setNumber(0);
+
+
         db = FirebaseFirestore.getInstance();
         View root = inflater.inflate(R.layout.fragment_notification, container, false);
         listView = root.findViewById(R.id.listView);
@@ -554,6 +560,14 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                 });
     }//acceptRequest
 
+
+//    @Override
+//    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+//        View v = inflater.inflate(id_number_of_layout); # such as R.layout.activity_main
+//        View innerView = v.findViewById(id_number_of_view_inside_v);
+//        BottomNavigationView navigationView = (BottomNavigationView) getView().findViewById(R.id.nav_view);
+//        navigationView.getOrCreateBadge(R.id.navigation_notifications).setNumber(0);
+//    }
 
     @Override
     public void handleResult(Result rawResult) {
