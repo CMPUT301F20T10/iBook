@@ -23,6 +23,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import static android.view.View.GONE;
 
 public class MainActivity extends AppCompatActivity {
@@ -33,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar signInProgressBar;
     public static Database database;
     public static User user;
+    public static Date lastLoginTime;
 
 
     @Override
@@ -85,10 +90,32 @@ public class MainActivity extends AppCompatActivity {
                                     if (task.isSuccessful()) {
                                         Toast.makeText(MainActivity.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
                                         createUserObject();
-                                        //create a user object of existing user by loading info from database
-                                        Intent intent = new Intent(getApplicationContext(), PageActivity.class);
-                                        intent.putExtra("curr_username", username);
-                                        startActivity(intent);
+
+                                        database.getUserDocumentReference()
+                                                .get()
+                                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                        if (documentSnapshot.exists()) {
+                                                            //user object intialized
+                                                            user = documentSnapshot.toObject(User.class);
+
+                                                            //Add the last logged in time
+                                                            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd h:mm a");
+                                                            Date date = new Date();
+                                                            lastLoginTime = user.getLastLoginTime();
+
+                                                            //set new login Time
+                                                            user.setLastLoginTime(date);
+                                                            database.getDb().collection("users").document(database.getCurrentUserUID()).set(user);
+                                                            //create a user object of existing user by loading info from database
+                                                            Intent intent = new Intent(getApplicationContext(), PageActivity.class);
+                                                            intent.putExtra("curr_username", username);
+                                                            startActivity(intent);
+                                                        }// if
+                                                    }//onSuccess
+                                                });
+
                                     }// if
                                     else {
                                         Toast.makeText(MainActivity.this, "Unsuccessful" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();

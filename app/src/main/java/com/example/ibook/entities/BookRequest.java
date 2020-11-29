@@ -22,6 +22,7 @@ public class BookRequest {
     private String bookRequestID;
     private String requestStatus;
     private String datetime;
+    private Date timeOfRequest;
 
 
 
@@ -29,7 +30,9 @@ public class BookRequest {
 
     }// no arg constructor for database
 
-    public BookRequest(String requestSenderID, String requestReceiverID, String requestedBook, String requestSenderUsername, String requestedBookTitle, String bookRequestID, String requestStatus,String datetime) {
+
+
+    public BookRequest(String requestSenderID, String requestReceiverID, String requestedBook, String requestSenderUsername, String requestedBookTitle, String bookRequestID, String requestStatus, String datetime, Date timeOfRequest) {
         this.requestReceiverID = requestReceiverID;
         this.requestSenderID = requestSenderID;
         this.requestedBookID = requestedBook;
@@ -38,7 +41,16 @@ public class BookRequest {
         this.bookRequestID = bookRequestID;
         this.requestStatus = requestStatus;
         this.datetime = datetime;
+        this.timeOfRequest = timeOfRequest;
     }// constructor
+
+    public Date getTimeOfRequest() {
+        return timeOfRequest;
+    }
+
+    public void setTimeOfRequest(Date timeOfRequest) {
+        this.timeOfRequest = timeOfRequest;
+    }
 
     public String getDatetime() {
         return datetime;

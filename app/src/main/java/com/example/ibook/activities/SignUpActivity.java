@@ -21,7 +21,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Activity for signing users up for the app
@@ -130,12 +133,13 @@ public class SignUpActivity extends AppCompatActivity {
                                     if (task.isSuccessful()) {
                                         MainActivity.database = new Database();
                                         String currentUserID = MainActivity.database.getCurrentUserUID();
-                                        MainActivity.user = new User(username, password, email, phoneNumber, currentUserID);
+                                        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd h:mm a");
+                                        Date date = new Date();
+                                        MainActivity.user = new User(username, password, email, phoneNumber, currentUserID,date);
                                         MainActivity.database.addUser(MainActivity.user);
                                         // store user info to database
 
                                         Toast.makeText(SignUpActivity.this, "Created user successfully", Toast.LENGTH_SHORT).show();
-
                                         // go to iBook homepage
                                         Intent intent = new Intent(getApplicationContext(), PageActivity.class);
                                         startActivity(intent);
