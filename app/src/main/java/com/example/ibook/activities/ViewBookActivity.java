@@ -265,7 +265,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
 
         cancelReturnButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { //ivan
+            public void onClick(View v) {
                 if (selectedBook.getStatus().equals(Book.Status.Returning)) {
                     status = "Borrowed";
                     selectedBook.setStatus(Book.Status.Borrowed);
@@ -577,6 +577,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 markerText = data.getStringExtra("markerText");
                 Log.i("Maps", "Returned from saved location");
                 //If its not the owner then the borrower can edit the location to save it
+                //TODO: Send new notification to other person when editing the location
                 //acceptRequest(); **CRASHES THE APP**
                 //Let the borrower edit the location when trying to return
                 saveMapsLocation();
@@ -672,21 +673,36 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                     });
         }
 
-        //update the book Status to be accepted
-        MainActivity.database.getDb().collection("books").document(bookID)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        DocumentSnapshot document = (DocumentSnapshot) task.getResult();
-                        Book book = document.toObject(Book.class);
-                        book.setStatus(Book.Status.Accepted);
-                        book.setMeetingLocation(markerLoc.latitude, markerLoc.longitude);
-                        book.setMeetingText(markerText);
-                        MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
-                    }// onComplete
-                });
-
+            //update the book Status to be accepted
+            MainActivity.database.getDb().collection("books").document(bookID)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            DocumentSnapshot document = (DocumentSnapshot) task.getResult();
+                            Book book = document.toObject(Book.class);
+                            book.setStatus(Book.Status.Accepted);
+                            book.setMeetingLocation(markerLoc.latitude, markerLoc.longitude);
+                            book.setMeetingText(markerText);
+                            MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
+                        }// onComplete
+                    });
+            // ivan
+            // update the request Status to be accepted
+            db.collection("bookRequest")
+                    .whereEqualTo("requestedBookID", selectedBook.getBookID())
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                        @Override
+                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                BookRequest bookReq = documentSnapshot.toObject(BookRequest.class);
+                                bookReq.setRequestStatus("Accepted");
+                                MainActivity.database.getDb().collection("bookRequest").document(bookReq.getBookRequestID()).set(bookReq);
+                            }
+                        }
+                    });
+        }
     }
 
     /**
@@ -1209,6 +1225,9 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
                     }// onComplete
                 });
+
+
+
     }
 
 
