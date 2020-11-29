@@ -152,8 +152,8 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
 
                                     Collections.reverse(list);// reverse list to put the data in right order
                                     arrayAdapter = new ArrayAdapter<>(getContext(),
-                                            R.layout.notification_list_content,
-                                            R.id.userNameTextView, list);
+                                            R.layout.responses_list_content,
+                                            R.id.textView, list);
                                     listView.setAdapter(arrayAdapter);
 
                                 }//onComplete
@@ -402,7 +402,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                         User currentUser = documentSnapshot.toObject(User.class);
                         currentUser.removeFromNotificationList(position);
                         Collections.reverse(currentUser.getNotificationList());
-                        arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, currentUser.getNotificationList());
+                        arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.responses_list_content, R.id.textView, currentUser.getNotificationList());
                         listView.setAdapter(arrayAdapter);
 
                         //update the user collection
