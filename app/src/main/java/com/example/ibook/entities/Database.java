@@ -219,7 +219,7 @@ public class Database {
                 success[0] = true;
             }
         });
-        //Delte the icon image as well
+        //Delete the icon image as well
         //Delete the image
         storageReference.child("coverImages/"+bookId + "icon").delete().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -233,3 +233,35 @@ public class Database {
     }
 
 }// Database
+
+
+/*References
+Android Notes for Professionals. Chapter 13. License(CC BY-SA).
+
+Haythem BEN AICHA. "How to save bitmap to Firebase". Stack Overflow. Stack Exchange Inc. Nov 30, 2016. License(CC BY-SA).
+https://stackoverflow.com/questions/40885860/how-to-save-bitmap-to-firebase
+
+Waqas. "How to Use Firebase Storage (Visual Tutorial)". Firebase Tutorials.
+https://firebasetutorials.com/use-firebase-storage/
+
+Panneer, Christlin. "How to check if a file exists in Firebase storage from your android application?". Stack Overflow. Stack Exchange Inc. Apr 23, 2017. License(CC BY-SA).
+https://stackoverflow.com/questions/43567626/how-to-check-if-a-file-exists-in-firebase-storage-from-your-android-application
+
+Yadav, Vishal. "how can I download image on firebase storage?". Stack Overflow. Stack Exchange Inc. Oct 07, 2017. License(CC BY-SA).
+https://stackoverflow.com/questions/46619510/how-can-i-download-image-on-firebase-storage
+
+https://stackoverflow.com/questions/11010386/passing-android-bitmap-data-within-activity-using-intent-in-android
+
+Guillaume. "How can I pass a Bitmap object from one activity to another". Stack Overflow. Stack Exchange Inc. Oct 19, 2018. License(CC BY-SA).
+https://stackoverflow.com/questions/2459524/how-can-i-pass-a-bitmap-object-from-one-activity-to-another/2459624#2459624
+
+Mayu, Jay. "How to resize Image in Android?". Stack Overflow. Stack Exchange Inc. May 02, 2012. License(CC BY-SA).
+https://stackoverflow.com/questions/10413659/how-to-resize-image-in-android
+
+Andre. "How to convert a Drawable to a Bitmap?". Stack Overflow. Stack Exchange Inc. May 15, 2012. License(CC BY-SA).
+https://stackoverflow.com/questions/3035692/how-to-convert-a-drawable-to-a-bitmap#:~:text=Android%20provides%20a%20non%20straight%20foward%20solution%3A%20BitmapDrawable.,Bitmap%20bm%20%3D%20%28%28BitmapDrawable%29%20getResources%20%28%29.getDrawable%20%28R.drawable.flower_pic%29%29.getBitmap%20%28%29%3B
+
+Jeet. "How to scale an Image in ImageView to keep the aspect ratio". Stack Overflow. Stack Exchange Inc. Jun 11, 2019. License(CC BY-SA).
+https://stackoverflow.com/questions/2521959/how-to-scale-an-image-in-imageview-to-keep-the-aspect-ratio
+
+ */
