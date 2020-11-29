@@ -474,7 +474,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                 markerText = data.getStringExtra("markerText");
             }
         }
-        Toast.makeText(getContext(), "runing?!", Toast.LENGTH_SHORT).show();
         acceptRequest();
     }
 
