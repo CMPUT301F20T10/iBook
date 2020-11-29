@@ -98,9 +98,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }else{
                     intent.putExtra("locationIncluded", false);
                 }
-
                 setResult(ADD_EDIT_LOCATION_RESULT_CODE, intent);
-
                 finish();
             }
         });
