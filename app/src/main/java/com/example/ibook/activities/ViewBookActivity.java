@@ -88,6 +88,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     private Button cancelRequestButton;
     private Button cancelReturnButton;
     private ListView requestList;
+    private TextView requestTitle;
 
     private FirebaseFirestore db;
     FirebaseAuth uAuth;
@@ -149,6 +150,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         requestList = findViewById(R.id.request_list);
         borrowerTitleText = findViewById(R.id.descriptionView5);
         borrowerView = findViewById(R.id.borrowerTextView);
+        requestTitle = findViewById(R.id.requestListTitle);
 
 
         imageChanged = false;
@@ -681,35 +683,37 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                             }//for loop
                         }//onComplete
                     });
-            //update the book Status to be accepted
-            MainActivity.database.getDb().collection("books").document(bookID)
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            DocumentSnapshot document = (DocumentSnapshot) task.getResult();
-                            Book book = document.toObject(Book.class);
-                            book.setStatus(Book.Status.Accepted);
-                            book.setMeetingLocation(markerLoc.latitude, markerLoc.longitude);
-                            book.setMeetingText(markerText);
-                            MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
-                        }// onComplete
-                    });
-            // update the request Status to be accepted
-            db.collection("bookRequest")
-                    .whereEqualTo("requestedBookID", selectedBook.getBookID())
-                    .get()
-                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                        @Override
-                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                                BookRequest bookReq = documentSnapshot.toObject(BookRequest.class);
-                                bookReq.setRequestStatus("Accepted");
-                                MainActivity.database.getDb().collection("bookRequest").document(bookReq.getBookRequestID()).set(bookReq);
-                            }
-                        }
-                    });
+
         }
+
+        //update the book Status to be accepted
+        MainActivity.database.getDb().collection("books").document(bookID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        DocumentSnapshot document = (DocumentSnapshot) task.getResult();
+                        Book book = document.toObject(Book.class);
+                        book.setStatus(Book.Status.Accepted);
+                        book.setMeetingLocation(markerLoc.latitude, markerLoc.longitude);
+                        book.setMeetingText(markerText);
+                        MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
+                    }// onComplete
+                });
+        // update the request Status to be accepted
+        db.collection("bookRequest")
+                .whereEqualTo("requestedBookID", selectedBook.getBookID())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            BookRequest bookReq = documentSnapshot.toObject(BookRequest.class);
+                            bookReq.setRequestStatus("Accepted");
+                            MainActivity.database.getDb().collection("bookRequest").document(bookReq.getBookRequestID()).set(bookReq);
+                        }
+                    }
+                });
     }
 
     /**
@@ -826,6 +830,8 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 delete_button.setVisibility(View.GONE);
                 request_button.setVisibility(View.GONE);
                 requestList.setVisibility(View.GONE);
+                requestTitle.setVisibility(View.GONE);
+
                 return_button.setVisibility(View.GONE);
                 scanButton.setVisibility(View.VISIBLE);
                 cancelRequestButton.setVisibility(View.GONE);
@@ -836,6 +842,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 delete_button.setVisibility(View.GONE);
                 request_button.setVisibility(View.GONE);
                 requestList.setVisibility(View.GONE);
+                requestTitle.setVisibility(View.GONE);
                 return_button.setVisibility(View.GONE);
                 scanButton.setVisibility(View.GONE);
                 cancelRequestButton.setVisibility(View.GONE);
@@ -867,6 +874,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                         delete_button.setVisibility(View.GONE);
                                         request_button.setVisibility(View.GONE);
                                         requestList.setVisibility(View.GONE);
+                                        requestTitle.setVisibility(View.GONE);
                                         return_button.setVisibility(View.GONE);
                                         cancelRequestButton.setVisibility(View.VISIBLE);
                                         cancelReturnButton.setVisibility(View.GONE);
@@ -880,6 +888,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                         delete_button.setVisibility(View.GONE);
                                         request_button.setVisibility(View.GONE);
                                         requestList.setVisibility(View.GONE);
+                                        requestTitle.setVisibility(View.GONE);
                                         return_button.setVisibility(View.GONE);
                                         scanButton.setVisibility(View.VISIBLE);
                                         cancelRequestButton.setVisibility(View.GONE);
@@ -892,6 +901,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                         delete_button.setVisibility(View.GONE);
                                         request_button.setVisibility(View.GONE);
                                         requestList.setVisibility(View.GONE);
+                                        requestTitle.setVisibility(View.GONE);
                                         cancelRequestButton.setVisibility(View.GONE);
                                         cancelReturnButton.setVisibility(View.GONE);
                                     } else if (((String) documentSnapshot.get("requestStatus")).equals("Returning")) {
@@ -901,6 +911,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                         delete_button.setVisibility(View.GONE);
                                         request_button.setVisibility(View.GONE);
                                         requestList.setVisibility(View.GONE);
+                                        requestTitle.setVisibility(View.GONE);
                                         cancelRequestButton.setVisibility(View.GONE);
                                         cancelReturnButton.setVisibility(View.VISIBLE);
                                     }
@@ -918,6 +929,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                     edit_button.setVisibility(View.GONE);
                                     delete_button.setVisibility(View.GONE);
                                     requestList.setVisibility(View.GONE);
+                                    requestTitle.setVisibility(View.GONE);
                                     return_button.setVisibility(View.GONE);
                                     cancelRequestButton.setVisibility(View.GONE);
                                     cancelReturnButton.setVisibility(View.GONE);
@@ -927,6 +939,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                     delete_button.setVisibility(View.GONE);
                                     request_button.setVisibility(View.GONE);
                                     requestList.setVisibility(View.GONE);
+                                    requestTitle.setVisibility(View.GONE);
                                     return_button.setVisibility(View.GONE);
                                     cancelRequestButton.setVisibility(View.GONE);
                                     cancelReturnButton.setVisibility(View.GONE);
@@ -1042,7 +1055,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 finish();
             }
 
-            // the holder wants to return a book (borrowed -> returning)
             if (Book.Status.valueOf(status).equals(Book.Status.Borrowed)) {
                 MainActivity.database
                         .getDb()
@@ -1247,8 +1259,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
                     }// onComplete
                 });
-
-
 
 
 
