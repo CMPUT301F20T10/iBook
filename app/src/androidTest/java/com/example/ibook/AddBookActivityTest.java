@@ -41,7 +41,7 @@ public class AddBookActivityTest {
     @Test
     public void testAddBook(){
         solo.clickOnView(solo.getView(R.id.navigation_booklist));
-        solo.clickOnView(solo.getView(R.id.button_add));
+        solo.clickOnView(solo.getView(R.id.completeButton));
 
         solo.assertCurrentActivity("Wrong activity", AddBookActivity.class);
         //add new book
@@ -52,7 +52,7 @@ public class AddBookActivityTest {
         solo.clickOnButton("Complete");
 
         solo.assertCurrentActivity("Should be page activity", PageActivity.class);
-        //new book is in listview
+        //new book is in list view
         assertTrue(solo.searchText("Paper Towns"));
 
 
@@ -60,7 +60,7 @@ public class AddBookActivityTest {
     @Test
     public void testLeavingEmptyFields(){
         solo.clickOnView(solo.getView(R.id.navigation_booklist));
-        solo.clickOnView(solo.getView(R.id.button_add));
+        solo.clickOnView(solo.getView(R.id.completeButton));
 
         solo.assertCurrentActivity("Wrong activity", AddBookActivity.class);
         //leave most fields empty

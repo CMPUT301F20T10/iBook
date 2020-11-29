@@ -59,14 +59,9 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
 
     private static final int ADD_EDIT_LOCATION_REQUEST_CODE = 455;
     public BookRequest bookRequest;
-    public String bookID;
     private FirebaseFirestore db;
-    private ArrayList<String> notificationList;
     private ListView listView;
-    private ArrayList<String> requestsList;
-    private ArrayList<String> responseList;
     private RadioGroup radioGroup;
-    private DocumentReference userDoc;
     private String currentUserID;
     private String currentUsername;
 
@@ -121,8 +116,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
         scanISBN = "";
 
 
-        requestsList = new ArrayList<>();
-        responseList = new ArrayList<>();
         radioGroup = root.findViewById(R.id.selectState);
         final DocumentReference docRef = db.collection("users").document(MainActivity.database.getCurrentUserUID());
 
@@ -150,8 +143,8 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
 
                                     Collections.reverse(list);// reverse list to put the data in right order
                                     arrayAdapter = new ArrayAdapter<>(getContext(),
-                                            R.layout.notification_list_content,
-                                            R.id.userNameTextView, list);
+                                            R.layout.responses_list_content,
+                                            R.id.textView, list);
                                     listView.setAdapter(arrayAdapter);
 
                                 }//onComplete
@@ -177,8 +170,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             bookRequest = document.toObject(BookRequest.class);
                             bookRequestArrayList.add(bookRequest);
-                            //adding the notification or message to requestList
-                            //requestsList.add(bookRequest.getRequestSenderUsername() + " wants to borrow your book called " + bookRequest.getRequestedBookTitle());
                         }// for loop
                         //update the listView
                         adapter.notifyDataSetChanged();
@@ -191,7 +182,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                                 if (radioButtonText.equals("Responses")) {
                                     deleteResponse(position);
                                     return;
-
                                 }// if
 
                                 else {
@@ -307,7 +297,10 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
 
 
                                             //delete the request from the listview when a request is declined
-                                            requestsList.remove(position);
+                                            Toast.makeText(getContext(), "Position" + position, Toast.LENGTH_SHORT).show();
+                                            System.out.println(position);
+                                            System.out.println(bookRequestArrayList.size());
+                                            bookRequestArrayList.remove(position);
                                             adapter.notifyDataSetChanged();
                                         }// onClick
                                     });//Accept
@@ -399,8 +392,12 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         User currentUser = documentSnapshot.toObject(User.class);
                         currentUser.removeFromNotificationList(position);
+
                         Collections.reverse(currentUser.getNotificationList());
-                        arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.notification_list_content, R.id.userNameTextView, currentUser.getNotificationList());
+                        arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.responses_list_content, R.id.textView, currentUser.getNotificationList());
+
+                        //Collections.reverse(currentUser.getNotificationList());
+
                         listView.setAdapter(arrayAdapter);
 
                         //update the user collection
@@ -472,9 +469,11 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
             if (data.getBooleanExtra("locationIncluded", false)) {
                 markerLoc = (LatLng) data.getExtras().getParcelable("markerLoc");
                 markerText = data.getStringExtra("markerText");
+
             }
+        }else{
+            return;
         }
-        Toast.makeText(getContext(), "runing?!", Toast.LENGTH_SHORT).show();
         acceptRequest();
     }
 
@@ -504,7 +503,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                     }//onComplete -- RequestSender
                 });
         //delete the request from the listview when that request is accepted
-        requestsList.remove(selectedPosition);
+        bookRequestArrayList.remove(selectedPosition);
         adapter.notifyDataSetChanged();
         //remove other bookRequests on the same book in the bookRequest collection
         MainActivity.database.getDb().collection("bookRequest")
@@ -518,9 +517,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                         BookRequest deleteRequest = null;
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             deleteRequest = document.toObject(BookRequest.class);
-                            //int index = bookRequestArrayList.indexOf(deleteRequest);
-                            //requestsList.remove(index);
-                            // adapter.notifyDataSetChanged();
                             document.getReference().delete();
                         }//for loop
                     }//onComplete
@@ -536,11 +532,11 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                         DocumentSnapshot document = (DocumentSnapshot) task.getResult();
                         Book book = document.toObject(Book.class);
                         book.setStatus(Book.Status.Accepted);
-                        book.setMeetingLocation(markerLoc.latitude, markerLoc.longitude);
-                        book.setMeetingText(markerText);
                         MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
                     }// onComplete
                 });
+
+
     }//acceptRequest
 
 
