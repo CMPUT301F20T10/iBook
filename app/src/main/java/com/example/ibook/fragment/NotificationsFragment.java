@@ -225,9 +225,8 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                                                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                             DocumentSnapshot document = (DocumentSnapshot) task.getResult();
                                                             document.getReference().delete();
-                                                            Toast.makeText(getContext(), "Deleted Document", Toast.LENGTH_SHORT).show();
                                                             //Update book status to "Available" if there are no more requests on that book
-                                                            Toast.makeText(getContext(), "Changed book status before to Available (last req deleted)" + requestedBookID, Toast.LENGTH_LONG).show();
+
                                                             MainActivity.database.getDb().collection("bookRequest")
                                                                     .whereEqualTo("requestedBookID", requestedBookID)
                                                                     .whereEqualTo("requestStatus", "Requested")
@@ -303,7 +302,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
 
 
                                             //delete the request from the listview when a request is declined
-                                            Toast.makeText(getContext(), "Position" + position, Toast.LENGTH_SHORT).show();
                                             System.out.println(position);
                                             System.out.println(bookRequestArrayList.size());
                                             bookRequestArrayList.remove(position);
@@ -338,7 +336,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                 // test ISBN: 123651565616
                 scanISBN = isbnView.getText().toString();
                 if (scanISBN.equals(selectedBookISBN)) {
-                    Toast.makeText(getContext(), "ISBN matches!", Toast.LENGTH_LONG).show();
                     Intent mapsIntent = new Intent(getContext(), MapsActivity.class);
                     mapsIntent.putExtra(MapsActivity.MAP_TYPE, MapsActivity.ADD_EDIT_LOCATION);
                     if (markerLoc != null) {
@@ -487,8 +484,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
     //TODO: fix data set
     private void acceptRequest() {
 
-
-        Toast.makeText(getContext(), "got location!", Toast.LENGTH_SHORT).show();
         bookReq.setRequestStatus("Accepted");
         MainActivity.database.getDb().collection("bookRequest").document(bookRequestID).set(bookReq);
         //get the request Sender information from database, since we need to notify that person
