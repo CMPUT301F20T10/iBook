@@ -324,7 +324,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         //if no other request on the book, change status to available
-                        Toast.makeText(ViewBookActivity.this, "Empty? " + task.getResult().isEmpty(), Toast.LENGTH_SHORT).show();
                         if (task.getResult().isEmpty()) {
                             MainActivity.database.getDb().collection("books").document(bookID)
                                     .get()
@@ -410,7 +409,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         // three requestStatus: Requested, Accepted, Borrowed
                         String bookRequestID = MainActivity.database.getDb().collection("bookRequest").document().getId();
 
-                        BookRequest newRequest = new BookRequest(currentUser.getUserID(), requestReceiver.getUserID(), selectedBook.getBookID(), currentUser.getUserName(), selectedBook.getTitle(), bookRequestID, "Requested", dateTime);
+                        BookRequest newRequest = new BookRequest(currentUser.getUserID(), requestReceiver.getUserID(), selectedBook.getBookID(), currentUser.getUserName(), selectedBook.getTitle(), bookRequestID, "Requested", dateTime,date);
                         db.collection("bookRequest").document(bookRequestID).set(newRequest);
 
 
