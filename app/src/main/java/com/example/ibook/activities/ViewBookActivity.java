@@ -671,7 +671,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                             }//for loop
                         }//onComplete
                     });
-        }
+        
 
             //update the book Status to be accepted
             MainActivity.database.getDb().collection("books").document(bookID)
