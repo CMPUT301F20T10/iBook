@@ -299,7 +299,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                 }//onComplete
                             }
 
-
                         });
 
                 //Should be able to request again

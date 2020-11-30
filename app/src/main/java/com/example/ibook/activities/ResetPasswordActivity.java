@@ -63,7 +63,8 @@ public class ResetPasswordActivity extends AppCompatActivity {
                     documentReference.update(editedInfo).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            Toast.makeText(ResetPasswordActivity.this, "Database successfully updated", Toast.LENGTH_SHORT).show();
+                            
+                            //Toast.makeText(ResetPasswordActivity.this, "Database successfully updated", Toast.LENGTH_SHORT).show();
                         }// onSuccess
                     }); //update the database
 
