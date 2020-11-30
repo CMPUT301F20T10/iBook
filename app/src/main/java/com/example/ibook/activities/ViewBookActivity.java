@@ -353,6 +353,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                             Book book = document.toObject(Book.class);
                                             //Set status Available since only request was declined
                                             book.setStatus(Book.Status.Available);
+                                            MainActivity.database.getDb().collection("books").document(bookID).set(book);
 
                                         }//onComplete
                                     });// addOnCompleteListener
