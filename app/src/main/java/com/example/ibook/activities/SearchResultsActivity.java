@@ -53,6 +53,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     public RecyclerView getListView() {
         return bookListView;
     }
+    public ListView getUserListView(){return userListView;}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

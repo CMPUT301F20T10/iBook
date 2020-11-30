@@ -167,6 +167,7 @@ public class HomeFragment extends Fragment {
                                                 }
                                             }
                                         }
+                                        System.out.println(resultList);
                                     }
                                 }).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
