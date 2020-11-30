@@ -121,7 +121,7 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
 
         radioGroup = root.findViewById(R.id.selectState);
         final DocumentReference docRef = db.collection("users").document(MainActivity.database.getCurrentUserUID());
-
+        // set up notification adapter and show the listView
         adapter = new NotificationAdapter(bookRequestArrayList, getContext());
         listView.setAdapter(adapter);
         currentUserID = MainActivity.database.getCurrentUserUID();
@@ -461,7 +461,8 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
         }
     }
 
-
+    // after choosing a location, save the location
+    // and accept the request
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

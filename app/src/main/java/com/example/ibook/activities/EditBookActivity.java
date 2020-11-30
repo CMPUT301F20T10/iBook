@@ -165,7 +165,6 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                         && authorName.length() > 0
                         && date.length() > 0
                         && isbnIsValid(isbn)) {
-//                    TODO:add more value
 
                     Book currentBook = new Book(bookName, authorName, date, description, originalBook.getStatus(), isbn, userID, originalBook.getBookID());
                     Intent intent = new Intent();
@@ -183,8 +182,9 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
                         }
                     }
                     setResult(4, intent);
-
                     finish();
+
+                    // when some info is empty
                 } else if (!(bookName.length() > 0
                         && authorName.length() > 0
                         && date.length() > 0)) {
@@ -253,11 +253,6 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
         builder.setPositiveButton("Camera", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                // second parameter : request code
-
-                //Toast.makeText(getBaseContext(), "There is a bug with camera, please use gallery", Toast.LENGTH_SHORT).show();
-                // TODO: there is a bug when using camera, maybe because of MediaStore library
-                // startActivityForResult(intent, REQ_CAMERA_IMAGE);
 
                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if (cameraIntent.resolveActivity(getPackageManager()) != null) {

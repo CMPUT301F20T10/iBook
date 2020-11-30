@@ -18,12 +18,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Activity for signing users up for the app
@@ -76,8 +76,7 @@ public class SignUpActivity extends AppCompatActivity {
         final String password = ed_password.getText().toString();
         String confirmPassword = ed_confirmPassword.getText().toString();
 
-        // verifying the user's input
-
+        // verify the user's input
         if (username.length() > 0
                 && phoneNumber.length() > 0
                 && email.length() > 0
@@ -105,7 +104,6 @@ public class SignUpActivity extends AppCompatActivity {
                 return;
             }
 
-            // Toast.makeText(getBaseContext(), "Confirm -> iBook Home Page", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(getBaseContext(), "Please input full information", Toast.LENGTH_SHORT).show();
             return;
@@ -123,7 +121,7 @@ public class SignUpActivity extends AppCompatActivity {
                         if (!task.getResult().isEmpty()) {
                             Toast.makeText(getBaseContext(), "Username exists", Toast.LENGTH_SHORT).show();
                         } else {
-                            // make the progressbar visible
+                            // make the progress bar visible
                             ed_progressBar.setVisibility(View.VISIBLE);
                             //register the user
                             uAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -169,6 +167,9 @@ public class SignUpActivity extends AppCompatActivity {
         finish();
     }// cancel_signup
 
+    /**
+    *  Method to check if phone number is valid
+    * */
     public boolean phoneIsValid(String phoneNumber) {
         return phoneNumber.matches("[0-9]+") && phoneNumber.length() == 10;
     }

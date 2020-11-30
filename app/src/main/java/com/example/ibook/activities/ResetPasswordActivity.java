@@ -48,6 +48,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
         applyChangesButton = findViewById(R.id.saveChangesButton);
         backButton = findViewById(R.id.backButton);
 
+        // save changes
         applyChangesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -63,8 +64,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
                     documentReference.update(editedInfo).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            
-                            //Toast.makeText(ResetPasswordActivity.this, "Database successfully updated", Toast.LENGTH_SHORT).show();
+
                         }// onSuccess
                     }); //update the database
 
