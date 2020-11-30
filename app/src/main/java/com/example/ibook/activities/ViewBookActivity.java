@@ -16,6 +16,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -80,6 +81,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     private TextView borrowerTitleText;
     private TextView borrowerView;
 
+    private LinearLayout linearLayout;
     private TextView edit_button;
     private Button backButton;
     private Button delete_button;
@@ -151,6 +153,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         borrowerTitleText = findViewById(R.id.descriptionView5);
         borrowerView = findViewById(R.id.borrowerTextView);
         requestTitle = findViewById(R.id.requestListTitle);
+        linearLayout = findViewById(R.id.linearLayout);
 
 
         imageChanged = false;
@@ -931,6 +934,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                     return_button.setVisibility(View.GONE);
                                     cancelRequestButton.setVisibility(View.GONE);
                                     cancelReturnButton.setVisibility(View.GONE);
+                                    linearLayout.setVisibility(View.GONE);
                                 }
                             }
                         }
