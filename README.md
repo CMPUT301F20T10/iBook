@@ -4,7 +4,7 @@
 
 [![Build Status](https://travis-ci.com/CMPUT301F20T10/iBook.svg?branch=main)](https://travis-ci.com/CMPUT301F20T10/iBook) ![language](https://img.shields.io/badge/language-java-orange.svg)
 
-## Warning:warning:
+## Notion:
 
 > :warning: **This program has not tested for all Android phones.**
 >
