@@ -67,9 +67,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     private String bookID;
     private String ownerID;
     private String isbn;
-    private String borrower;
-    private final int REQ_CAMERA_IMAGE = 1;
-    private final int REQ_GALLERY_IMAGE = 2;
 
     private TextView bookNameTextView;
     private TextView authorTextView;
@@ -925,6 +922,9 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                     cancelReturnButton.setVisibility(View.GONE);
                                 } else {
                                     // nothing can do
+                                    findViewById(R.id.imageView3).setVisibility(View.VISIBLE);
+                                    findViewById(R.id.ViewBookName).setVisibility(View.VISIBLE);
+                                    findViewById(R.id.ViewAuthor).setVisibility(View.VISIBLE);
                                     edit_button.setVisibility(View.GONE);
                                     delete_button.setVisibility(View.GONE);
                                     request_button.setVisibility(View.GONE);

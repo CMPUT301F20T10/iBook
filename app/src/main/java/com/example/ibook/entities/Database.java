@@ -2,35 +2,26 @@ package com.example.ibook.entities;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.SystemClock;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import com.example.ibook.activities.EditBookActivity;
-import com.example.ibook.activities.EditProfile;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 
-import static com.google.android.gms.tasks.Tasks.await;
 
 /**
  * This class is created to have "seperation of concerns", meaning most of the database actions will be
@@ -44,11 +35,6 @@ public class Database {
     private FirebaseFirestore db;
     private StorageReference storageReference;
     public final static String tempFileName = "tempImage.png";
-
-    public Database(FirebaseAuth uAuth, FirebaseFirestore db) {
-        this.uAuth = uAuth;
-        this.db = db;
-    }
 
     public Database(){
         this.uAuth = FirebaseAuth.getInstance();
