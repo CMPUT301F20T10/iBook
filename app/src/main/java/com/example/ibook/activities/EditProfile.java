@@ -113,7 +113,7 @@ public class EditProfile extends AppCompatActivity {
                                                     MainActivity.database.getUserDocumentReference().set(MainActivity.user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override
                                                         public void onSuccess(Void aVoid) {
-                                                            Toast.makeText(EditProfile.this, "Database successfully updated", Toast.LENGTH_SHORT).show();
+                                                            Toast.makeText(EditProfile.this, "Profile updated", Toast.LENGTH_SHORT).show();
                                                             finish();
                                                         }
                                                     }); //update the database
