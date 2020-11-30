@@ -27,7 +27,6 @@ import androidx.fragment.app.Fragment;
 /**
  * Activity for the current user profile
  * Displays username, phone-number, email-id
- * Displays image(will add the functionalities in future)
  */
 public class UserFragment extends Fragment {
     private TextView email;
@@ -46,9 +45,7 @@ public class UserFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
          root = inflater.inflate(R.layout.fragment_user, container, false);
-
         displayUserInfo(root);
-
         resetPasswordButton = root.findViewById(R.id.resetPasswordButton);
         resetPasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,7 +61,6 @@ public class UserFragment extends Fragment {
         logOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 logout(root);
             }
         });

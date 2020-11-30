@@ -7,12 +7,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.ibook.R;
-import com.example.ibook.entities.BookRequest;
 import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 

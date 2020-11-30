@@ -200,7 +200,8 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
      * The function to get the data of the current book, and display the data in the application
      */
     private void getBookData() {
-        db.collection("books").document(bookID)
+        db.collection("books")
+                .document(bookID)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -247,44 +248,43 @@ public class EditBookActivity extends AppCompatActivity implements ScanFragment.
      * It invokes the API of MediaStore to finish the taking picture action.
      */
     private void showImagePickerDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setTitle("Upload Image")
-                .setPositiveButton("Camera", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        // second parameter : request code
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Upload Image");
+        builder.setPositiveButton("Camera", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // second parameter : request code
 
-                        //Toast.makeText(getBaseContext(), "There is a bug with camera, please use gallery", Toast.LENGTH_SHORT).show();
-                        // TODO: there is a bug when using camera, maybe because of MediaStore library
-                        // startActivityForResult(intent, REQ_CAMERA_IMAGE);
+                //Toast.makeText(getBaseContext(), "There is a bug with camera, please use gallery", Toast.LENGTH_SHORT).show();
+                // TODO: there is a bug when using camera, maybe because of MediaStore library
+                // startActivityForResult(intent, REQ_CAMERA_IMAGE);
 
-                        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        if (cameraIntent.resolveActivity(getPackageManager()) != null) {
-                            startActivityForResult(cameraIntent, REQ_CAMERA_IMAGE);
-                        }
+                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(cameraIntent, REQ_CAMERA_IMAGE);
+                }
+            }
+        });
+        builder.setNegativeButton("Gallery", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
 
-                    }
-                })
-                .setNegativeButton("Gallery", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent();
-                        intent.setType("image/*");
-                        intent.setAction(Intent.ACTION_GET_CONTENT);
-
-                        startActivityForResult(intent, REQ_GALLERY_IMAGE);
-                    }
-                })
-                .setNeutralButton("Delete Image", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        //imageView.setImageResource(android.R.drawable.ic_input_add);
-                        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), android.R.drawable.ic_menu_gallery);
-                        storeLocally(bitmap);
-                        imageView = EditBookActivity.scaleAndSetImage(bitmap, imageView);
-                        imageAdded = true;
-                    }
-                });
+                startActivityForResult(intent, REQ_GALLERY_IMAGE);
+            }
+        });
+        builder.setNeutralButton("Delete Image", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //imageView.setImageResource(android.R.drawable.ic_input_add);
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), android.R.drawable.ic_menu_gallery);
+                storeLocally(bitmap);
+                imageView = EditBookActivity.scaleAndSetImage(bitmap, imageView);
+                imageAdded = true;
+            }
+        });
         AlertDialog dialog = builder.create();
         dialog.show();
     }

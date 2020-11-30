@@ -27,7 +27,6 @@ import com.example.ibook.entities.Book;
 import com.example.ibook.entities.BookRequest;
 import com.example.ibook.entities.User;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -54,11 +53,10 @@ import androidx.fragment.app.Fragment;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 /**
- * The class for the notification fragment
+ * The class for the notification fragment (shows book request from users and responses when requests are accepted)
  */
 public class NotificationsFragment extends Fragment implements ZXingScannerView.ResultHandler {
 
-    private static final int ADD_EDIT_LOCATION_REQUEST_CODE = 455;
     public BookRequest bookRequest;
     private FirebaseFirestore db;
     private ListView listView;
@@ -71,9 +69,8 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
     private TextView title;
 
     //Maps
-    private Marker marker;
-    public static LatLng markerLoc = null;
-    public static String markerText;
+    private static LatLng markerLoc = null;
+    private static String markerText;
 
     ArrayAdapter arrayAdapter;
 
@@ -98,13 +95,13 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
     final ArrayList<BookRequest> bookRequestArrayList = new ArrayList<BookRequest>();
 
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.activity_page,container,false);
         BottomNavigationView rootView =  (BottomNavigationView) v.findViewById(R.id.nav_view);
         rootView.getOrCreateBadge(R.id.navigation_notifications).setNumber(0);
-
 
         db = FirebaseFirestore.getInstance();
         View root = inflater.inflate(R.layout.fragment_notification, container, false);
@@ -295,11 +292,8 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                                                                                     });
                                                                         }//onComplete
                                                                     });
-
-
                                                         }//onComplete
                                                     }); //addOnCompleteListener
-
 
                                             //delete the request from the listview when a request is declined
                                             System.out.println(position);
@@ -383,8 +377,12 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
         return root;
     }
 
+    /**
+     * A dialog pops up and the user clicks whether to delete or not, and
+     * the this method then deletes and updates the list
+     * @param position - the index in the list that the user wants to delete
+     */
     private void deleteResponse(final int position) {
-
 
         AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
         builder1.setMessage("Do you confirm to delete this response?");
@@ -398,8 +396,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
 
                         Collections.reverse(currentUser.getNotificationList());
                         arrayAdapter = new ArrayAdapter<>(getContext(), R.layout.responses_list_content, R.id.textView, currentUser.getNotificationList());
-
-                        //Collections.reverse(currentUser.getNotificationList());
 
                         listView.setAdapter(arrayAdapter);
 
@@ -481,9 +477,12 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
         acceptRequest();
     }
 
-    //TODO: fix data set
+    /**
+     * This method is repsonsible for accepting the request and updating the database, and also
+     * change status of book, and add notificaiton to the borrower that his request has been accepted
+     */
     private void acceptRequest() {
-
+        
         bookReq.setRequestStatus("Accepted");
         MainActivity.database.getDb().collection("bookRequest").document(bookRequestID).set(bookReq);
         //get the request Sender information from database, since we need to notify that person
@@ -545,14 +544,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
 
     }//acceptRequest
 
-
-//    @Override
-//    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-//        View v = inflater.inflate(id_number_of_layout); # such as R.layout.activity_main
-//        View innerView = v.findViewById(id_number_of_view_inside_v);
-//        BottomNavigationView navigationView = (BottomNavigationView) getView().findViewById(R.id.nav_view);
-//        navigationView.getOrCreateBadge(R.id.navigation_notifications).setNumber(0);
-//    }
 
     @Override
     public void handleResult(Result rawResult) {
