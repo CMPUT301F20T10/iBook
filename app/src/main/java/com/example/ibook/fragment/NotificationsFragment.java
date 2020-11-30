@@ -27,7 +27,6 @@ import com.example.ibook.entities.Book;
 import com.example.ibook.entities.BookRequest;
 import com.example.ibook.entities.User;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -70,8 +69,8 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
     private TextView title;
 
     //Maps
-    public static LatLng markerLoc = null;
-    public static String markerText;
+    private static LatLng markerLoc = null;
+    private static String markerText;
 
     ArrayAdapter arrayAdapter;
 
