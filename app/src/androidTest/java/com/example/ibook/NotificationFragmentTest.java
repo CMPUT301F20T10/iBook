@@ -49,7 +49,6 @@ public class NotificationFragmentTest {
     @Test
     public void testRequestNotif() {
 
-
         solo.assertCurrentActivity("Wrong activity", PageActivity.class);
         solo.clickOnView(solo.getView(R.id.searchButton));
         solo.sleep(2000);

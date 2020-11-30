@@ -49,7 +49,7 @@ public class EditBookActivityTest {
 
     }
 
-    //search a user and view their profile
+    //edit a book and check if UI is updated
     @Test
     public void testEditBook() {
 
