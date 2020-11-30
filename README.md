@@ -4,17 +4,16 @@
 
 [![Build Status](https://travis-ci.com/CMPUT301F20T10/iBook.svg?branch=main)](https://travis-ci.com/CMPUT301F20T10/iBook) ![language](https://img.shields.io/badge/language-java-orange.svg)
 
-## Notion:
+## Notion
 
-> :warning: **This program has not tested for all Android phones.**
+> :warning: **This app has not been tested for all Android phones.**
 >
 > :warning: **It is currently known that unknown errors will occur in some models.**
 >
-> :warning: **It is recommended to use the emulator of Android Studio to compile and run this project.**
->
 > **Current Known issue:**
 >
-> * **some interfaces may go blank in xioami 9 and LG G8. But it works on emulator and Huawei P20**
+> * **The book title and author are hided for curtain cases on some phones such as xiaomi 9 and LG G8.
+  <br>But it works well on the emulator and many other devices**
 
 ### Recommended operating environment: Emulator with model Pixel 3 API 28(with Google play Service)
 
