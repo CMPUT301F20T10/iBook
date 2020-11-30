@@ -496,10 +496,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 finish();
             }
         });
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
     }
 
     /**
@@ -550,13 +546,9 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 });
     }
 
-<<<<<<< Updated upstream
-    // delete a book
-=======
     /**
      * This method will delete the selected book and all corresponding BookRequests, then finish the viewBookActivity.
      * */
->>>>>>> Stashed changes
     public void delete_book(View view) {
         MainActivity.database.deleteImage(selectedBook.getBookID());
         db.collection("books").document(selectedBook.getBookID())
@@ -697,10 +689,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                             BookRequest deleteRequest = null;
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 deleteRequest = document.toObject(BookRequest.class);
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
                                 document.getReference().delete();
                             }
                         }//onComplete
@@ -971,14 +959,10 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         }
     }
 
-<<<<<<< Updated upstream
-    // decline a borrowing request
-=======
     /**
      * This method will handle the decline process.
      * It will delete the corresponding book request and update the book status to available if there is no other request on this book
      * */
->>>>>>> Stashed changes
     private void declineRequest() {
         MainActivity.database
                 .getDb()
@@ -1296,10 +1280,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
                     }// onComplete
                 });
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
     }
 
     @Override
