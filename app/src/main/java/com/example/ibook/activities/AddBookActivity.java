@@ -149,7 +149,10 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
                 final String description = descriptionEditText.getText().toString();
 
                 // check full information
-                if (bookName.length() > 0 && authorName.length() > 0 && date.length() > 0 && isbnIsValid(isbn)) {
+                if (bookName.length() > 0
+                        && authorName.length() > 0
+                        && date.length() > 0
+                        && isbnIsValid(isbn)) {
                     bookID = MainActivity.database.getDb().collection("books").document().getId();
                     final Book newBook = new Book(bookName, authorName, date, description, Book.Status.Available, isbn, userID, bookID);
                     MainActivity.database.getDb().collection("books").document(bookID).set(newBook);
@@ -187,42 +190,42 @@ public class AddBookActivity extends AppCompatActivity implements ScanFragment.O
      * photo
      */
     private void showImagePickerDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setTitle("Upload Image")
-                .setPositiveButton("Camera", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        // second parameter : request code
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Upload Image");
+        builder.setPositiveButton("Camera", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                // second parameter : request code
 
-                        //Toast.makeText(getBaseContext(), "There is a bug with camera, please use gallery", Toast.LENGTH_SHORT).show();
-                        // TODO: there is a bug when using camera, maybe because of MediaStore library
-                        //startActivityForResult(intent, REQ_CAMERA_IMAGE);
+                //Toast.makeText(getBaseContext(), "There is a bug with camera, please use gallery", Toast.LENGTH_SHORT).show();
+                // TODO: there is a bug when using camera, maybe because of MediaStore library
+                //startActivityForResult(intent, REQ_CAMERA_IMAGE);
 
-                        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        if (cameraIntent.resolveActivity(getPackageManager()) != null) {
-                            startActivityForResult(cameraIntent, REQ_CAMERA_IMAGE);
-                        }
+                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(cameraIntent, REQ_CAMERA_IMAGE);
+                }
 
-                    }
-                })
-                .setNegativeButton("Gallery", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent();
-                        intent.setType("image/*");
-                        intent.setAction(Intent.ACTION_GET_CONTENT);
+            }
+        });
+        builder.setNegativeButton("Gallery", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
 
-                        startActivityForResult(intent, REQ_GALLERY_IMAGE);
-                    }
-                })
-                .setNeutralButton("Delete Image", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        imageView.setImageResource(android.R.drawable.ic_input_add);
-                        imageAdded = false;
-                    }
-                });
+                startActivityForResult(intent, REQ_GALLERY_IMAGE);
+            }
+        });
+        builder.setNeutralButton("Delete Image", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                imageView.setImageResource(android.R.drawable.ic_input_add);
+                imageAdded = false;
+            }
+        });
         AlertDialog dialog = builder.create();
         dialog.show();
     }

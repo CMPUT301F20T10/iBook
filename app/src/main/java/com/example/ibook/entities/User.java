@@ -1,23 +1,9 @@
 package com.example.ibook.entities;
 
-import android.app.Notification;
-import android.os.SystemClock;
-import android.util.Log;
-
-import com.example.ibook.activities.MainActivity;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This is a model/entity class for the user

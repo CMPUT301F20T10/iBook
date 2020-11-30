@@ -7,12 +7,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.ibook.R;
-import com.example.ibook.entities.BookRequest;
 import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -24,6 +21,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * This activity will show the profile of a selected user.
+ * To call this activity, the intent will need to have the email to specify the selected user,
+ * which will be given in the key-value pair like {("EMAIL", email)}.
+ * */
 public class ViewProfileActivity extends AppCompatActivity {
     private TextView name;
     private TextView email;
@@ -49,13 +51,16 @@ public class ViewProfileActivity extends AppCompatActivity {
         final String emailID = getIntent().getStringExtra("EMAIL");
 
         System.out.println("Email " + email.getText().toString());
+
+        // get information from the database
         MainActivity.database.getDb().collection("users")
                 .whereEqualTo("email", emailID)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        //Arraylist to hold the BookRequest objects
+
+                        //ArrayList to hold the BookRequest objects
                         //final ArrayList<BookRequest> bookRequestArrayList = new ArrayList<BookRequest>();
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             User user = document.toObject(User.class);
@@ -67,28 +72,22 @@ public class ViewProfileActivity extends AppCompatActivity {
                             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd h:mm a");
                             String dateTime = dateFormat.format(lastLoginTime);
 
+                            // print the last login time time
                             if(lastLoginTime.compareTo(currentTime) == 0){
                                 lastOnline.setText("Last logged in at: NOW ");
-                            }//
+                            }
                             else{
                                 lastOnline.setText("Last logged in at: " + dateTime);
+                            }
+                        }
 
-                            }// else
-
-                        }// for loop
-
-
+                        // setting up the TextViews
                         email.setText(emailID);
                         phone.setText(getIntent().getStringExtra("PHONE"));
                         name.setText(getIntent().getStringExtra("NAME"));
 
                     }// onSuccess
                 });
-
-
-
-
-
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override

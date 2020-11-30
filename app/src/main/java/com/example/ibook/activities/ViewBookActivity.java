@@ -16,6 +16,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -59,6 +60,12 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+/**
+ * This activity will show the details of a selected book.
+ * To call this activity, the intent will need to have the book_id, owner_id, and book status,
+ * which will be given in the key-value pair like {("BOOK_ID", book_id), ("OWNER", owner_id), ("STATUS", status)}.
+ * This activity will also decide which component will be shown by checking the status, and checking whether the current user is the owner or borrower.
+ * */
 public class ViewBookActivity extends AppCompatActivity implements ScanFragment.OnFragmentInteractionListener, OnMapReadyCallback {
 
     private String userID;
@@ -66,9 +73,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     private String bookID;
     private String ownerID;
     private String isbn;
-    private String borrower;
-    private final int REQ_CAMERA_IMAGE = 1;
-    private final int REQ_GALLERY_IMAGE = 2;
 
     private TextView bookNameTextView;
     private TextView authorTextView;
@@ -80,6 +84,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     private TextView borrowerTitleText;
     private TextView borrowerView;
 
+    private LinearLayout linearLayout;
     private TextView edit_button;
     private Button backButton;
     private Button delete_button;
@@ -151,6 +156,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         borrowerTitleText = findViewById(R.id.descriptionView5);
         borrowerView = findViewById(R.id.borrowerTextView);
         requestTitle = findViewById(R.id.requestListTitle);
+        linearLayout = findViewById(R.id.linearLayout);
 
 
         imageChanged = false;
@@ -178,8 +184,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
 
         getBookData();
         checkCases();
-
-
 
         setUpMaps();
         setUpEditButtonListener();
@@ -234,7 +238,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                     document.getReference().delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            Toast.makeText(ViewBookActivity.this, "Deleted book request successfully!", Toast.LENGTH_SHORT).show();
+
                                             //update the book status if no more request on book
                                             checkForBookStatusUpdate(bookID);
                                         }
@@ -296,7 +300,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                 }//onComplete
                             }
 
-
                         });
 
                 //Should be able to request again
@@ -314,7 +317,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
      * @param - bookID
      */
     public void checkForBookStatusUpdate(final String bookID) {
-        Toast.makeText(this, "Coming to check for book status update for: " + bookID, Toast.LENGTH_SHORT).show();
 
         MainActivity.database.getDb()
                 .collection("bookRequest")
@@ -336,7 +338,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                     .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                         @Override
                                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                            Toast.makeText(ViewBookActivity.this, "Successfully made it to book doc", Toast.LENGTH_SHORT).show();
+
                                             DocumentSnapshot document = (DocumentSnapshot) task.getResult();
                                             Book book = document.toObject(Book.class);
                                             //Set status Available since only request was declined
@@ -345,7 +347,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                             MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                 @Override
                                                 public void onSuccess(Void aVoid) {
-                                                    Toast.makeText(ViewBookActivity.this, "Updated book status to Available Successfully", Toast.LENGTH_SHORT).show();
+                                                    //Toast.makeText(ViewBookActivity.this, "Updated book status to Available Successfully", Toast.LENGTH_SHORT).show();
                                                 }
                                             });
                                         }//onComplete
@@ -873,8 +875,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                         // Toast.makeText(getBaseContext(), "Canceling requests to be done", Toast.LENGTH_SHORT).show();
                                     } else if (((String) documentSnapshot.get("requestStatus")).equals("Accepted")) {
 
-                                        // todo: launch an activity with scanning to confirm it
-                                        Toast.makeText(getBaseContext(), "launch an activity with scanning to confirm it", Toast.LENGTH_SHORT).show();
                                         edit_button.setVisibility(View.GONE);
                                         delete_button.setVisibility(View.GONE);
                                         request_button.setVisibility(View.GONE);
@@ -926,6 +926,9 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                     cancelReturnButton.setVisibility(View.GONE);
                                 } else {
                                     // nothing can do
+                                    findViewById(R.id.imageView3).setVisibility(View.VISIBLE);
+                                    findViewById(R.id.ViewBookName).setVisibility(View.VISIBLE);
+                                    findViewById(R.id.ViewAuthor).setVisibility(View.VISIBLE);
                                     edit_button.setVisibility(View.GONE);
                                     delete_button.setVisibility(View.GONE);
                                     request_button.setVisibility(View.GONE);
@@ -934,6 +937,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                     return_button.setVisibility(View.GONE);
                                     cancelRequestButton.setVisibility(View.GONE);
                                     cancelReturnButton.setVisibility(View.GONE);
+                                    linearLayout.setVisibility(View.GONE);
                                 }
                             }
                         }
@@ -953,7 +957,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         ((DocumentSnapshot) task.getResult()).getReference().delete();
-                        Toast.makeText(getApplicationContext(), "Deleted Document", Toast.LENGTH_SHORT).show();
                         MainActivity.database
                                 .getDb()
                                 .collection("bookRequest")
@@ -1078,8 +1081,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                                     MainActivity.database.getDb().collection("books").document(bookID).set(selectedBook);
                                                 }
                                             });
-                                    Toast.makeText(getBaseContext(), "raised a return request", Toast.LENGTH_SHORT).show();
-//
+
 
                                     final DocumentReference docRef = db.collection("users").document(bookReq.getRequestReceiverID());
 

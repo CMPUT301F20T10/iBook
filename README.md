@@ -4,9 +4,25 @@
 
 [![Build Status](https://travis-ci.com/CMPUT301F20T10/iBook.svg?branch=main)](https://travis-ci.com/CMPUT301F20T10/iBook) ![language](https://img.shields.io/badge/language-java-orange.svg)
 
+## Warning:warning:
+
+> :warning: **This program has not tested for all Android phones.**
+>
+> :warning: **It is currently known that unknown errors will occur in some models.**
+>
+> :warning: **It is recommended to use the emulator of Android Studio to compile and run this project.**
+>
+> **Current Known issue:**
+>
+> * **some interfaces may go blank in xioami 9 and LG G8. But it works on emulator and Huawei P20**
+
+### Recommended operating environment: Emulator with model Pixel 3 API 28(with Google play Service)
+
+
+
 ## UML
 
-### Note: The [UML](.doc/UML_Updated.png) has been updated for the Half-Way Checkpoint
+### Note: The [UML](.doc/UML_Updated.png) has been updated for the Final Checkpoint
 
 The UML is devided into 3 parts, since it's too complicated that having them in one single diagram would make it really hard to read.
 
@@ -23,10 +39,22 @@ The **[Product Backlog](https://github.com/CMPUT301F20T10/iBook/wiki)** is on th
 
 ## Mockup
 
-The ***[Mockup](./doc/Mockups.png)*** is in the doc folder📂 
+The Mockup has two parts:
+
+* **[Part 1](./doc/Login,%20Search%20and%20Me.png):**
+  * Login in
+  * Sign up
+  * Search
+  * View/Edit Profile
+* **[Part 2](./doc/Request,%20Accept,%20borrow%20and%20Return.png):**
+  * Request/Accept/Borrow/Return
+  * Book list
+  * Notifications
+
+The ***[Mockup](./doc/)*** is in the doc folder📂
 
 ## Javadoc
-The Javadoc is on the ***[GitHub Page](https://cmput301f20t10.github.io/iBook/)***, or you can find it in the ***[docs](./docs/)*** folder📂
+The Javadoc is on the ***[GitHub Page](https://cmput301f20t10.github.io/iBook/)*** , or you can find it in the ***[docs](./docs/)*** folder📂
 
 ## Contributors
 

@@ -14,8 +14,13 @@
         android:id="@+id/displayMapInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#959595"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="#7AD4FD"
         android:text="Add a marker by clicking on the map"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/mapFull" />
 
@@ -23,6 +28,7 @@
         android:id="@+id/saveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:text="Save Meeting Location"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/goBackButton" />
@@ -31,6 +37,7 @@
         android:id="@+id/goBackButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:text="Go Back"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

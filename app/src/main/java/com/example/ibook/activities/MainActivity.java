@@ -1,3 +1,8 @@
+/**
+ * This class is the start of the app(Login page) and is responsible for validating and logging the user in
+ * and navigating to sign up activity if the user clicks on sign up
+ */
+
 package com.example.ibook.activities;
 
 import android.content.Intent;
@@ -89,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
                                         Toast.makeText(MainActivity.this, "Logged in Successfully", Toast.LENGTH_SHORT).show();
-                                        createUserObject();
+
 
                                         database.getUserDocumentReference()
                                                 .get()
@@ -133,9 +138,8 @@ public class MainActivity extends AppCompatActivity {
     }// setupSignInListener
 
     /**
-     * @param username - the username that the userInput while logging in (the var should actually
-     *                 be called emailId --> will fix later)
-     * @param password -
+     * @param username
+     * @param password
      *
      * @return
      */
@@ -156,23 +160,5 @@ public class MainActivity extends AppCompatActivity {
         }); // onClickListener
     }// setupSignUpListener
 
-    /**
-     * This method gets the user object from the database for the current user upon logging in
-     */
-    public void createUserObject() {
-        database
-                .getUserDocumentReference()
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.exists()) {
-                            //user object intialized
-                            user = documentSnapshot.toObject(User.class);
-                        }// if
-                    }//onSuccess
-                });
-    }//createUserObject
 
-
-}// Database Class
+}
