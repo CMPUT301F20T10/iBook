@@ -14,6 +14,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:text="Book Title"
+        android:maxLines="1"
         android:textColor="#000000"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/listImageView"
@@ -34,9 +35,10 @@
         android:id="@+id/listBookDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:text="Date: 2020/10/10"
+        android:maxLines="1"
         app:layout_constraintStart_toEndOf="@+id/listImageView"
         app:layout_constraintTop_toBottomOf="@+id/listBookAuthors" />
 
@@ -47,6 +49,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:background="#00FFFFFF"
+        android:maxLines="1"
         android:text="Owner:"
         app:layout_constraintStart_toEndOf="@+id/listImageView"
         app:layout_constraintTop_toBottomOf="@+id/listBookDate" />
@@ -57,6 +60,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
+        android:maxWidth="200dp"
+        android:maxLines="1"
         android:text="Author(s): Name"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/listImageView"

@@ -66,6 +66,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBaseline_toBaselineOf="@+id/imageView3"
+                android:maxWidth="200dp"
                 app:layout_constraintStart_toEndOf="@+id/imageView3"
                 tools:layout_editor_absoluteY="71dp"
                 tools:text="@string/nameText" />
@@ -78,6 +79,7 @@
                 android:layout_marginLeft="32dp"
                 android:layout_marginTop="16dp"
                 android:text="@string/authorText"
+                android:maxWidth="200dp"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/imageView3"
@@ -158,6 +160,7 @@
                     android:layout_marginLeft="32dp"
                     android:layout_marginTop="8dp"
                     android:text="Description"
+                    android:maxWidth="300dp"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
@@ -306,6 +309,7 @@
             <!--MapsEnd-->
 
             <LinearLayout
+                android:id="@+id/linearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="32dp"
