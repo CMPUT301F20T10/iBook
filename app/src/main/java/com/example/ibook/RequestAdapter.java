@@ -5,12 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.ibook.entities.Book;
 import com.example.ibook.entities.BookRequest;
-import com.example.ibook.entities.User;
 
 import java.util.ArrayList;
 
@@ -19,7 +16,6 @@ public class RequestAdapter extends BaseAdapter {
     private ArrayList<BookRequest> requests;
     private Context context;
     private TextView message;
-    private ImageView imageView;
 
     public RequestAdapter(ArrayList<BookRequest> requests, Context context) {
         this.requests = requests;

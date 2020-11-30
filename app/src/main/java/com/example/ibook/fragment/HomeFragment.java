@@ -17,15 +17,12 @@ import com.example.ibook.activities.SearchResultsActivity;
 import com.example.ibook.entities.Book;
 import com.example.ibook.entities.User;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.logging.Logger;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,7 +39,6 @@ import androidx.recyclerview.widget.RecyclerView;
 public class HomeFragment extends Fragment {
 
     //Private variables
-    //private ListView bookListView;
     private RecyclerView bookListView;
     private BookListAdapter adapter;
     private ArrayList<Book> datalist;
@@ -53,9 +49,6 @@ public class HomeFragment extends Fragment {
     private FirebaseFirestore db;
     private ProgressBar searchProgressBar;
     boolean searchBarClosed = true;
-
-    boolean search_book_complete = false;
-    boolean search_user_complete = false;
 
     @Nullable
     @Override

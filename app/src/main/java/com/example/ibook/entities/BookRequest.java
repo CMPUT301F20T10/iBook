@@ -1,16 +1,7 @@
 package com.example.ibook.entities;
 
-import com.google.firebase.database.Exclude;
-import com.google.firebase.database.ServerValue;
-import com.google.firebase.firestore.FieldValue;
-import com.google.protobuf.Timestamp;
 
-import java.text.DateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import static java.text.DateFormat.getDateTimeInstance;
 
 public class BookRequest {
     private String requestReceiverID;
