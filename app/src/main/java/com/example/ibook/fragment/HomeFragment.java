@@ -115,7 +115,7 @@ public class HomeFragment extends Fragment {
     /***
      *This method searches the database for the keyword entered
      * in the books collection and users collection.
-     * If the keyword appears it adds the book object to a list that gets passed to
+     * If the keyword appears it adds the book/user object to lists that get passed to
      * the activity that shows the results.
      */
     public void searchData(final String query) {
@@ -161,6 +161,7 @@ public class HomeFragment extends Fragment {
                                                 }
                                             }
                                         }
+                                        System.out.println(resultList);
                                     }
                                 }).addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
