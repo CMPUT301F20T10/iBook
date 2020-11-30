@@ -59,6 +59,12 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+/**
+ * This activity will show the details of a selected book.
+ * To call this activity, the intent will need to have the book_id, owner_id, and book status,
+ * which will be given in the key-value pair like {("BOOK_ID", book_id), ("OWNER", owner_id), ("STATUS", status)}.
+ * This activity will also decide which component will be shown by checking the status, and checking whether the current user is the owner or borrower.
+ * */
 public class ViewBookActivity extends AppCompatActivity implements ScanFragment.OnFragmentInteractionListener, OnMapReadyCallback {
 
     private String userID;
@@ -178,8 +184,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
 
         getBookData();
         checkCases();
-
-
 
         setUpMaps();
         setUpEditButtonListener();
