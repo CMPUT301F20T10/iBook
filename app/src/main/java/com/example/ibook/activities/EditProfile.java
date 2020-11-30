@@ -28,7 +28,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 public class EditProfile extends AppCompatActivity {
 
 
-    Button saveButton,backButton;
+    Button saveButton, backButton;
     EditText usernameEditText, phoneEditText, emailEditText;
 
 
@@ -50,37 +50,30 @@ public class EditProfile extends AppCompatActivity {
         emailEditText = findViewById(R.id.emailEditText);
         phoneEditText = findViewById(R.id.phoneEditText);
         saveButton = findViewById(R.id.saveButton);
-        backButton=findViewById(R.id.backButton);
+        backButton = findViewById(R.id.backButton);
 
 
         usernameEditText.setText(username);
         emailEditText.setText(email);
         phoneEditText.setText(phone);
+        setUpBackButtonListener();
 
-        final String userID = MainActivity.database.getCurrentUserUID();
-
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // if  left empty
+                // if left empty
                 if (usernameEditText.getText().toString().isEmpty() || emailEditText.getText().toString().isEmpty() || phoneEditText.getText().toString().isEmpty()) {
                     Toast.makeText(EditProfile.this, "Cannot be left empty", Toast.LENGTH_SHORT).show();
                     return;
                 }// if
-                if(!phoneIsValid(phoneEditText.getText().toString())){
+                if (!phoneIsValid(phoneEditText.getText().toString())) {
                     Toast.makeText(getBaseContext(), "Phone number is not valid", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 FirebaseFirestore.getInstance()
                         .collection("users")
-                        .whereEqualTo("userName", usernameEditText.getText().toString()).whereNotEqualTo("userName",username)
+                        .whereEqualTo("userName", usernameEditText.getText().toString()).whereNotEqualTo("userName", username)
                         .get()
                         .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             //check if username already exists
@@ -90,7 +83,10 @@ public class EditProfile extends AppCompatActivity {
                                     Toast.makeText(getBaseContext(), "Username exists", Toast.LENGTH_SHORT).show();
                                 } else {
                                     String email = emailEditText.getText().toString();
-                                    MainActivity.database.getuAuth().getCurrentUser().updateEmail(email)
+                                    MainActivity.database
+                                            .getuAuth()
+                                            .getCurrentUser()
+                                            .updateEmail(email)
                                             .addOnFailureListener(new OnFailureListener() {
                                                 @Override
                                                 public void onFailure(@NonNull Exception e) {
@@ -117,11 +113,30 @@ public class EditProfile extends AppCompatActivity {
                                 }
                             }
                         });
-
             }//onClick
         });
     }//onCreate
-    public boolean phoneIsValid(String phoneNumber){
+
+    /**
+     * The function to set up the listener for the back button
+     */
+    private void setUpBackButtonListener() {
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+    /**
+     * The function to validate the input phone number
+     *
+     * @param phoneNumber the input phone number
+     *
+     * @return the validation result of the phone number
+     */
+    public boolean phoneIsValid(String phoneNumber) {
         return phoneNumber.matches("[0-9]+") && phoneNumber.length() == 10;
     }
 
