@@ -6,11 +6,11 @@
 
 ## Notion
 
-> :warning: **This app has not been tested for all Android phones.**
+> :warning: **This app has not been tested for all Android devices.**
 >
-> :warning: **It is currently known that unknown errors will occur in some models.**
+> :warning: **We got an unknown error from some phones.**
 >
-> **Current Known issue:**
+> **Current issues:**
 >
 > * **The book title and author are hided for curtain cases on some phones such as xiaomi 9 and LG G8.
   <br>But it works well on the emulator and many other devices**
@@ -19,7 +19,7 @@
 
 
 ## Demo Video
-https://drive.google.com/file/d/1UCBd1DxWGRAjTBwWoW2HuCKkCDsAQH3J/view?usp=sharing
+https://drive.google.com/file/d/1BAnhIuPn1leXR7QlrS5Jp3S9A_H2RT0D/view?usp=sharing
 
 ## UML
 
