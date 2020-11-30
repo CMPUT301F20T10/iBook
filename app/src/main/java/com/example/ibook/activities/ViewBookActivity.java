@@ -1334,4 +1334,3 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         listView.requestLayout();
     }
 }
-}
