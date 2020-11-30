@@ -165,7 +165,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onMapLongClick(LatLng latLng) {
                 markerLoc = latLng;
                 markerText = "Meeting Location";
-                mapInfo.setText("Move the marker around by long clicking it and dragging it.");
+                mapInfo.setText("Move the marker around by long pressing and dragging it.");
                 addMarker();
             }
         });
@@ -180,7 +180,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onPoiClick(PointOfInterest pointOfInterest) {
                 markerLoc = pointOfInterest.latLng;
                 markerText = pointOfInterest.name;
-                mapInfo.setText("Move the marker around by long clicking it and dragging it.");
+                mapInfo.setText("Move the marker around by long pressing and dragging it.");
                 addMarker();
             }
         });
