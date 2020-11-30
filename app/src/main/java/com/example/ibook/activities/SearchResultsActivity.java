@@ -33,6 +33,8 @@ import androidx.recyclerview.widget.RecyclerView;
  *This activity displays the results for the search results in a list view.
  * When the items are clicked on the book info is passed to the view
  * book activity and displayed there.
+ * When a user is clicked the user info is passed to the view profile
+ * activity and displayed there.
  */
 public class SearchResultsActivity extends AppCompatActivity {
     private BookListAdapter booksAdapter;
@@ -53,6 +55,7 @@ public class SearchResultsActivity extends AppCompatActivity {
     public RecyclerView getListView() {
         return bookListView;
     }
+    public ListView getUserListView(){return userListView;}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,7 +141,10 @@ public class SearchResultsActivity extends AppCompatActivity {
             }
         });
     }
-
+    /***
+     *This method sets up the listener for the user list items which passes the info to the view
+     * profile activity.
+     */
     private void setUpListListener() {
         //**Books list onitemclicklistener is inside the bookListAdapter now, so no need to set it**
         if (radioGroup.getCheckedRadioButtonId() == R.id.search_book) {
@@ -170,6 +176,10 @@ public class SearchResultsActivity extends AppCompatActivity {
             });
         }
     }
+    /***
+     *This method fetches the results from the database again so that the UI
+     * gets updated onResume.
+     */
     public void updateBookResults(){
         bookList= new ArrayList<>();
         MainActivity.database
