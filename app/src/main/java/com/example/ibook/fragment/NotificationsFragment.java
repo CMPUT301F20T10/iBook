@@ -31,6 +31,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -100,6 +101,11 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.activity_page,container,false);
+        BottomNavigationView rootView =  (BottomNavigationView) v.findViewById(R.id.nav_view);
+        rootView.getOrCreateBadge(R.id.navigation_notifications).setNumber(0);
+
+
         db = FirebaseFirestore.getInstance();
         View root = inflater.inflate(R.layout.fragment_notification, container, false);
         listView = root.findViewById(R.id.listView);
@@ -219,9 +225,8 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                                                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                                             DocumentSnapshot document = (DocumentSnapshot) task.getResult();
                                                             document.getReference().delete();
-                                                            Toast.makeText(getContext(), "Deleted Document", Toast.LENGTH_SHORT).show();
                                                             //Update book status to "Available" if there are no more requests on that book
-                                                            Toast.makeText(getContext(), "Changed book status before to Available (last req deleted)" + requestedBookID, Toast.LENGTH_LONG).show();
+
                                                             MainActivity.database.getDb().collection("bookRequest")
                                                                     .whereEqualTo("requestedBookID", requestedBookID)
                                                                     .whereEqualTo("requestStatus", "Requested")
@@ -297,7 +302,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
 
 
                                             //delete the request from the listview when a request is declined
-                                            Toast.makeText(getContext(), "Position" + position, Toast.LENGTH_SHORT).show();
                                             System.out.println(position);
                                             System.out.println(bookRequestArrayList.size());
                                             bookRequestArrayList.remove(position);
@@ -332,7 +336,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                 // test ISBN: 123651565616
                 scanISBN = isbnView.getText().toString();
                 if (scanISBN.equals(selectedBookISBN)) {
-                    Toast.makeText(getContext(), "ISBN matches!", Toast.LENGTH_LONG).show();
                     Intent mapsIntent = new Intent(getContext(), MapsActivity.class);
                     mapsIntent.putExtra(MapsActivity.MAP_TYPE, MapsActivity.ADD_EDIT_LOCATION);
                     if (markerLoc != null) {
@@ -462,14 +465,15 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
         }
     }
 
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == MapsActivity.ADD_EDIT_LOCATION_RESULT_CODE && requestCode == MapsActivity.ADD_EDIT_LOCATION_REQUEST_CODE) {
             if (data.getBooleanExtra("locationIncluded", false)) {
+                //Toast.makeText(getContext(),"saving loc",Toast.LENGTH_SHORT).show();
                 markerLoc = (LatLng) data.getExtras().getParcelable("markerLoc");
                 markerText = data.getStringExtra("markerText");
-
             }
         }else{
             return;
@@ -480,8 +484,6 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
     //TODO: fix data set
     private void acceptRequest() {
 
-
-        Toast.makeText(getContext(), "got location!", Toast.LENGTH_SHORT).show();
         bookReq.setRequestStatus("Accepted");
         MainActivity.database.getDb().collection("bookRequest").document(bookRequestID).set(bookReq);
         //get the request Sender information from database, since we need to notify that person
@@ -532,6 +534,10 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
                         DocumentSnapshot document = (DocumentSnapshot) task.getResult();
                         Book book = document.toObject(Book.class);
                         book.setStatus(Book.Status.Accepted);
+                        if((markerLoc != null) && (markerText != null)) {
+                            book.setMeetingLocation(markerLoc.latitude, markerLoc.longitude);
+                            book.setMeetingText(markerText);
+                        }
                         MainActivity.database.getDb().collection("books").document(book.getBookID()).set(book);
                     }// onComplete
                 });
@@ -539,6 +545,14 @@ public class NotificationsFragment extends Fragment implements ZXingScannerView.
 
     }//acceptRequest
 
+
+//    @Override
+//    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+//        View v = inflater.inflate(id_number_of_layout); # such as R.layout.activity_main
+//        View innerView = v.findViewById(id_number_of_view_inside_v);
+//        BottomNavigationView navigationView = (BottomNavigationView) getView().findViewById(R.id.nav_view);
+//        navigationView.getOrCreateBadge(R.id.navigation_notifications).setNumber(0);
+//    }
 
     @Override
     public void handleResult(Result rawResult) {

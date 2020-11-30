@@ -14,6 +14,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,36 +28,10 @@ public class User implements Serializable {
     private String password;
     private String email;
     private String phoneNumber;
-    private ArrayList<Book> bookList;
     private ArrayList<String> notificationList; //holds all the notifications for the user
     private String userID;
+    private Date lastLoginTime;
 
-//
-//
-//    BookRequest
-//
-
-    public ArrayList<Book> getBookList() {
-        return bookList;
-    }
-
-    public void setBookList(ArrayList<Book> bookList) {
-        this.bookList = bookList;
-    }
-//    Sender;
-//    Receiver;
-//    Book;
-//
-//    for the current user, I will check in the book request collection.
-//    for everyplace where currentUserID matches the requestsender  docoument in bookRequest document
-//
-//    if book.status is requested,
-//    then i gather, then i display in requested toggle
-//
-//            the owner accepts it, delete all the documents where the bookID matches, except for the document where the senderID is the one i accepted of
-//
-//            if book.status is accepted
-//    then I put them in accepeted booklist
 
     /**
      * no argument constructor for the firebase cloud
@@ -74,14 +49,14 @@ public class User implements Serializable {
      * @param email
      * @param phoneNumber
      */
-    public User(String userName, String password, String email, String phoneNumber, String userID) {
+    public User(String userName, String password, String email, String phoneNumber, String userID,Date loginTime) {
         this.userName = userName;
         this.password = password;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.bookList = new ArrayList<Book>();
         this.notificationList = new ArrayList<String>();
         this.userID = userID;
+        this.lastLoginTime = loginTime;
     }// constructor
 
 
@@ -93,9 +68,6 @@ public class User implements Serializable {
         return userID;
     }
 
-    public void setUserID(String userID) {
-        this.userID = userID;
-    }
 
     public void setUserName(String userName) {
         this.userName = userName;
@@ -107,6 +79,18 @@ public class User implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setNotificationList(ArrayList<String> notificationList) {
+        this.notificationList = notificationList;
+    }
+
+    public Date getLastLoginTime() {
+        return lastLoginTime;
+    }
+
+    public void setLastLoginTime(Date lastLoginTime) {
+        this.lastLoginTime = lastLoginTime;
     }
 
     public String getEmail() {
@@ -145,9 +129,6 @@ public class User implements Serializable {
         this.notificationList.remove(position);
     }// removeFromNotificationList
 
-    public void addToBookList(Book book) {
-        bookList.add(book);
-    }
 
 
 }// users class
