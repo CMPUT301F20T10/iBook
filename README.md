@@ -12,8 +12,8 @@
 >
 > **Current issues:**
 >
-> * **The book title and author are hided for curtain cases on some phones such as xiaomi 9 and LG G8.
-  <br>But it works well on the emulator and many other devices**
+> * **The book title and author are hided for few cases on some phones such as xiaomi 9 and LG G8.
+  <br>But it works well on the emulator and many other android devices**
 
 ### Recommended operating environment: Emulator with model Pixel 3 API 28(with Google play Service)
 
