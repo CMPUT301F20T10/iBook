@@ -186,7 +186,8 @@ public class SearchResultsActivity extends AppCompatActivity {
                                 }
                             }
                         }
-                        if (bookList.isEmpty()) {
+
+                        if (bookList.isEmpty() && radioGroup.getCheckedRadioButtonId() == R.id.search_book) {
                             noResultText.setVisibility(View.VISIBLE);
                         }else {
                             noResultText.setVisibility(View.GONE);
