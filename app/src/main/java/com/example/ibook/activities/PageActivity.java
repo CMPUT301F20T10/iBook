@@ -54,7 +54,7 @@ public class PageActivity extends AppCompatActivity {
     private String username;
     private User currentUser;
     private AppBarConfiguration appBarConfiguration;
-    private  BottomNavigationView navigationView;
+    private BottomNavigationView navigationView;
 
     /**
      * The onCreate method when activity is creating
@@ -82,31 +82,29 @@ public class PageActivity extends AppCompatActivity {
         ).build();
 
 
-
         MainActivity.database.getDb().collection("bookRequest").
                 whereEqualTo("requestReceiverID", FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                           @Override
-                                           public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                               //Arraylist to hold the BookRequest objects
-                                               //final ArrayList<BookRequest> bookRequestArrayList = new ArrayList<BookRequest>();
-                                               int countNewNotif = 0;
-                                               for (final QueryDocumentSnapshot document : task.getResult()) {
-                                                   BookRequest bookRequest = document.toObject(BookRequest.class);
-                                                   Date timeOfRequest= bookRequest.getTimeOfRequest();
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        //Arraylist to hold the BookRequest objects
+                        //final ArrayList<BookRequest> bookRequestArrayList = new ArrayList<BookRequest>();
+                        int countNewNotif = 0;
+                        for (final QueryDocumentSnapshot document : task.getResult()) {
+                            BookRequest bookRequest = document.toObject(BookRequest.class);
+                            Date timeOfRequest = bookRequest.getTimeOfRequest();
 
-                                                   System.out.println(MainActivity.lastLoginTime);
-                                                   if(!(timeOfRequest == null)) {
-                                                       if (timeOfRequest.compareTo(MainActivity.lastLoginTime) > 0) {
-                                                           countNewNotif++;
-                                                       }// of
-                                                   }// if
-                                               }//for
-                                               navigationView.getOrCreateBadge(R.id.navigation_notifications).setNumber(countNewNotif);
-                                           }//onComplete
-                                       });
-
+                            System.out.println(MainActivity.lastLoginTime);
+                            if (!(timeOfRequest == null)) {
+                                if (timeOfRequest.compareTo(MainActivity.lastLoginTime) > 0) {
+                                    countNewNotif++;
+                                }// of
+                            }// if
+                        }//for
+                        navigationView.getOrCreateBadge(R.id.navigation_notifications).setNumber(countNewNotif);
+                    }//onComplete
+                });
 
 
         // Set up the navigation bar controller
@@ -132,13 +130,11 @@ public class PageActivity extends AppCompatActivity {
     }
 
 
-
-    public void doNavigation(){
-
-
+    public void doNavigation() {
 
 
     }// doNavigation
+
     /**
      * This method prevents users from going back to login by clicking back button
      */
