@@ -7,7 +7,9 @@
 ## Warning:warning:
 
 > :warning: **This program has not tested for all Android phones.**
+>
 > :warning: **It is currently known that unknown errors will occur in some models.**
+>
 > :warning: **It is recommended to use the emulator of Android Studio to compile and run this project.**
 >
 > **Current Known issue:**
