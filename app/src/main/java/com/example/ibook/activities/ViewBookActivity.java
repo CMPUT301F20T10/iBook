@@ -926,6 +926,9 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                     cancelReturnButton.setVisibility(View.GONE);
                                 } else {
                                     // nothing can do
+                                    findViewById(R.id.imageView3).setVisibility(View.VISIBLE);
+                                    findViewById(R.id.ViewBookName).setVisibility(View.VISIBLE);
+                                    findViewById(R.id.ViewAuthor).setVisibility(View.VISIBLE);
                                     edit_button.setVisibility(View.GONE);
                                     delete_button.setVisibility(View.GONE);
                                     request_button.setVisibility(View.GONE);

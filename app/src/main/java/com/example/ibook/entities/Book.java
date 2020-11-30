@@ -18,7 +18,7 @@ public class Book implements Serializable, Comparable<Book>{
     private String isbn;
     private String owner;
     private String bookID;
-    private GeoPoint meetingLocation;
+    private transient GeoPoint meetingLocation;
     private String meetingText;
 
 
