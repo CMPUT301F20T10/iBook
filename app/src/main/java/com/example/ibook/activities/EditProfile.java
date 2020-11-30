@@ -1,8 +1,5 @@
 package com.example.ibook.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -18,6 +15,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 
 /**
@@ -59,6 +59,7 @@ public class EditProfile extends AppCompatActivity {
         setUpBackButtonListener();
 
 
+        // check validity and save user profile
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,7 +67,7 @@ public class EditProfile extends AppCompatActivity {
                 if (usernameEditText.getText().toString().isEmpty() || emailEditText.getText().toString().isEmpty() || phoneEditText.getText().toString().isEmpty()) {
                     Toast.makeText(EditProfile.this, "Cannot be left empty", Toast.LENGTH_SHORT).show();
                     return;
-                }// if
+                }
                 if (!phoneIsValid(phoneEditText.getText().toString())) {
                     Toast.makeText(getBaseContext(), "Phone number is not valid", Toast.LENGTH_SHORT).show();
                     return;

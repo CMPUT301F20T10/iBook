@@ -45,7 +45,6 @@ public class ViewProfileActivity extends AppCompatActivity {
 
         final String emailID = getIntent().getStringExtra("EMAIL");
 
-        System.out.println("Email " + email.getText().toString());
         MainActivity.database.getDb().collection("users")
                 .whereEqualTo("email", emailID)
                 .get()
@@ -81,11 +80,6 @@ public class ViewProfileActivity extends AppCompatActivity {
 
                     }// onSuccess
                 });
-
-
-
-
-
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override

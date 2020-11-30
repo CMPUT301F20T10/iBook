@@ -84,6 +84,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        // search functionality
         searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {

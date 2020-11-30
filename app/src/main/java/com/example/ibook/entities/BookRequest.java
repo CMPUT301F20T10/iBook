@@ -109,7 +109,4 @@ public class BookRequest {
         this.requestedBookID = requestedBookID;
     }
 
-
-//use this two messages to populate the notification list in the user class when its appropriate
-
 }// BookRequest class
