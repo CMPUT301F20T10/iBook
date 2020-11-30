@@ -219,6 +219,12 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
 
     }
 
+    /**
+     * This method will set up the onClickListener for the cancel request button.
+     * So that the cancel request button will now delete all requests that are sent to the selected book by the current user
+     * After deletion, it calls checkForBookStatusUpdate to update the book status, if applicable.
+     * It also sends a notification to the owner of the book to notify the cancellation.
+     * */
     private void setUpCancelRequestButtonListener() {
         cancelRequestButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -271,6 +277,9 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
 
     }
 
+    /**
+     *
+     * */
     private void setUpCancelReturnButtonListener() {
 
         cancelReturnButton.setOnClickListener(new View.OnClickListener() {
@@ -352,6 +361,11 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 });//addOnCompleteListener
     }//checkForBookStatusUpdate
 
+    /**
+     * This method will set up the onItemClickListener for the request list
+     * When the user click in one item of the request list, a dialog will show up,
+     * prompting the user for a following action: accept/decline
+     * */
     private void setUpRequestListListener() {
         requestList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -385,6 +399,11 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         });
     }
 
+    /**
+     * This method will set up the onClickListener for the request button.
+     * It adds a new BookRequest class to the bookRequest collection on the database,
+     * and also set the correct status for the selected book.
+     * */
     private void setUpRequestButtonListener() {
         request_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -431,6 +450,11 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         });
     }
 
+    /**
+     * This method will set up the onClickListener for the return button.
+     * It sets the book status back to "Borrowed" to cancel the returning process if the book status is already "Returning",
+     * otherwise it calls the ScanFragment to complete the return process.
+     * */
     private void setUpReturnButtonListener() {
         return_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -449,18 +473,22 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         });
     }//setupReturnButtonListener
 
-
+    /**
+     * This method will set up the behavior of the scan icon
+     * It calls to ScanFragment to complete the scan.
+     * */
     private void setUpScanButtonListener() {
         scanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new ScanFragment().show(getSupportFragmentManager(), "Scan ISBN");
-
             }
         });
     }
 
-
+    /**
+     * This method will set up the behavior of the go-back button
+     * */
     private void setUpBackButtonListener() {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -468,9 +496,12 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 finish();
             }
         });
-
     }
 
+    /**
+     * This method will set up the onClickListener of the edit button.
+     * It calls EditBookActivity to complete the editing process.
+     * */
     private void setUpEditButtonListener() {
         edit_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -482,6 +513,9 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         });
     }
 
+    /**
+     * This method will update the notification lists of the request sender and receiver, after the request has been declined.
+     * */
     private void updateBookInf() {
         //update the notification info to the sent user
         MainActivity.database.getDb().collection("users").document(requestSenderID)
@@ -512,7 +546,9 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 });
     }
 
-    // delete a book
+    /**
+     * This method will delete the selected book and all corresponding BookRequests, then finish the viewBookActivity.
+     * */
     public void delete_book(View view) {
         MainActivity.database.deleteImage(selectedBook.getBookID());
         db.collection("books").document(selectedBook.getBookID())
@@ -537,10 +573,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     }
 
 
-    /**
-     * This method will be invoked when the user's focus comes back to ViewBookActivity
-     * It will refresh the data from the database, so that if any data was updated, they will be displayed correctly
-     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -592,6 +624,11 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         }
     }
 
+    /**
+     * This method will handle the process of accepting a request on the selected book.
+     * It will add a notification to the request sender, delete all other requests
+     * , and update the book status and request status accordingly.
+     * */
     private void acceptRequest() {
         final Book.Status bookStatus = Book.Status.valueOf(status);
         if (selectedBook.getOwner().equals(userID)) {
@@ -608,6 +645,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                             final User senderUser = document.toObject(User.class);
 
                             //Get the username of the current user/owner
+                            // add a notification to the sender's notification list.
                             MainActivity.database
                                     .getDb()
                                     .collection("users")
@@ -633,7 +671,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         }//onComplete -- RequestSender
                     });
 
-            //delete the request from the listview when that request is accepted
+            //delete the request from the listView when that request is accepted
             requests.remove(requestPosition);
             requestAdapter = new RequestAdapter(requests, getApplicationContext());
             requestList.setAdapter(requestAdapter);
@@ -773,8 +811,8 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
     }
 
     /**
-     * This method will check whether the current user is the owner of the book
-     * and then set the UIs accordingly.
+     * This method will check the book status and check whether the current user is the owner of the book.
+     * And then it will set the UIs accordingly.
      */
     private void checkCases() {
         final Book.Status bookStatus = Book.Status.valueOf(status);
@@ -918,11 +956,13 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         }
                     });
 
-
         }
     }
 
-    // decline a borrowing request
+    /**
+     * This method will handle the decline process.
+     * It will delete the corresponding book request and update the book status to available if there is no other request on this book
+     * */
     private void declineRequest() {
         MainActivity.database
                 .getDb()
@@ -963,11 +1003,20 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 });
     }
 
+    /**
+     * This method overrides the the onOkPressed of the ScanFragment.OnFragmentInteractionListener interface.
+     * It first validates the scanned ISBN, and decide the actions according to the book status.
+     * 4 cases: 1. the owner accepting the request,
+     *          2. the borrower confirming the borrow,
+     *          3. the borrower start the returning process,
+     *          4. the owner confirms the return.
+     * */
     @Override
     public void onOkPressed(String ISBN) {
         // after scaning isbn successfully
         if (ISBN.equals(isbn)) {
-            // if the book is requested. (for owner)
+            // if the book is requested (for owner), it is a accepting process
+            // start the MapActivity to select a pickup location.
             if (Book.Status.valueOf(status).equals(Book.Status.Requested)) {
                 Intent mapsIntent = new Intent(getApplicationContext(), MapsActivity.class);
                 mapsIntent.putExtra(MapsActivity.MAP_TYPE, MapsActivity.ADD_EDIT_LOCATION);
@@ -981,7 +1030,9 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 startActivityForResult(mapsIntent, MapsActivity.ADD_EDIT_LOCATION_REQUEST_CODE);
                 return;
             }
-            //if the book is accepted -> borrowed
+
+            //if the book is accepted -> borrowed, it is a borrowing process,
+            // the borrower is scanning the isbn to confirm the borrowing.
             if (Book.Status.valueOf(status).equals(Book.Status.Accepted)) {
                 MainActivity.database
                         .getDb()
@@ -1026,6 +1077,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                 finish();
             }
 
+            // if book.status is borrowed, this is the borrower starting the borrowing process
             if (Book.Status.valueOf(status).equals(Book.Status.Borrowed)) {
                 MainActivity.database
                         .getDb()
@@ -1059,7 +1111,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                                 }
                                             });
 
-
                                     final DocumentReference docRef = db.collection("users").document(bookReq.getRequestReceiverID());
 
                                     docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -1075,12 +1126,14 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                         });
                 finish();
             }
-            // if it's the owner
+
+            // if it's the owner, it is the owner confirming the return.
             if (selectedBook.getOwner().equals(userID)) {
                 // if the status is returning
                 if (Book.Status.valueOf(status).equals(Book.Status.Returning)) {
 
                     // if you are the owner, you want to scan the book to end the process
+                    // delete the book request
                     MainActivity.database.getDb().collection("bookRequest")
                             .whereEqualTo("requestedBookID", bookID)
                             .whereEqualTo("requestReceiverID", userID)
@@ -1094,6 +1147,7 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                                     }
                                 }//onComplete
                             });
+                    // set the book status back to available.
                     MainActivity.database
                             .getDb()
                             .collection("books")
@@ -1209,9 +1263,11 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         }
     }
 
+    /**
+     * This method save the marked location to the Book collection on the database
+     * */
     void saveMapsLocation() {
         //Save the meeting location
-
         MainActivity.database.getDb().collection("books").document(bookID)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -1225,7 +1281,6 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
                     }// onComplete
                 });
     }
-
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -1250,6 +1305,10 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         }
     }
 
+    /**
+     * This static method will set up the height of listView according to the number of items in this listView
+     * , so that the listView is displayed properly.
+     * */
     public static void setListViewHeightBasedOnChildren(ListView listView) {
         ListAdapter listAdapter = listView.getAdapter();
         if (listAdapter == null) return;
@@ -1274,4 +1333,5 @@ public class ViewBookActivity extends AppCompatActivity implements ScanFragment.
         listView.setLayoutParams(params);
         listView.requestLayout();
     }
+}
 }
