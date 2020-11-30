@@ -116,7 +116,7 @@ public class BookListFragment extends Fragment {
         });
 
 
-        // when click filter button
+        // when click filter button, show/hide menu
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -140,6 +140,7 @@ public class BookListFragment extends Fragment {
         isButtonVisible(true, true);
     }
 
+    // get borrowed/returning book list
     private void getBorrowBookList() {
         datalist.clear();
         adapter = new BookListAdapter(datalist, getActivity());
@@ -154,11 +155,11 @@ public class BookListFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                            // only for ignoring old data
                             if(!documentSnapshot.contains("requestStatus"))
                                 continue;
                             String bookStatus = (String) documentSnapshot.get("requestStatus");
 
+                            // if it's not borrowed or returning, ignore it
                             if(!bookStatus.equals("Borrowed") && !bookStatus.equals("Returning")){
                                 continue;
                             }
@@ -180,6 +181,7 @@ public class BookListFragment extends Fragment {
                 });
     }
 
+    // get accepted book list
     private void getAcceptedBookList() {
         datalist.clear();
         adapter = new BookListAdapter(datalist, getActivity());
@@ -195,7 +197,7 @@ public class BookListFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                            // only for ignoring old data
+                            // ignore for some old data
                             if(!documentSnapshot.contains("requestStatus"))
                                 continue;
 
@@ -218,6 +220,7 @@ public class BookListFragment extends Fragment {
                 });
     }
 
+    // get requested book list
     private void getRequestBookList() {
         datalist.clear();
         adapter = new BookListAdapter(datalist, getActivity());
@@ -259,6 +262,7 @@ public class BookListFragment extends Fragment {
                 });
     }
 
+    // get own book list
     private void getOwnBookList() {
         datalist.clear();
         MainActivity.database.getDb().collection("books")
@@ -278,6 +282,7 @@ public class BookListFragment extends Fragment {
                 });
     }
 
+    // set filter button visibility
     private void isButtonVisible(boolean isVisible, boolean isFilterVisible) {
         if (isVisible) {
             addButton.setVisibility(View.VISIBLE);
@@ -314,6 +319,7 @@ public class BookListFragment extends Fragment {
         }
     }
 
+    // update book list
     public void updateBookList() {
         ArrayList<Book> filtered_book = new ArrayList<>();
         if (filterStatus.equals("All")) {
@@ -332,8 +338,8 @@ public class BookListFragment extends Fragment {
         bookListView.setAdapter(adapter);
     }
 
+    // set up listeners
     private void setUpListener() {
-        // for the text color change
         acceptBookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -457,6 +463,7 @@ public class BookListFragment extends Fragment {
         checkToggle();
     }// onResume
 
+    // check the current toggle
     private void checkToggle(){
         if(isOnToggle == 0){
             getOwnBookList();

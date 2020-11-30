@@ -50,8 +50,6 @@ public class ViewProfileActivity extends AppCompatActivity {
 
         final String emailID = getIntent().getStringExtra("EMAIL");
 
-        System.out.println("Email " + email.getText().toString());
-
         // get information from the database
         MainActivity.database.getDb().collection("users")
                 .whereEqualTo("email", emailID)
