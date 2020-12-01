@@ -25,7 +25,7 @@ https://drive.google.com/file/d/1BAnhIuPn1leXR7QlrS5Jp3S9A_H2RT0D/view?usp=shari
 
 ### Note: The [UML](./doc/UML_Final.png) (final version) has been updated for the Final Checkpoint
 
-The UML is devided into 3 parts, since it's too complicated that having them in one single diagram would make it really hard to read.
+The early UML draft is devided into 3 parts, since it's easier to read and design separately
 
 * ***[UML_Overall](./doc/UML_Overall.png)*** focuses on the most important anticipated classes
 * ***[UML_pageLevelDetails](./doc/UML_pageLevelDetails.png)*** provides a deeper view of the classes, interfaces and their relationships, focusing on the pages, fragments and their relationships
