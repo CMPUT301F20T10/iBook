@@ -23,7 +23,7 @@ https://drive.google.com/file/d/1BAnhIuPn1leXR7QlrS5Jp3S9A_H2RT0D/view?usp=shari
 
 ## UML
 
-### Note: The [UML](./doc/UML_Final.png) has been updated for the Final Checkpoint
+### Note: The [UML](./doc/UML_Final.png) (final version) has been updated for the Final Checkpoint
 
 The UML is devided into 3 parts, since it's too complicated that having them in one single diagram would make it really hard to read.
 
