@@ -25,14 +25,15 @@ https://drive.google.com/file/d/1BAnhIuPn1leXR7QlrS5Jp3S9A_H2RT0D/view?usp=shari
 
 ### Note: The [UML](./doc/UML_Final.png) (final version) has been updated for the Final Checkpoint
 
-The early UML draft is devided into 3 parts, since it's easier to read and design separately
+#### Previous Version (deprecated):
+~~The UML is devided into 3 parts, since it's too complicated that having them in one single diagram would make it really hard to read.~~
 
-* ***[UML_Overall](./doc/UML_Overall.png)*** focuses on the most important anticipated classes
-* ***[UML_pageLevelDetails](./doc/UML_pageLevelDetails.png)*** provides a deeper view of the classes, interfaces and their relationships, focusing on the pages, fragments and their relationships
-  * how they communicate with/generate other pages
-  * how they interact with the databse
-* ***[UML_FragmentLevelDetails](./doc/UML_FragmentLevelDetails.png)*** is all about the ViewBookFragment class.
-  Since we decide (for now) to have different button logics (requesting/returning/borrowing...) for the page used to view the book details, according to the book to be viewed and the user openning this page, the classes like ViewBookFragment will have 6 ways of interacting with other classes (though they will be used by other classes in the same way).
+* ~~***[UML_Overall](./doc/UML_Overall.png)*** focuses on the most important anticipated classes~~
+* ~~***[UML_pageLevelDetails](./doc/UML_pageLevelDetails.png)*** provides a deeper view of the classes, interfaces and their relationships, focusing on the pages, fragments and their relationships~~
+  * ~~how they communicate with/generate other pages~~
+  * ~~how they interact with the databse~~
+* ~~***[UML_FragmentLevelDetails](./doc/UML_FragmentLevelDetails.png)*** is all about the ViewBookFragment class.~~
+  ~~Since we decide (for now) to have different button logics (requesting/returning/borrowing...) for the page used to view the book details, according to the book to be viewed and the user openning this page, the classes like ViewBookFragment will have 6 ways of interacting with other classes (though they will be used by other classes in the same way).~~
 
 ## Product Backlog
 
