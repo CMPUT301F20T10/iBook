@@ -4,9 +4,9 @@
 
 [![Build Status](https://travis-ci.com/CMPUT301F20T10/iBook.svg?branch=main)](https://travis-ci.com/CMPUT301F20T10/iBook) ![language](https://img.shields.io/badge/language-java-orange.svg)
 
-## Notion
+## Note
 
-> :warning: **This app has not been tested for all Android devices.**
+> **This app has not been tested for all Android devices.**
 >
 > :warning: **We got an unknown error from some phones.**
 >
